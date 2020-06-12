@@ -136,3 +136,6 @@ kedro build-reqs
 This will copy the contents of `src/requirements.txt` into a new file `src/requirements.in` which will be used as the source for `pip-compile`. You can see the output of the resolution by opening `src/requirements.txt`.
 
 After this, if you'd like to update your project requirements, please update `src/requirements.in` and re-run `kedro build-reqs`.
+=======
+# zebrafish_ec_migration
+>>>>>>> d883417c773b5533c7ee799236bcf585af6c53fb
