@@ -33,16 +33,19 @@ PLEASE DELETE THIS FILE ONCE YOU START WORKING ON YOUR OWN PROJECT!
 
 from kedro.pipeline import Pipeline, node
 
-
-
 from zebrafish_ec_migration.nodes.process_key_file import (
-    preprocess_key_file,
+    process_key_file,
+)
+
+from zebrafish_ec_migration.nodes.CMSO_transformation import (
+    CMSO_movement_data,
 )
 
 def create_pipeline(**kwargs):
 
     return Pipeline(
         [
-            node(preprocess_key_file, "parameters" , "preprocessed_key_file", name="process_key_file"),
+            node(process_key_file, "parameters" , "processed_key_file", name="process_key_file"),
+            node(CMSO_movement_data, ["processed_key_file", "parameters","params:start_time_dpf1","params:end_time_dpf1"], "CMSO_objects", name="CMSO_transformation"),
         ]
     )

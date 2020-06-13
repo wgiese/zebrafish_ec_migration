@@ -1,1 +1,25 @@
 data_dir : "/directory/to/data/"
+
+
+
+# quality check for trajectories
+min_tracks : 3
+min_track_length : 6
+
+# parameters for time series analysis
+dt : 2
+time_resolution : 1
+start_time_dpf1 : 24
+end_time_dpf1 : 48
+start_time_anastomosis : 26
+end_time_anastomosis : 32
+start_time_remodeling : 32
+end_time_remodeling : 40
+start_time_dpf2 : 48
+end_time_dpf2 : 72
+
+# parameters for time series plots
+start_plot_dpf1 : 26
+end_plot_dpf1 : 44.3
+start_plot_dpf2 : 50
+end_plot_dpf2 : 68.3

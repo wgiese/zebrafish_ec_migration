@@ -36,8 +36,13 @@ from kedro.pipeline import Pipeline
 from zebrafish_ec_migration.pipelines.FAIR_pipeline import pipeline as FAIR_pipeline
 
 from zebrafish_ec_migration.nodes.process_key_file import (
-    preprocess_key_file,
+    process_key_file,
 )
+
+from zebrafish_ec_migration.nodes.CMSO_transformation import (
+    CMSO_movement_data,
+)
+
 
 def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
     """Create the project's pipeline.

@@ -3,14 +3,16 @@ import numpy as np
 from typing import Dict, List
 
 
-def preprocess_key_file(parameters: Dict) -> pd.DataFrame:
+def process_key_file(parameters: Dict) -> pd.DataFrame:
 
     default_load_args = {"engine": "xlrd", "skiprows" : 1}
     df_key =  pd.read_excel(parameters["key_file"], **default_load_args)
 
-    preprocessed_key_file = _specify_analysis_groups(df_key)
+    processed_key_file = _specify_analysis_groups(df_key)
+    
+    processed_key_file = processed_key_file[processed_key_file["filename"].str.contains(".csv")]
 
-    return preprocessed_key_file
+    return processed_key_file
     
 
 
@@ -34,9 +36,9 @@ def _specify_analysis_groups(df_key):
                                                             df_key.iterrows()]  # vessel type`
     # df_key.loc[df_key['vessel_type']!='isv', 'isv_type']  =  ['aISV' if d_['aISV'] else ('vISV' if d_['vISV'] else ('either' if d_['ISV'] else 'none')) for _, d_ in
 
-    df_key['filename_short'] = [fn_['filename'][fn_['filename'].find('Statistics on cell migration'):] for _, fn_ in
+    df_key['filename'] = [fn_['filename'][fn_['filename'].find('Statistics on cell migration')-1:] for _, fn_ in
                                 df_key.iterrows()]
-    df_key['filename_short'] = [fns.replace('.csv', '') for fns in df_key['filename_short']]
+    #df_key['filename_short'] = [fns.replace('.csv', '') for fns in df_key['filename_short']]
 
     df_key['is_control'] = np.array(df_key['tnnt2'] == 0) * \
                             np.array(df_key['CK-666'] == 0) * \
