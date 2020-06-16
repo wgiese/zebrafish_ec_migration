@@ -46,6 +46,9 @@ def create_pipeline(**kwargs):
     return Pipeline(
         [
             node(process_key_file, "parameters" , "processed_key_file", name="process_key_file"),
-            node(CMSO_movement_data, ["processed_key_file", "parameters","params:start_time_dpf1","params:end_time_dpf1"], "CMSO_objects", name="CMSO_transformation"),
+            node(CMSO_movement_data,
+                 ["processed_key_file", "parameters","params:start_time_dpf1","params:end_time_dpf1"],
+                 ["IMARIS_data", "unaligned_tracking_data", "CMSO_objects", "CMSO_objects_data"],
+                 name="CMSO_transformation"),
         ]
     )
