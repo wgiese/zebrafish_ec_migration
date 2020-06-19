@@ -72,6 +72,10 @@ def CMSO_movement_data(processed_key_file: pd.DataFrame, parameters: Dict, start
 
     object_data = dict()
 
+    link_data = dict()
+
+    tracking_data = dict()
+
     object_data_statistics = pd.DataFrame()
     counter = 1
 
@@ -92,10 +96,10 @@ def CMSO_movement_data(processed_key_file: pd.DataFrame, parameters: Dict, start
 
             print(df_single_fish)
 
-            objects_df = pd.DataFrame({"X": [1, 2], "Y": [3, 4]})
+            #objects_df = pd.DataFrame({"X": [1, 2], "Y": [3, 4]})
 
             filename = 'objects_fish_%s_%s.csv' % (int(fish_number), analysis_group)
-            object_data[filename] = objects_df
+            #object_data[filename] = objects_df
 
             object_data_statistics.at[counter, "filename"] = filename
 
@@ -111,16 +115,29 @@ def CMSO_movement_data(processed_key_file: pd.DataFrame, parameters: Dict, start
                     imaris_data['tracks_fish_%s_%s_%s.csv' % (
                     analysis_group, int(fish_number), row["vessel_type"])] = imaris_df
                     unified_df = _unify_tidy_wide_IMARIS_formats(imaris_df)
+                    print(unified_df.head())
                     if unified_df.size > 1:
-                        unified_imaris ['tracks_fish_%s_%s_%s.csv' % (
+                        imaris_data['tracks_fish_%s_%s_%s.csv' % (
+                            analysis_group, int(fish_number), row["vessel_type"])] = imaris_df
+                        unified_imaris['tracks_fish_%s_%s_%s.csv' % (
                         analysis_group, int(fish_number), row["vessel_type"])] = unified_df
 
-                    # _read_IMARIS_cell_migration_data()
+                        object_data['objects_fish_%s_%s_%s.csv' % (
+                            analysis_group, int(fish_number), row["vessel_type"])] = unified_df[["ID", "X", "Y", "Z"]]
+                        link_data['link_fish_%s_%s_%s.csv' % (
+                        analysis_group, int(fish_number), row["vessel_type"])] = unified_df[["ID", "TrackID"]]
+                        track_counter = 0
 
+                        track_df = pd.DataFrame()
+                        for TrackID in unified_df["TrackID"].unique():
+                            track_df.at[track_counter, "LinkID"] = TrackID
+                            track_df.at[track_counter, "TrackID"] = TrackID
+                            track_counter += 1                # _read_IMARIS_cell_migration_data()
+                        tracking_data['tracks_fish_%s_%s_%s.csv' % (analysis_group, int(fish_number), row["vessel_type"])] = track_df
         counter += 1
 
 
-    return imaris_data, unified_imaris, object_data, object_data_statistics
+    return imaris_data, unified_imaris, object_data, object_data_statistics, link_data, tracking_data
 
     # print("The following parameters are used: ")
     # print(parameters)

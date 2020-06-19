@@ -11,14 +11,22 @@ processed_key_file:
   type: pandas.CSVDataSet
   filepath: data/01_raw/processed_key_file.csv
 
-CMSO_objects:
+CMSO_object_data:
   type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
   filepath: data/01_raw/CMSO_objects/
 
 CMSO_objects_statistics:
   type: pandas.CSVDataSet
   filepath: data/01_raw/CMSO_objects_statistics.csv
-  
+
+CMSO_link_data:
+  type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
+  filepath: data/01_raw/CMSO_link_data/
+
+CMSO_track_data:
+  type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
+  filepath: data/01_raw/CMSO_track_data/
+
 IMARIS_data:
   type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
   filepath: data/01_raw/IMARIS_data/
