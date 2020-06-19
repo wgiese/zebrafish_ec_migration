@@ -123,15 +123,15 @@ def CMSO_movement_data(processed_key_file: pd.DataFrame, parameters: Dict, start
                         analysis_group, int(fish_number), row["vessel_type"])] = unified_df
 
                         object_data['objects_fish_%s_%s_%s.csv' % (
-                            analysis_group, int(fish_number), row["vessel_type"])] = unified_df[["ID", "X", "Y", "Z"]]
+                            analysis_group, int(fish_number), row["vessel_type"])] = unified_df[["object_id", "x", "y", "z"]]
                         link_data['link_fish_%s_%s_%s.csv' % (
-                        analysis_group, int(fish_number), row["vessel_type"])] = unified_df[["ID", "TrackID"]]
+                        analysis_group, int(fish_number), row["vessel_type"])] = unified_df[["object_id", "track_id"]]
                         track_counter = 0
 
                         track_df = pd.DataFrame()
-                        for TrackID in unified_df["TrackID"].unique():
-                            track_df.at[track_counter, "LinkID"] = TrackID
-                            track_df.at[track_counter, "TrackID"] = TrackID
+                        for TrackID in unified_df["track_id"].unique():
+                            track_df.at[track_counter, "link_id"] = TrackID
+                            track_df.at[track_counter, "track_id"] = TrackID
                             track_counter += 1                # _read_IMARIS_cell_migration_data()
                         tracking_data['tracks_fish_%s_%s_%s.csv' % (analysis_group, int(fish_number), row["vessel_type"])] = track_df
         counter += 1
@@ -228,11 +228,11 @@ def _unify_tidy_wide_IMARIS_formats(imaris_df):
                 track_y[i] = float(track_y[i].replace(",", "."))
                 track_z[i] = float(track_z[i].replace(",", "."))
 
-        trackIDs = [str(trackID) for i in range(len(time))]
+        trackIDs = [str(int(trackID)) for i in range(len(time))]
 
 
-        temp = pd.DataFrame({'X': track_x, 'Y': track_y, 'Z': track_z, 'Time': time,
-                             'TrackID': trackIDs, "ID": object_id},
+        temp = pd.DataFrame({'x': track_x, 'y': track_y, 'z': track_z, 'frame': time,
+                             'track_id': trackIDs, "object_id": object_id},
                             index=range(len(time)))
 
         if (len(unified_df) > 1):
