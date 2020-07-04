@@ -64,7 +64,9 @@ def _count_delimiters(s):
     return max(tup)[1]
 
 
-def CMSO_movement_data(processed_key_file: pd.DataFrame, parameters: Dict, start_time, end_time) -> pd.DataFrame:
+def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_time, end_time) -> pd.DataFrame:
+
+    processed_key_file = imaris_key_file.copy()
 
     imaris_data = dict()
 
@@ -79,12 +81,12 @@ def CMSO_movement_data(processed_key_file: pd.DataFrame, parameters: Dict, start
     object_data_statistics = pd.DataFrame()
     counter = 1
 
-    for fish_number in processed_key_file["fish number"].unique():
+    for fish_number in imaris_key_file["fish number"].unique():
 
         if (np.isnan(fish_number)):
             continue
 
-        df_single_fish_all_groups = processed_key_file[processed_key_file['fish number'] == fish_number]
+        df_single_fish_all_groups = imaris_key_file[imaris_key_file['fish number'] == fish_number]
 
         for analysis_group in df_single_fish_all_groups["analysis_group"].unique():
 
@@ -98,10 +100,10 @@ def CMSO_movement_data(processed_key_file: pd.DataFrame, parameters: Dict, start
 
             #objects_df = pd.DataFrame({"X": [1, 2], "Y": [3, 4]})
 
-            filename = 'objects_fish_%s_%s.csv' % (int(fish_number), analysis_group)
+            object_filename = 'objects_fish_%s_%s.csv' % (int(fish_number), analysis_group)
             #object_data[filename] = objects_df
 
-            object_data_statistics.at[counter, "filename"] = filename
+            object_data_statistics.at[counter, "filename"] = object_filename
 
             for index, row in df_single_fish.iterrows():
 
@@ -121,11 +123,11 @@ def CMSO_movement_data(processed_key_file: pd.DataFrame, parameters: Dict, start
                             analysis_group, int(fish_number), row["vessel_type"])] = imaris_df
                         unified_imaris['tracks_fish_%s_%s_%s.csv' % (
                         analysis_group, int(fish_number), row["vessel_type"])] = unified_df
-
-                        object_data['objects_fish_%s_%s_%s.csv' % (
-                            analysis_group, int(fish_number), row["vessel_type"])] = unified_df[["object_id", "x", "y", "z"]]
-                        link_data['link_fish_%s_%s_%s.csv' % (
-                        analysis_group, int(fish_number), row["vessel_type"])] = unified_df[["object_id", "track_id"]]
+                        object_filename = 'objects_fish_%s_%s_%s.csv' % (
+                            analysis_group, int(fish_number), row["vessel_type"])
+                        object_data[object_filename] = unified_df[["object_id", "x", "y", "z"]]
+                        link_filename = 'link_fish_%s_%s_%s.csv' % (analysis_group, int(fish_number), row["vessel_type"])
+                        link_data[link_filename] = unified_df[["object_id", "track_id"]]
                         track_counter = 0
 
                         track_df = pd.DataFrame()
@@ -133,11 +135,16 @@ def CMSO_movement_data(processed_key_file: pd.DataFrame, parameters: Dict, start
                             track_df.at[track_counter, "link_id"] = TrackID
                             track_df.at[track_counter, "track_id"] = TrackID
                             track_counter += 1                # _read_IMARIS_cell_migration_data()
-                        tracking_data['tracks_fish_%s_%s_%s.csv' % (analysis_group, int(fish_number), row["vessel_type"])] = track_df
+                        track_filename = 'tracks_fish_%s_%s_%s.csv' % (analysis_group, int(fish_number), row["vessel_type"])
+                        tracking_data[track_filename] = track_df
+
+                        processed_key_file.at[index,"link_data"] = link_filename
+                        processed_key_file.at[index, "track_data"] = track_filename
+                        processed_key_file.at[index, "object_data"] = object_filename
         counter += 1
 
 
-    return imaris_data, unified_imaris, object_data, object_data_statistics, link_data, tracking_data
+    return processed_key_file, imaris_data, object_data, object_data_statistics, link_data, tracking_data
 
     # print("The following parameters are used: ")
     # print(parameters)

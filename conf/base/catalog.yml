@@ -7,6 +7,10 @@
 #  type: zebrafish_ec_migration.io.xls_local.ExcelLocalDataSet
 #  filepath: data/01_raw/Key.xlsx
 
+imaris_key_file:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/imaris_key_file.csv
+
 processed_key_file:
   type: pandas.CSVDataSet
   filepath: data/01_raw/processed_key_file.csv
