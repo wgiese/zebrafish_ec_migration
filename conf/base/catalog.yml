@@ -15,9 +15,17 @@ processed_key_file:
   type: pandas.CSVDataSet
   filepath: data/01_raw/processed_key_file.csv
 
+key_aligned_objects:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/key_aligned_objects.csv
+
 CMSO_object_data:
   type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
   filepath: data/01_raw/CMSO_objects/
+
+CMSO_aligned_object_data:
+  type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
+  filepath: data/02_intermediate/CMSO_objects/
 
 CMSO_objects_statistics:
   type: pandas.CSVDataSet
@@ -35,6 +43,11 @@ IMARIS_data:
   type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
   filepath: data/01_raw/IMARIS_data/
 
+#TODO check if unaligned_tracking_data still exists
 unaligned_tracking_data:
   type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
   filepath: data/02_intermediate/unaligned_tracking_data/
+
+movement_data_summary:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/movement_data_summary.csv

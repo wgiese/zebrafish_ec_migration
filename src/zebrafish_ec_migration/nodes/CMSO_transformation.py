@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 from typing import Dict, List
+import yaml
 import os
-
 
 def _read_IMARIS_cell_migration_data(filename):
     '''
@@ -81,6 +81,13 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
     object_data_statistics = pd.DataFrame()
     counter = 1
 
+    with open("./conf/base/catalog.yml") as file:
+        catalog_dict = yaml.load(file, Loader=yaml.FullLoader)
+
+    cmso_object_dir = catalog_dict['CMSO_object_data']['filepath']
+    cmso_link_dir = catalog_dict['CMSO_link_data']['filepath']
+    cmso_track_dir = catalog_dict['CMSO_track_data']['filepath']
+
     for fish_number in imaris_key_file["fish number"].unique():
 
         if (np.isnan(fish_number)):
@@ -138,9 +145,9 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
                         track_filename = 'tracks_fish_%s_%s_%s.csv' % (analysis_group, int(fish_number), row["vessel_type"])
                         tracking_data[track_filename] = track_df
 
-                        processed_key_file.at[index,"link_data"] = link_filename
-                        processed_key_file.at[index, "track_data"] = track_filename
-                        processed_key_file.at[index, "object_data"] = object_filename
+                        processed_key_file.at[index,"link_data"] = cmso_link_dir + link_filename
+                        processed_key_file.at[index, "track_data"] = cmso_track_dir + track_filename
+                        processed_key_file.at[index, "object_data"] = cmso_object_dir + object_filename
         counter += 1
 
 
