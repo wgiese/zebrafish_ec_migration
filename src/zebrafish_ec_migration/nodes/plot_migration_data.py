@@ -1,4 +1,7 @@
 import pandas as pd
+from typing import Dict, List
+import numpy as np
+import pylab as plt
 
 def plot_migration_data(processed_key_file: pd.DataFrame, parameters: Dict, start_time, end_time):
 
@@ -57,7 +60,7 @@ def plot_migration_data(processed_key_file: pd.DataFrame, parameters: Dict, star
             #if (len(movement_data.columns) < 3):
             #    continue
 
-            trajectory_plots["trajectories_fish_ % s.pdf" % fish_number] = _plot_trajectory(movement_dataement_data,parameters)
+            trajectory_plots["trajectories_fish_ % s.pdf" % fish_number] = _plot_trajectory(movement_data,parameters)
             trajectory_plots["trajectories_fish_ % s.png" % fish_number] = _plot_trajectory(movement_data,parameters)
 
             #movement_data = geo.rotate_fish(movement_data, rotate_XY=True, rotate_XZ=True)
@@ -68,7 +71,7 @@ def plot_migration_data(processed_key_file: pd.DataFrame, parameters: Dict, star
 
     return trajectory_plots#, oriented_trajectory_plots
 
-def _plot_trajectory(movement_data, parameters)
+def _plot_trajectory(movement_data, parameters):
     x_min = movement_data['x'].min()
     y_min = movement_data['y'].min()
     z_min = movement_data['z'].min()
@@ -156,4 +159,4 @@ def _plot_trajectory(movement_data, parameters)
 
     plt.tight_layout()
 
-return fig
+    return fig

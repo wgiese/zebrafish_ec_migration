@@ -51,3 +51,9 @@ unaligned_tracking_data:
 movement_data_summary:
   type: pandas.CSVDataSet
   filepath: data/02_intermediate/movement_data_summary.csv
+
+trajectory_plots:
+  type: zebrafish_ec_migration.io.matplotlib_figures.MatplotlibWriter
+  filepath: data/02_intermediate/trajectory_plots/
+  save_args:
+    multiFile : True

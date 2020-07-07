@@ -31,7 +31,7 @@
 
 from typing import Dict
 
-from kedro.pipeline import Pipeline
+from kedro.pipeline import Pipeline, node
 
 from zebrafish_ec_migration.pipelines.FAIR_pipeline import pipeline as FAIR_pipeline
 
@@ -41,6 +41,10 @@ from zebrafish_ec_migration.nodes.process_key_file import (
 
 from zebrafish_ec_migration.nodes.CMSO_transformation import (
     CMSO_movement_data,
+)
+
+from zebrafish_ec_migration.nodes.plot_migration_data import (
+    plot_migration_data,
 )
 
 
@@ -57,6 +61,8 @@ def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
     
     preprocess_pipeline = FAIR_pipeline.create_pipeline()
 
-    
+    master_pipeline = Pipeline(
+        [node(plot_migration_data, ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"], "trajectory_plots", name="plot_trajectories")])
 
-    return {"__default__": preprocess_pipeline}
+    #return {"__default__": preprocess_pipeline}
+    return {"__default__": master_pipeline}
