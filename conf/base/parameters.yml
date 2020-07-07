@@ -1,3 +1,4 @@
+key_file : "/directory/to/key_file/Key.xlsx"
 data_dir : "/directory/to/data/"
 
 
@@ -23,3 +24,9 @@ start_plot_dpf1 : 26
 end_plot_dpf1 : 44.3
 start_plot_dpf2 : 50
 end_plot_dpf2 : 68.3
+
+# definitions of vessel_types and analysis groups
+analysis_groups : ["control","WaspI [100uM]","Gata1","Gata1_Wasp1"]
+
+vessel_types: ["aISV", "vISV", "aorta", "dlav"]
+vessel_type_colors: {"aorta": "red", "dlav": "blue", "aISV": "orange", "vISV": "c", "either": "purple"}

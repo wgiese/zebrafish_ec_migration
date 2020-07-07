@@ -134,7 +134,11 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
                             analysis_group, int(fish_number), row["vessel_type"])
                         object_data[object_filename] = unified_df[["object_id", "x", "y", "z"]]
                         link_filename = 'link_fish_%s_%s_%s.csv' % (analysis_group, int(fish_number), row["vessel_type"])
-                        link_data[link_filename] = unified_df[["object_id", "track_id"]]
+                        link_df = unified_df[["object_id", "track_id"]]
+                        link_df = link_df.rename(columns={"track_id": "link_id"})
+                        link_data[link_filename] = link_df
+
+
                         track_counter = 0
 
                         track_df = pd.DataFrame()
