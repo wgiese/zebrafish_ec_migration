@@ -154,6 +154,7 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
                         processed_key_file.at[index, "object_data"] = cmso_object_dir + object_filename
         counter += 1
 
+    processed_key_file = processed_key_file[processed_key_file["object_data"] != np.nan]
 
     return processed_key_file, imaris_data, object_data, object_data_statistics, link_data, tracking_data
 

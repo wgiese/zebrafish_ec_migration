@@ -25,11 +25,32 @@ def plot_migration_data(processed_key_file: pd.DataFrame, parameters: Dict, star
 
             df_single_fish = df_single_fish_all_groups[df_single_fish_all_groups["analysis_group"] == analysis_group]
 
-            object_data = pd.read_csv( df_single_fish["object_data"].iloc[0])
-            link_data = pd.read_csv(df_single_fish["link_data"].iloc[0])
-            # print(link_data.head())
-            movement_data = pd.merge(object_data, link_data, on='object_id')
-            print(movement_data.head())
+            movement_data = pd.DataFrame(data=[], columns = ["x","y","z","link_id","object_id", "vessel_type"])
+            for index,row in df_single_fish.iterrows():
+
+                #print("Object data: %s" % row["object_data"])
+                if not isinstance(row["object_data"], str):
+                     continue
+
+                object_data = pd.read_csv( row["object_data"])
+                link_data = pd.read_csv( row["link_data"])
+                movement_data_ = pd.merge(object_data, link_data, on='object_id')
+
+                vessel_type_ = row["vessel_type"]
+
+                if vessel_type_ == "isv":
+                    vessel_type = row["isv_type"]
+                else:
+                    vessel_type = vessel_type_
+
+                movement_data_["vessel_type"] = [vessel_type for x in movement_data_["x"]]
+
+                if len(movement_data['x']) > 1:
+                    movement_data = movement_data.append(movement_data_)
+                else:
+                    movement_data = movement_data_.copy()
+
+
 
 
             #print("=================================================")
@@ -57,11 +78,11 @@ def plot_migration_data(processed_key_file: pd.DataFrame, parameters: Dict, star
             #'''
             #rotate fish
             #'''
-            #if (len(movement_data.columns) < 3):
-            #    continue
+            if (len(movement_data['x']) < 3):
+                continue
 
-            trajectory_plots["trajectories_fish_ % s.pdf" % fish_number] = _plot_trajectory(movement_data,parameters)
-            trajectory_plots["trajectories_fish_ % s.png" % fish_number] = _plot_trajectory(movement_data,parameters)
+            trajectory_plots["trajectories_fish_%s.pdf" % fish_number] = _plot_trajectory(movement_data,parameters)
+            trajectory_plots["trajectories_fish_%s.png" % fish_number] = _plot_trajectory(movement_data,parameters)
 
             #movement_data = geo.rotate_fish(movement_data, rotate_XY=True, rotate_XZ=True)
 

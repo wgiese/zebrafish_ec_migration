@@ -65,4 +65,4 @@ def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
         [node(plot_migration_data, ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"], "trajectory_plots", name="plot_trajectories")])
 
     #return {"__default__": preprocess_pipeline}
-    return {"__default__": master_pipeline}
+    return {"__default__": master_pipeline, "preprocess_pipeline" : preprocess_pipeline}
