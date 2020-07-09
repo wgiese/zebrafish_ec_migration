@@ -14,7 +14,7 @@ def plot_migration_data(processed_key_file: pd.DataFrame, parameters: Dict, star
 
     counter_statistics = 0
 
-    for fish_number in [135]: #processed_key_file["fish number"].unique():
+    for fish_number in processed_key_file["fish number"].unique():
 
         if (np.isnan(fish_number)):
             continue
