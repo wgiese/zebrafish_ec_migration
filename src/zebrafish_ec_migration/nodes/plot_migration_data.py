@@ -14,7 +14,7 @@ def plot_migration_data(processed_key_file: pd.DataFrame, parameters: Dict, star
 
     counter_statistics = 0
 
-    for fish_number in processed_key_file["fish number"].unique():
+    for fish_number in [135]: #processed_key_file["fish number"].unique():
 
         if (np.isnan(fish_number)):
             continue
@@ -119,6 +119,10 @@ def _plot_trajectory(movement_data, parameters):
         for link_id in vessel_df["link_id"].unique():
             temp = vessel_df[vessel_df["link_id"] == link_id]
 
+            mean_x_link_id = temp["x"].mean()
+            mean_y_link_id = temp["y"].mean()
+            mean_z_link_id = temp["z"].mean()
+
             if (len(temp) < 2):
                 continue
 
@@ -129,23 +133,20 @@ def _plot_trajectory(movement_data, parameters):
             z_pos = np.array(temp["z"])
             z_pos = z_pos - z_min - 0.5 * (z_max - z_min) + 0.5 * max_ext
 
-            # color = 'b'
-            # if (vessel_type=="aorta"):
-            # color = 'r'
-            # if (vessel_type=="aISV"):
-            # color = 'orange'
-            # if (vessel_type=="either"):
-            # color = 'm'
-            # if (vessel_type=="vISV"):
-            # color = 'c'
-
+            mean_x_link_id = mean_x_link_id - x_min - 0.5 * (x_max - x_min) + 0.5 * max_ext
+            mean_y_link_id = mean_y_link_id - y_min - 0.5 * (y_max - y_min) + 0.5 * max_ext
+            mean_z_link_id = mean_z_link_id - z_min - 0.5 * (z_max - z_min) + 0.5 * max_ext
             color = vessel_type_colors[vessel_type]
 
             axarr[0].plot(x_pos, y_pos, color)
+            axarr[0].text(mean_x_link_id, mean_y_link_id, link_id, fontsize=5)
+            #axarr[0].text(100, 100, "link_id: %s" % link_id, fontsize=3)
             axarr[0].set_xlabel("x")
             axarr[0].set_ylabel("y")
             axarr[0].set_xlim(0, max_ext)
             axarr[0].set_ylim(0, max_ext)
+
+
 
             if legend_dlav and (vessel_type == 'dlav'):
                 axarr[1].plot(x_pos, z_pos, color, label=vessel_type)
@@ -171,7 +172,7 @@ def _plot_trajectory(movement_data, parameters):
             axarr[1].set_ylim(0, max_ext)
 
             axarr[2].plot(y_pos, z_pos, color)
-            axarr[2].set_xlabel("x")
+            axarr[2].set_xlabel("y")
             axarr[2].set_ylabel("z")
             axarr[2].set_xlim(0, max_ext)
             axarr[2].set_ylim(0, max_ext)
