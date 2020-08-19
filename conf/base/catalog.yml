@@ -57,3 +57,11 @@ trajectory_plots:
   filepath: data/02_intermediate/trajectory_plots/
   save_args:
     multiFile : True
+
+migration_features:
+  type: pandas.CSVDataSet
+  filepath: data/04_feature/migration_features.csv
+
+migration_data_statistics:
+  type: pandas.CSVDataSet
+  filepath: data/04_feature/migration_data_statistics.csv

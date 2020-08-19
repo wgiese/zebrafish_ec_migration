@@ -35,17 +35,14 @@ from kedro.pipeline import Pipeline, node
 
 from zebrafish_ec_migration.pipelines.FAIR_pipeline import pipeline as FAIR_pipeline
 
-from zebrafish_ec_migration.nodes.process_key_file import (
-    process_key_file,
-)
-
-from zebrafish_ec_migration.nodes.CMSO_transformation import (
-    CMSO_movement_data,
-)
-
 from zebrafish_ec_migration.nodes.plot_migration_data import (
     plot_migration_data,
 )
+
+from zebrafish_ec_migration.nodes.extract_cell_migration_features import (
+    extract_migration_features,
+)
+
 
 
 def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
@@ -62,7 +59,11 @@ def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
     preprocess_pipeline = FAIR_pipeline.create_pipeline()
 
     master_pipeline = Pipeline(
-        [node(plot_migration_data, ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"], "trajectory_plots", name="plot_trajectories")])
+        [node(plot_migration_data, ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"], "trajectory_plots", name="plot_trajectories"),
+         node(extract_migration_features,
+              ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"],
+              ["migration_features", "migration_data_statistics"], name="extract_migration_features_dpf1"),
+         ])
 
     #return {"__default__": preprocess_pipeline}
     return {"__default__": master_pipeline, "preprocess_pipeline" : preprocess_pipeline}
