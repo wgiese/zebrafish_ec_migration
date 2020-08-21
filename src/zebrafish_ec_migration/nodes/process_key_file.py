@@ -13,7 +13,7 @@ def process_key_file(parameters: Dict) -> pd.DataFrame:
     processed_key_file = processed_key_file[processed_key_file["filename"].str.contains(".csv")]
 
     return processed_key_file
-    
+
 
 
 def _specify_analysis_groups(df_key):
@@ -29,10 +29,14 @@ def _specify_analysis_groups(df_key):
 
     df_key.rename(index=str, columns={'vessel type': 'vessel_type'}, inplace=True)
 
-    df_key['vessel_type'] = ['aorta' if d_['Aorta'] else ('dlav' if d_['DLAV'] else 'isv') for _, d_ in
+    #df_key['vessel_type'] = ['aorta' if d_['Aorta'] else ('dlav' if d_['DLAV'] else
+    #                                                      ('aISV' if d_['aISV'] else ('vISV' if d_['vISV'] else ('either' if d_['ISV'] else 'none')) for _, d_ in
+    #                        df_key.iterrows()]  # vessel type
+
+    df_key['vessel_type'] = ['aorta' if d_['Aorta'] else ('dlav' if d_['DLAV'] else ('aISV' if d_['aISV'] else ('vISV' if d_['vISV'] else ('either_ISV' if d_['ISV'] else 'none')))) for _, d_ in
                             df_key.iterrows()]  # vessel type
 
-    df_key['isv_type']  =  ['aISV' if d_['aISV'] else ('vISV' if d_['vISV'] else ('either' if d_['ISV'] else 'none')) for _, d_ in
+    df_key['isv_type'] = ['aISV' if d_['aISV'] else ('vISV' if d_['vISV'] else ('either' if d_['ISV'] else 'none')) for _, d_ in
                                                             df_key.iterrows()]  # vessel type`
     # df_key.loc[df_key['vessel_type']!='isv', 'isv_type']  =  ['aISV' if d_['aISV'] else ('vISV' if d_['vISV'] else ('either' if d_['ISV'] else 'none')) for _, d_ in
 

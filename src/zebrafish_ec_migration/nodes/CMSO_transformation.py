@@ -66,6 +66,7 @@ def _count_delimiters(s):
 
 def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_time, end_time) -> pd.DataFrame:
 
+
     processed_key_file = imaris_key_file.copy()
 
     imaris_data = dict()
@@ -104,8 +105,6 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
             print("=================================================")
 
             print(df_single_fish)
-
-            #objects_df = pd.DataFrame({"X": [1, 2], "Y": [3, 4]})
 
             object_filename = 'objects_fish_%s_%s.csv' % (int(fish_number), analysis_group)
             #object_data[filename] = objects_df

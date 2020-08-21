@@ -29,4 +29,4 @@ end_plot_dpf2 : 68.3
 analysis_groups : ["control","WaspI [100uM]","Gata1","Gata1_Wasp1"]
 
 vessel_types: ["aISV", "vISV", "aorta", "dlav"]
-vessel_type_colors: {"aorta": "red", "dlav": "blue", "aISV": "orange", "vISV": "c", "either": "purple"}
+vessel_type_colors: {"aorta": "red", "dlav": "blue", "aISV": "orange", "vISV": "c", "either_ISV": "purple"}

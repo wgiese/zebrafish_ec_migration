@@ -38,10 +38,10 @@ def plot_migration_data(processed_key_file: pd.DataFrame, parameters: Dict, star
 
                 vessel_type_ = row["vessel_type"]
 
-                if vessel_type_ == "isv":
-                    vessel_type = row["isv_type"]
-                else:
-                    vessel_type = vessel_type_
+                #if vessel_type_ == "isv":
+                #    vessel_type = row["isv_type"]
+                #else:
+                #    vessel_type = vessel_type_
 
                 movement_data_["vessel_type"] = [vessel_type for x in movement_data_["x"]]
 
@@ -93,6 +93,7 @@ def plot_migration_data(processed_key_file: pd.DataFrame, parameters: Dict, star
     return trajectory_plots#, oriented_trajectory_plots
 
 def _plot_trajectory(movement_data, parameters):
+    
     x_min = movement_data['x'].min()
     y_min = movement_data['y'].min()
     z_min = movement_data['z'].min()
