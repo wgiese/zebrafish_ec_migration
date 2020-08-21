@@ -6,13 +6,7 @@ import os
 
 def _read_IMARIS_cell_migration_data(filename):
     '''
-    Function that extracts detailed time resolved data on cell migration for a given experimentonly vessel diameters for each experiment/fish over time.
-    Input:
-        filename of the
-    
-    
-    Return:
-        - df_stat: pandas DataFrame with information on vessel diameters over time
+
     '''
 
     if (not os.path.isfile(filename)):
@@ -131,7 +125,7 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
                         analysis_group, int(fish_number), row["vessel_type"])] = unified_df
                         object_filename = 'objects_fish_%s_%s_%s.csv' % (
                             analysis_group, int(fish_number), row["vessel_type"])
-                        object_data[object_filename] = unified_df[["object_id", "x", "y", "z"]]
+                        object_data[object_filename] = unified_df[["object_id", "x", "y", "z", "frame"]]
                         link_filename = 'link_fish_%s_%s_%s.csv' % (analysis_group, int(fish_number), row["vessel_type"])
                         link_df = unified_df[["object_id", "track_id"]]
                         link_df = link_df.rename(columns={"track_id": "link_id"})

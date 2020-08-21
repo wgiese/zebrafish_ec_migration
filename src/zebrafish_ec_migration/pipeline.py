@@ -39,6 +39,10 @@ from zebrafish_ec_migration.nodes.plot_migration_data import (
     plot_migration_data,
 )
 
+from zebrafish_ec_migration.nodes.detect_mitosis_events import (
+    extract_potential_mitosis_events,
+)
+
 from zebrafish_ec_migration.nodes.extract_cell_migration_features import (
     extract_migration_features,
 )
@@ -63,6 +67,8 @@ def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
          node(extract_migration_features,
               ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"],
               ["migration_features", "migration_data_statistics"], name="extract_migration_features_dpf1"),
+         node(extract_potential_mitosis_events, ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"], "mitosis_events",
+              name="detect_mitosis_events"),
          ])
 
     #return {"__default__": preprocess_pipeline}

@@ -65,3 +65,7 @@ migration_features:
 migration_data_statistics:
   type: pandas.CSVDataSet
   filepath: data/04_feature/migration_data_statistics.csv
+
+mitosis_events:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/mitosis_events.csv
