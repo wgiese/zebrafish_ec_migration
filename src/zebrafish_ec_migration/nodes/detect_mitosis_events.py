@@ -44,21 +44,34 @@ def extract_potential_mitosis_events(processed_key_file: pd.DataFrame, parameter
                 for link_id1 in movement_data_["link_id"].unique():
                     movement_data_link_id1 = movement_data_[movement_data_["link_id"] == link_id1]
                     for link_id2 in movement_data_["link_id"].unique():
+                        if (link_id2 <= link_id1):
+                            continue
                         movement_data_link_id2 = movement_data_[movement_data_["link_id"] == link_id2]
 
                         min_time_id1 = np.array(movement_data_link_id1["frame"]).min()
                         min_time_id2 = np.array(movement_data_link_id2["frame"]).min()
 
+                        max_time_id1 = np.array(movement_data_link_id1["frame"]).min()
+                        max_time_id2 = np.array(movement_data_link_id2["frame"]).min()
+
                         if min_time_id1 < min_time_id2:
-                            row_daughter = movement_data_link_id1[movement_data_link_id1["frame"] == min_time_id1].iloc[0]
-                            link_daughter = link_id1
-                            mother_df = movement_data_link_id2.copy() #[movement_data_link_id1[""] >= min_time_id1]
-                            link_mother = link_id2
-                        else:
                             row_daughter = movement_data_link_id2[movement_data_link_id2["frame"] == min_time_id2].iloc[0]
                             link_daughter = link_id2
-                            mother_df = movement_data_link_id1.copy()
+                            mother_df = movement_data_link_id1.copy() #[movement_data_link_id1[""] >= min_time_id1]
                             link_mother = link_id1
+                            start_frame_mother = min_time_id1
+                            end_frame_mother = max_time_id1
+                            start_frame_daughter = min_time_id2
+                            end_frame_daughter = max_time_i2
+                        else:
+                            row_daughter = movement_data_link_id1[movement_data_link_id1["frame"] == min_time_id1].iloc[0]
+                            link_daughter = link_id1
+                            mother_df = movement_data_link_id2.copy()
+                            link_mother = link_id2
+                            start_frame_mother = min_time_id2
+                            end_frame_mother = max_time_id2
+                            start_frame_daughter = min_time_id2
+                            end_frame_daughter = max_time_id2
 
 
                         dist2_min = np.infty
@@ -69,8 +82,10 @@ def extract_potential_mitosis_events(processed_key_file: pd.DataFrame, parameter
                             dist2_ += (row_moth['y'] - row_daughter['y']) ** 2
                             dist2_ += (row_moth['z'] - row_daughter['z']) ** 2
                             dist2_ += time_distance_weight * (row_moth['frame'] - row_daughter['frame']) ** 2
+
                             if dist2_ < dist2_min:
                                 dist2_min = dist2_
+
                                 mitosis_events_df.at[mitosis_counter, "fish_number"] = fish_number
                                 mitosis_events_df.at[mitosis_counter, "vessel_type"] = row["vessel_type"]
                                 mitosis_events_df.at[mitosis_counter, "link_mother"] = link_mother
@@ -79,13 +94,17 @@ def extract_potential_mitosis_events(processed_key_file: pd.DataFrame, parameter
                                 mitosis_events_df.at[mitosis_counter, "y_mother"] = row_moth['y']
                                 mitosis_events_df.at[mitosis_counter, "z_mother"] = row_moth['z']
                                 mitosis_events_df.at[mitosis_counter, "frame_mother"] = row_moth['frame']
+                                mitosis_events_df.at[mitosis_counter, "start_frame_mother"] = start_frame_mother
+                                mitosis_events_df.at[mitosis_counter, "end_frame_mother"] = end_frame_mother
 
                                 mitosis_events_df.at[mitosis_counter, "x_daughter"] = row_daughter['x']
                                 mitosis_events_df.at[mitosis_counter, "y_daughter"] = row_daughter['y']
                                 mitosis_events_df.at[mitosis_counter, "z_daughter"] = row_daughter['z']
                                 mitosis_events_df.at[mitosis_counter, "frame_daughter"] = row_daughter['frame']
+                                mitosis_events_df.at[mitosis_counter, "start_frame_daughter"] = start_frame_daughter
+                                mitosis_events_df.at[mitosis_counter, "end_frame_daughter"] = end_frame_daughter
 
-                                mitosis_events_df.at[mitosis_counter, "dist2"] = dist2_
+                                mitosis_events_df.at[mitosis_counter, "dist_space_time"] = np.sqrt(dist2_)
                                 
                         mitosis_counter += 1
 
