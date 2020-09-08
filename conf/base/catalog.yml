@@ -35,6 +35,10 @@ CMSO_link_data:
   type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
   filepath: data/01_raw/CMSO_link_data/
 
+CMSO_json_data:
+  type: zebrafish_ec_migration.io.json_stack_export.JSONStackDataSet
+  filepath: data/01_raw/json_meta_description/
+
 CMSO_track_data:
   type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
   filepath: data/01_raw/CMSO_track_data/

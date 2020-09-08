@@ -73,6 +73,10 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
 
     tracking_data = dict()
 
+    json_meta = dict()
+
+    #json_meta["test.json"] = {"cmso_space_unit": "micron", "cmso_time_unit": "frame"}
+
     object_data_statistics = pd.DataFrame()
     counter = 1
 
@@ -131,6 +135,88 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
                         link_df = link_df.rename(columns={"track_id": "link_id"})
                         link_data[link_filename] = link_df
 
+                        json_filename = "meta_fish_%s_%s_%s.json" % (analysis_group, int(fish_number), row["vessel_type"])
+
+                        json_meta[json_filename] = {"cmso_space_unit": "micron",
+                                                               "cmso_time_unit": "frame",
+                                                               "name": "cmso_tracks_zebrafish_%s" % analysis_group,
+                                                               "resources": [
+                                                                   {
+                                                                       "name" : "objects_table_fish_%s_%s_%s.csv" % (
+                                                                        analysis_group, int(fish_number), row["vessel_type"]),
+                                                                       "path": "../CMSO_objects/%s" % object_filename,
+                                                                       "schema": {
+                                                                           "fields": [
+                                                                               {
+                                                                                   "constraints": {
+                                                                                       "unique": True
+                                                                                   },
+                                                                                   "description": "",
+                                                                                   "format": "default",
+                                                                                   "name": "cmso_object_id",
+                                                                                   "title": "",
+                                                                                   "type": "integer"
+                                                                               },
+                                                                               {
+                                                                                   "description": "",
+                                                                                   "format": "default",
+                                                                                   "name": "cmso_frame_id",
+                                                                                   "title": "",
+                                                                                   "type": "integer"
+                                                                               },
+                                                                               {
+                                                                                   "description": "",
+                                                                                   "format": "default",
+                                                                                   "name": "cmso_x_coord",
+                                                                                   "title": "",
+                                                                                   "type": "number"
+                                                                               },
+                                                                               {
+                                                                                   "description": "",
+                                                                                   "format": "default",
+                                                                                   "name": "cmso_y_coord",
+                                                                                   "title": "",
+                                                                                   "type": "number"
+                                                                               }
+                                                                           ],
+                                                                           "primaryKey": "cmso_object_id"
+                                                                       }
+                                                                   },
+                                                                   {
+                                                                       "name": "cmso_links_table",
+                                                                       "path": "links.csv",
+                                                                       "schema": {
+                                                                           "fields": [
+                                                                               {
+                                                                                   "description": "",
+                                                                                   "format": "default",
+                                                                                   "name": "cmso_link_id",
+                                                                                   "title": "",
+                                                                                   "type": "integer"
+                                                                               },
+                                                                               {
+                                                                                   "description": "",
+                                                                                   "format": "default",
+                                                                                   "name": "cmso_object_id",
+                                                                                   "title": "",
+                                                                                   "type": "integer"
+                                                                               }
+                                                                           ],
+                                                                           "foreignKeys": [
+                                                                               {
+                                                                                   "fields": "cmso_object_id",
+                                                                                   "reference": {
+                                                                                       "datapackage": "",
+                                                                                       "fields": "cmso_object_id",
+                                                                                       "resource": "cmso_objects_table"
+                                                                                   }
+                                                                               }
+                                                                           ]
+                                                                       }
+                                                                   }
+                                                               ]
+
+                                                               }
 
                         track_counter = 0
 
@@ -149,7 +235,7 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
 
     processed_key_file = processed_key_file[processed_key_file["object_data"] != np.nan]
 
-    return processed_key_file, imaris_data, object_data, object_data_statistics, link_data, tracking_data
+    return processed_key_file, imaris_data, object_data, object_data_statistics, link_data, tracking_data, json_meta
 
     # print("The following parameters are used: ")
     # print(parameters)
