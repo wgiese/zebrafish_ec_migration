@@ -142,9 +142,9 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
                                                                "name": "cmso_tracks_zebrafish_%s" % analysis_group,
                                                                "resources": [
                                                                    {
-                                                                       "name" : "objects_table_fish_%s_%s_%s.csv" % (
+                                                                       "name" : "objects_table_fish_%s_%s_%s" % (
                                                                         analysis_group, int(fish_number), row["vessel_type"]),
-                                                                       "path": "../CMSO_objects/%s" % object_filename,
+                                                                       "path": "../CMSO_object_data/%s" % object_filename,
                                                                        "schema": {
                                                                            "fields": [
                                                                                {
@@ -153,51 +153,60 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
                                                                                    },
                                                                                    "description": "",
                                                                                    "format": "default",
-                                                                                   "name": "cmso_object_id",
+                                                                                   "name": "object_id",
                                                                                    "title": "",
                                                                                    "type": "integer"
                                                                                },
                                                                                {
                                                                                    "description": "",
                                                                                    "format": "default",
-                                                                                   "name": "cmso_frame_id",
+                                                                                   "name": "frame",
                                                                                    "title": "",
                                                                                    "type": "integer"
                                                                                },
                                                                                {
                                                                                    "description": "",
                                                                                    "format": "default",
-                                                                                   "name": "cmso_x_coord",
+                                                                                   "name": "x",
                                                                                    "title": "",
                                                                                    "type": "number"
                                                                                },
                                                                                {
                                                                                    "description": "",
                                                                                    "format": "default",
-                                                                                   "name": "cmso_y_coord",
+                                                                                   "name": "y",
                                                                                    "title": "",
                                                                                    "type": "number"
-                                                                               }
+                                                                               },
+                                                                               {
+                                                                                   "description": "",
+                                                                                   "format": "default",
+                                                                                   "name": "z",
+                                                                                   "title": "",
+                                                                                   "type": "number"
+                                                                               },
                                                                            ],
                                                                            "primaryKey": "cmso_object_id"
                                                                        }
                                                                    },
                                                                    {
-                                                                       "name": "cmso_links_table",
-                                                                       "path": "links.csv",
+                                                                       "name": "objects_table_fish_%s_%s_%s" % (
+                                                                           analysis_group, int(fish_number),
+                                                                           row["vessel_type"]),
+                                                                       "path": "../CMSO_link_data/%s" % link_filename,
                                                                        "schema": {
                                                                            "fields": [
                                                                                {
                                                                                    "description": "",
                                                                                    "format": "default",
-                                                                                   "name": "cmso_link_id",
+                                                                                   "name": "link_id",
                                                                                    "title": "",
                                                                                    "type": "integer"
                                                                                },
                                                                                {
                                                                                    "description": "",
                                                                                    "format": "default",
-                                                                                   "name": "cmso_object_id",
+                                                                                   "name": "object_id",
                                                                                    "title": "",
                                                                                    "type": "integer"
                                                                                }
@@ -207,7 +216,7 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
                                                                                    "fields": "cmso_object_id",
                                                                                    "reference": {
                                                                                        "datapackage": "",
-                                                                                       "fields": "cmso_object_id",
+                                                                                       "fields": "object_id",
                                                                                        "resource": "cmso_objects_table"
                                                                                    }
                                                                                }

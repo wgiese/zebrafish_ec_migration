@@ -142,7 +142,8 @@ def _plot_trajectory(movement_data, parameters):
             color = vessel_type_colors[vessel_type]
 
             axarr[0].plot(x_pos, y_pos, color)
-            axarr[0].text(mean_x_link_id, mean_y_link_id, link_id, fontsize=5)
+            axarr[0].text(mean_x_link_id, mean_y_link_id, link_id, fontsize=7)
+            axarr[0].set_title("x-y-projection with link IDs")
             #axarr[0].text(100, 100, "link_id: %s" % link_id, fontsize=3)
             axarr[0].set_xlabel("x")
             axarr[0].set_ylabel("y")
@@ -173,12 +174,14 @@ def _plot_trajectory(movement_data, parameters):
             axarr[1].set_ylabel("z")
             axarr[1].set_xlim(0, max_ext)
             axarr[1].set_ylim(0, max_ext)
+            axarr[1].set_title("x-z-projection")
 
             axarr[2].plot(y_pos, z_pos, color)
             axarr[2].set_xlabel("y")
             axarr[2].set_ylabel("z")
             axarr[2].set_xlim(0, max_ext)
             axarr[2].set_ylim(0, max_ext)
+            axarr[2].set_title("y-z-projection")
 
     axarr[1].legend()
 

@@ -21,7 +21,7 @@ key_aligned_objects:
 
 CMSO_object_data:
   type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
-  filepath: data/01_raw/CMSO_objects/
+  filepath: data/01_raw/CMSO_object_data/
 
 CMSO_aligned_object_data:
   type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
