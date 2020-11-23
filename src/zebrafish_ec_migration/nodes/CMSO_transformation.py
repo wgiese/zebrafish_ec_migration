@@ -244,6 +244,8 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
 
     processed_key_file = processed_key_file[processed_key_file["object_data"] != np.nan]
 
+    processed_key_file = processed_key_file.drop('filename', 1)
+
     return processed_key_file, imaris_data, object_data, object_data_statistics, link_data, tracking_data, json_meta
 
     # print("The following parameters are used: ")
