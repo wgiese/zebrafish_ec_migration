@@ -40,6 +40,8 @@ def _read_IMARIS_cell_migration_data(filename):
 
     df_stat = pd.read_csv(filename, skiprows=skip_row, sep=sep, encoding="ISO-8859-1")
 
+
+
     return df_stat
 
 
@@ -115,14 +117,21 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
 
                 imaris_df = _read_IMARIS_cell_migration_data(filename)
 
-
-
-                if imaris_df.size > 1:
+                object_data_statistics.at[counter,"imaris_df.size"] = imaris_df.size
+                if imaris_df.size <= 1:
+                   print("ERROR: Imaris df too small")
+                   print(imaris_df.head())
+                else:
                     imaris_data['tracks_fish_%s_%s_%s.csv' % (
                     analysis_group, int(fish_number), row["vessel_type"])] = imaris_df
                     unified_df = _unify_tidy_wide_IMARIS_formats(imaris_df)
                     print(unified_df.head())
-                    if unified_df.size > 1:
+                    if unified_df.size <= 1:
+                        print("ERROR: Unified df too small")
+                        print(unified_df.head())
+                    else:
+                        object_data_statistics.at[counter, "unified_df.size"] = unified_df.size
+
                         imaris_data['tracks_fish_%s_%s_%s.csv' % (
                             analysis_group, int(fish_number), row["vessel_type"])] = imaris_df
                         unified_imaris['tracks_fish_%s_%s_%s.csv' % (
