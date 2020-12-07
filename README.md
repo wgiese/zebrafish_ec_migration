@@ -1,4 +1,4 @@
-# zebrafish_ec_migration
+# Qunatification of Endothelial Cell Migration in Zebrafish
 
 This is our analysis pipeline for the pre-print https://doi.org/10.1101/2020.09.15.296574
 "Wasp controls oriented migration of endothelial cells to achieve functional vascular patterning"
