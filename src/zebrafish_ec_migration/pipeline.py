@@ -44,6 +44,11 @@ from zebrafish_ec_migration.nodes.plot_migration_data import (
     plot_migration_data,
 )
 
+from zebrafish_ec_migration.nodes.load_cmso_migration_data import (
+    align_cmso_migration_data,
+)
+
+
 from zebrafish_ec_migration.nodes.detect_mitosis_events import (
     extract_potential_mitosis_events,
 )
@@ -70,6 +75,10 @@ def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
         [node(plot_migration_data,
               ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"],
               "trajectory_plots", name="plot_trajectories"),
+         node(align_cmso_migration_data,
+              ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"],
+              ["fish_data_summary", "link_data_summary"],
+              name = "align_cmso_migration_data"),
          node(extract_migration_features,
               ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"],
               ["migration_features", "migration_data_statistics"], name="extract_migration_features_dpf1"),

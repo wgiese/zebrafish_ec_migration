@@ -48,9 +48,13 @@ unaligned_tracking_data:
   type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
   filepath: data/02_intermediate/unaligned_tracking_data/
 
-movement_data_summary:
+fish_data_summary:
   type: pandas.CSVDataSet
-  filepath: data/02_intermediate/movement_data_summary.csv
+  filepath: data/02_intermediate/fish_data_summary.csv
+
+link_data_summary:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/link_data_summary.csv
 
 trajectory_plots:
   type: zebrafish_ec_migration.io.matplotlib_figures.MatplotlibWriter

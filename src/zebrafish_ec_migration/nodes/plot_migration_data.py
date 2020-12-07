@@ -6,6 +6,9 @@ import pylab as plt
 def plot_migration_data(processed_key_file: pd.DataFrame, parameters: Dict, start_time, end_time):
 
     trajectory_plots = dict()
+
+
+
     #oriented_trajectory_plots = dict()
 
     #ex = extract.ExtractData(parameters["data_dir"], key_filename='Key.xlsx')
