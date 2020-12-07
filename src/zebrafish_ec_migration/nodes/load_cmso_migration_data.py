@@ -1,6 +1,8 @@
 import pandas as pd
 from typing import Dict, List
 import numpy as np
+from matplotlib import pyplot as plt
+import seaborn as sns
 
 
 def align_cmso_migration_data(processed_key_file: pd.DataFrame, parameters: Dict, start_time, end_time):
@@ -50,6 +52,7 @@ def align_cmso_migration_data(processed_key_file: pd.DataFrame, parameters: Dict
                     link_data_summary.at[counter_link_data, "end_frame"] = movement_data_["frame"].max()
                     link_data_summary.at[counter_link_data, "link_length"] = movement_data_["frame"].max() - \
                                                                           movement_data_["frame"].min()
+                    link_data_summary.at[counter_link_data, "vessel_type"] = vessel_type
                     counter_link_data += 1
 
                 movement_data_["vessel_type"] = [vessel_type for x in movement_data_["x"]]
@@ -72,3 +75,22 @@ def align_cmso_migration_data(processed_key_file: pd.DataFrame, parameters: Dict
 
     # return key_aligned_objects, aligned_objects, fish_data_summary,track_data_summary
     return fish_data_summary, link_data_summary
+
+def plot_link_lengths(link_data_summary: pd.DataFrame):
+
+    plots = dict()
+
+    for vessel_type in link_data_summary["vessel_type"].unique():
+
+        fig, ax = plt.subplots(figsize=(5, 5))
+
+        link_data_summary_sub = link_data_summary[link_data_summary["vessel_type"] == vessel_type]
+        sns.histplot(x = "link_length", data = link_data_summary_sub,  binwidth=15, ax=ax)
+
+        ax.set_xlim(0,150.0)
+        ax.set_ylim(0,500.0)
+
+        plots["link_length_%s.pdf" % vessel_type] = fig
+        plots["link_length_%s.png" % vessel_type] = fig
+
+    return plots

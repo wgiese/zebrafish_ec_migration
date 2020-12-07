@@ -56,6 +56,12 @@ link_data_summary:
   type: pandas.CSVDataSet
   filepath: data/02_intermediate/link_data_summary.csv
 
+link_data_hist_plot:
+  type: zebrafish_ec_migration.io.matplotlib_figures.MatplotlibWriter
+  filepath: data/02_intermediate/
+  save_args:
+    multiFile: True
+
 trajectory_plots:
   type: zebrafish_ec_migration.io.matplotlib_figures.MatplotlibWriter
   filepath: data/02_intermediate/trajectory_plots/
