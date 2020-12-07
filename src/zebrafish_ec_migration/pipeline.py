@@ -26,6 +26,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#
+#   This code has been derived and modified from https://pypi.org/project/kedro/ by Wolfgang Giese and Andre de la Rosa
+#
+
+
 """Construction of the master pipeline.
 """
 
@@ -48,7 +53,6 @@ from zebrafish_ec_migration.nodes.extract_cell_migration_features import (
 )
 
 
-
 def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
     """Create the project's pipeline.
 
@@ -59,17 +63,20 @@ def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
         A mapping from a pipeline name to a ``Pipeline`` object.
 
     """
-    
+
     preprocess_pipeline = FAIR_pipeline.create_pipeline()
 
     master_pipeline = Pipeline(
-        [node(plot_migration_data, ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"], "trajectory_plots", name="plot_trajectories"),
+        [node(plot_migration_data,
+              ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"],
+              "trajectory_plots", name="plot_trajectories"),
          node(extract_migration_features,
               ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"],
               ["migration_features", "migration_data_statistics"], name="extract_migration_features_dpf1"),
-         node(extract_potential_mitosis_events, ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"], "mitosis_events",
+         node(extract_potential_mitosis_events,
+              ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"], "mitosis_events",
               name="detect_mitosis_events"),
          ])
 
-    #return {"__default__": preprocess_pipeline}
-    return {"__default__": master_pipeline, "preprocess_pipeline" : preprocess_pipeline}
+    # return {"__default__": preprocess_pipeline}
+    return {"__default__": master_pipeline, "preprocess_pipeline": preprocess_pipeline}
