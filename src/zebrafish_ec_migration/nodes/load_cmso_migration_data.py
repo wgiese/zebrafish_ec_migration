@@ -46,13 +46,17 @@ def align_cmso_migration_data(processed_key_file: pd.DataFrame, parameters: Dict
                 for link_id in movement_data_["link_id"].unique():
                     link_data_summary.at[counter_link_data, "unique_id"] = str(link_id) + "_fish_%s_%s" % (fish_number,
                                                                                                         vessel_type)
+
+                    single_link_data = movement_data_[movement_data_["link_id"] == link_id]
+
                     link_data_summary.at[counter_link_data, "link_id"] = link_id
                     link_data_summary.at[counter_link_data, "fish_number"] = fish_number
-                    link_data_summary.at[counter_link_data, "start_frame"] = movement_data_["frame"].min()
-                    link_data_summary.at[counter_link_data, "end_frame"] = movement_data_["frame"].max()
-                    link_data_summary.at[counter_link_data, "link_length"] = movement_data_["frame"].max() - \
-                                                                          movement_data_["frame"].min()
+                    link_data_summary.at[counter_link_data, "start_frame"] = single_link_data["frame"].min()
+                    link_data_summary.at[counter_link_data, "end_frame"] = single_link_data["frame"].max()
+                    link_data_summary.at[counter_link_data, "link_length"] = single_link_data["frame"].max() - \
+                                                                          single_link_data["frame"].min()
                     link_data_summary.at[counter_link_data, "vessel_type"] = vessel_type
+                    link_data_summary.at[counter_link_data, "analysis_group"] = analysis_group
                     counter_link_data += 1
 
                 movement_data_["vessel_type"] = [vessel_type for x in movement_data_["x"]]
@@ -76,21 +80,74 @@ def align_cmso_migration_data(processed_key_file: pd.DataFrame, parameters: Dict
     # return key_aligned_objects, aligned_objects, fish_data_summary,track_data_summary
     return fish_data_summary, link_data_summary
 
+def plot_link_lengths_hist(link_data_summary: pd.DataFrame):
+
+    plots = dict()
+
+    for analysis_group in link_data_summary["analysis_group"].unique():
+
+        link_data_summary_ = link_data_summary[link_data_summary["analysis_group"] == analysis_group]
+
+
+        for vessel_type in link_data_summary_["vessel_type"].unique():
+
+
+            link_data_summary_sub = link_data_summary_[link_data_summary_["vessel_type"] == vessel_type]
+
+            fig, ax = plt.subplots(figsize=(5, 5))
+
+
+
+            sns.histplot(x = "link_length", data = link_data_summary_sub,  binwidth=15, ax=ax)
+
+            ax.set_xlim(0,150.0)
+            ax.set_ylim(0,500.0)
+
+            plots["link_length_hist_%s_%s.pdf" % (vessel_type, analysis_group)] = fig
+            plots["link_length_hist_%s_%s.png" % (vessel_type, analysis_group)] = fig
+
+    return plots
+
 def plot_link_lengths(link_data_summary: pd.DataFrame):
 
     plots = dict()
 
-    for vessel_type in link_data_summary["vessel_type"].unique():
+    for analysis_group in link_data_summary["analysis_group"].unique():
 
-        fig, ax = plt.subplots(figsize=(5, 5))
+        link_data_summary_ = link_data_summary[link_data_summary["analysis_group"] == analysis_group]
 
-        link_data_summary_sub = link_data_summary[link_data_summary["vessel_type"] == vessel_type]
-        sns.histplot(x = "link_length", data = link_data_summary_sub,  binwidth=15, ax=ax)
+        for vessel_type in link_data_summary_["vessel_type"].unique():
+            link_data_summary_sub = link_data_summary_[link_data_summary_["vessel_type"] == vessel_type]
 
-        ax.set_xlim(0,150.0)
-        ax.set_ylim(0,500.0)
+            fig, ax = plt.subplots(figsize=(5, 5))
 
-        plots["link_length_%s.pdf" % vessel_type] = fig
-        plots["link_length_%s.png" % vessel_type] = fig
+            height = 2.0
+            color = 'r'
+            for fish_number in link_data_summary_sub["fish_number"].unique():
+
+                link_data_plot = link_data_summary_sub[link_data_summary_sub["fish_number"]==fish_number]
+                link_data_plot = link_data_plot.sort_values(by=['start_frame'])
+
+                for unique_id in  link_data_plot["unique_id"].unique():
+
+                    single_link = link_data_plot[link_data_plot["unique_id"] == unique_id]
+
+                    ax.plot([single_link["start_frame"].iloc[0], single_link["end_frame"].iloc[0]],[height,height], color = color)
+                    height += 5.0
+
+                if color == "r":
+                    color = "b"
+                else:
+                    color = "r"
+
+                height += 30.0
+                ax.axhline(height, color ='k', linestyle = 'dashed')
+                height += 30.0
+
+            #ax.set_xlim(0,150.0)
+            #ax.set_ylim(0,500.0)
+
+            plots["link_length_%s_%s.pdf" % (vessel_type, analysis_group)] = fig
+            plots["link_length_%s_%s.png" % (vessel_type, analysis_group)] = fig
 
     return plots

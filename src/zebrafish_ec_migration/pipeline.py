@@ -47,6 +47,7 @@ from zebrafish_ec_migration.nodes.plot_migration_data import (
 from zebrafish_ec_migration.nodes.load_cmso_migration_data import (
     align_cmso_migration_data,
     plot_link_lengths,
+    plot_link_lengths_hist,
 )
 
 
@@ -80,8 +81,10 @@ def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
               ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"],
               ["fish_data_summary", "link_data_summary"],
               name = "align_cmso_migration_data"),
-         node(plot_link_lengths, "link_data_summary",  "link_data_hist_plot",
+         node(plot_link_lengths_hist, "link_data_summary",  "link_data_hist_plot",
               name="plot_link_data_hist"),
+         node(plot_link_lengths, "link_data_summary", "link_length_plot",
+              name="plot_link_length"),
          node(extract_migration_features,
               ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"],
               ["migration_features", "migration_data_statistics"], name="extract_migration_features_dpf1"),
