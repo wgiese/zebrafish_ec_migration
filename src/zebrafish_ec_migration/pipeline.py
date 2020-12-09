@@ -83,7 +83,7 @@ def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
               name = "align_cmso_migration_data"),
          node(plot_link_lengths_hist, "link_data_summary",  "link_data_hist_plot",
               name="plot_link_data_hist"),
-         node(plot_link_lengths, "link_data_summary", "link_length_plot",
+         node(plot_link_lengths, ["fish_data_summary", "link_data_summary"], "link_length_plot",
               name="plot_link_length"),
          node(extract_migration_features,
               ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"],

@@ -108,7 +108,7 @@ def plot_link_lengths_hist(link_data_summary: pd.DataFrame):
 
     return plots
 
-def plot_link_lengths(link_data_summary: pd.DataFrame):
+def plot_link_lengths(fish_data_summary: pd.DataFrame, link_data_summary: pd.DataFrame):
 
     plots = dict()
 
@@ -119,10 +119,10 @@ def plot_link_lengths(link_data_summary: pd.DataFrame):
         for vessel_type in link_data_summary_["vessel_type"].unique():
             link_data_summary_sub = link_data_summary_[link_data_summary_["vessel_type"] == vessel_type]
 
-            fig, ax = plt.subplots(figsize=(5, 5))
+            fig, ax = plt.subplots(figsize=(5, 10))
 
             height = 2.0
-            color = 'r'
+            color = 'goldenrod'
             for fish_number in link_data_summary_sub["fish_number"].unique():
 
                 link_data_plot = link_data_summary_sub[link_data_summary_sub["fish_number"]==fish_number]
@@ -135,14 +135,17 @@ def plot_link_lengths(link_data_summary: pd.DataFrame):
                     ax.plot([single_link["start_frame"].iloc[0], single_link["end_frame"].iloc[0]],[height,height], color = color)
                     height += 5.0
 
-                if color == "r":
-                    color = "b"
-                else:
-                    color = "r"
+                #if color == "r":
+                #    color = "b"
+                #else:
+                #    color = "r"
 
-                height += 30.0
-                ax.axhline(height, color ='k', linestyle = 'dashed')
-                height += 30.0
+                height += 50.0
+                #ax.axhline(height, color ='k', linestyle = 'dashed')
+                linewidth = 5.0
+                ax.plot([link_data_plot["start_frame"].min()+linewidth/2.0 - 2.0, link_data_plot["end_frame"].max()-linewidth/2.0 +2.0],[height,height], color='k', linewidth=linewidth)
+                height += 100.0
+            ax.set(ylabel=None,yticklabels=[] )
 
             #ax.set_xlim(0,150.0)
             #ax.set_ylim(0,500.0)
