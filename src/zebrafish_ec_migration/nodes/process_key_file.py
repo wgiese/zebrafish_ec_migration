@@ -60,6 +60,16 @@ def _specify_analysis_groups(df_key):
                       'Rac1T17N', 'Cdc42G12V', 'Cdc42T17N', 'CK-666', 'CK689', 'Tricaine', 'Epinephrine', 'Glycerin',
                       'Wiskostatin', 'DMSO']
 
+    gata1_false = ['WaspI [50uM]', 'WaspI [100uM] (merged)', 'WaspI [200uM]', 'WaspII [50uM]', 'WaspII [100uM]',
+                   'WaspII [200uM]', 'tnnt2',
+                   'Rac1T17N', 'Cdc42G12V', 'Cdc42T17N', 'CK-666', 'CK689', 'Tricaine', 'Epinephrine', 'Glycerin',
+                   'Wiskostatin', 'DMSO']
+
+    gata1_wasp1_false = ['Control', 'WaspII [50uM]', 'WaspII [100uM]', 'WaspII [200uM]', 'tnnt2',
+                         'Rac1T17N', 'Cdc42G12V', 'Cdc42T17N', 'CK-666', 'CK689', 'Tricaine', 'Epinephrine', 'Glycerin',
+                         'Wiskostatin', 'DMSO']
+
+    # filtering for control
     df_control = processed_key_file[processed_key_file['Control'] == 1]
 
     for cond in control_false:
@@ -67,6 +77,7 @@ def _specify_analysis_groups(df_key):
 
     df_control["analysis_group"] = pd.Series(["control" for i in range(len(df_control))], index=df_control.index)
 
+    # filtering for wasp
     df_wasp_100 = processed_key_file[processed_key_file['WaspI [100uM] (merged)'] == 1]
 
     for cond in wasp_100_false:
@@ -74,5 +85,23 @@ def _specify_analysis_groups(df_key):
 
     df_wasp_100["analysis_group"] = pd.Series(['WaspI [100uM]' for i in range(len(df_wasp_100))],
                                               index=df_wasp_100.index)
+    # filtering for gata
+    df_gata1 = processed_key_file[processed_key_file['Gata1'] == 1]
 
-    return pd.concat([df_control, df_wasp_100], ignore_index=True)
+    for cond in gata1_false:
+        df_gata1 = df_gata1[df_gata1[cond] != 1]
+
+    df_gata1["analysis_group"] = pd.Series(['Gata1' for i in range(len(df_gata1))], index=df_gata1.index)
+
+    # filtering for wasp and gata
+    df_wasp_gata1 = processed_key_file[processed_key_file['Gata1'] == 1]
+
+    df_wasp_gata1 = df_wasp_gata1[df_wasp_gata1['WaspI [100uM] (merged)'] == 1]
+
+    for cond in gata1_wasp1_false:
+        df_wasp_gata1 = df_wasp_gata1[df_wasp_gata1[cond] != 1]
+
+    df_wasp_gata1["analysis_group"] = pd.Series(['Gata1_Wasp1' for i in range(len(df_wasp_gata1))],
+                                                index=df_wasp_gata1.index)
+
+    return pd.concat([df_control, df_wasp_100, df_gata1, df_wasp_gata1], ignore_index=True)

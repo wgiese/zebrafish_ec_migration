@@ -1,4 +1,6 @@
 key_file : "/directory/to/key_file/Key.xlsx"
+mitosis_miration_file : "/directory/to/mitosis_miration_file/mitosis_migration_file.xlsx"
+
 data_dir : "/directory/to/data/"
 
 
