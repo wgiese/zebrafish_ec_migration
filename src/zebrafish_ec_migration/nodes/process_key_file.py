@@ -19,6 +19,17 @@ def process_key_file(parameters: Dict) -> pd.DataFrame:
     return processed_key_file
 
 
+def preprocess_mitosis_migration_file(parameters: Dict) -> pd.DataFrame:
+
+    mitosis_migration_filename = parameters["mitosis_migration_file"]
+    print("Mitosis migration filename: %s" % mitosis_migration_filename)
+    load_args = {"engine": "xlrd", "skiprows": 1}
+
+    processed_mitosis_migration_df = pd.read_excel(mitosis_migration_filename, **load_args)
+
+    return processed_mitosis_migration_df
+
+
 def _specify_analysis_groups(df_key):
     # TODO: remove some code chunks here since many columns are not needed anymore
 

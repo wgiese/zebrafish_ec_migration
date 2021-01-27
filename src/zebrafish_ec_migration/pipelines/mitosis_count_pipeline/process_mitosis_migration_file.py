@@ -24,7 +24,7 @@ def is_number(x):
     return value
 
 
-def preprocess_mitosis_migration_file(preprocessed_key_file: pd.DataFrame, mitosis_migration_file: pd.DataFrame, parameters: Dict):
+def process_mitosis_migration_file(preprocessed_key_file: pd.DataFrame, mitosis_migration_file: pd.DataFrame, parameters: Dict):
     
     processed_migration_file = pd.DataFrame()
 

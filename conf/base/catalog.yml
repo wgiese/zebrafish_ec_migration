@@ -85,3 +85,8 @@ migration_data_statistics:
 mitosis_events:
   type: pandas.CSVDataSet
   filepath: data/02_intermediate/mitosis_events.csv
+
+
+preprocessed_mitosis_migration_file:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/preprocessed_mitosis_migration_file.csv
