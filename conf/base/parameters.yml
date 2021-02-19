@@ -27,6 +27,9 @@ end_plot_dpf1 : 44.3
 start_plot_dpf2 : 50
 end_plot_dpf2 : 68.3
 
+# parameters for cell number count
+time_cell_count : 40
+
 # definitions of vessel_types and analysis groups
 analysis_groups : ["control","WaspI [100uM]","Gata1","Gata1_Wasp1"]
 

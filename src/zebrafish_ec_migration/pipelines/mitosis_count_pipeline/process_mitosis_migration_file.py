@@ -13,7 +13,7 @@ import seaborn as sns
 import logging
 from typing import Dict, List
 sys.path.append("./src/isv_analysis/classes/")
-import extract_data as extract
+#import extract_data as extract
 
 
 def is_number(x):

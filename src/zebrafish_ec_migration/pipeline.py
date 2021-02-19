@@ -39,6 +39,8 @@ from typing import Dict
 from kedro.pipeline import Pipeline, node
 
 from zebrafish_ec_migration.pipelines.FAIR_pipeline import pipeline as FAIR_pipeline
+from zebrafish_ec_migration.pipelines.mitosis_count_pipeline import pipeline as mitosis_count_pipeline
+
 
 from zebrafish_ec_migration.nodes.plot_migration_data import (
     plot_migration_data,
@@ -72,6 +74,7 @@ def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
     """
 
     preprocess_pipeline = FAIR_pipeline.create_pipeline()
+    mitosis_migration_pipeline = mitosis_count_pipeline.create_pipeline()
 
     master_pipeline = Pipeline(
         [node(plot_migration_data,
@@ -94,4 +97,5 @@ def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
          ])
 
     # return {"__default__": preprocess_pipeline}
-    return {"__default__": master_pipeline, "preprocess_pipeline": preprocess_pipeline}
+    return {"__default__": master_pipeline, "preprocess_pipeline": preprocess_pipeline,
+            "mitosis_migration_pipeline": mitosis_migration_pipeline}

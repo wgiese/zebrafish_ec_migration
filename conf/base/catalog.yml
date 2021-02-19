@@ -90,3 +90,11 @@ mitosis_events:
 preprocessed_mitosis_migration_file:
   type: pandas.CSVDataSet
   filepath: data/01_raw/preprocessed_mitosis_migration_file.csv
+
+processed_migration_file:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/processed_mitosis_migration_file.csv
+
+migration_statistics_file:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/mitosis_migration_statistics_file.csv
