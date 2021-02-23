@@ -98,3 +98,11 @@ processed_migration_file:
 migration_statistics_file:
   type: pandas.CSVDataSet
   filepath: data/01_raw/mitosis_migration_statistics_file.csv
+
+migration_distributions:
+  type: zebrafish_ec_migration.io.dictionary_json_export.DictToJSONDataSet
+  filepath: data/04_feature/mitosis_distributions.json
+
+mitosis_statistics:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/mitosis_statistics.csv
