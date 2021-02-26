@@ -1,0 +1,34 @@
+---
+title: "Nonparametric Goodness-of-Fit: Comparison dicrete vs. continuous"
+author: "Wolfgang Giese"
+date: "February 25, 2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dgof)
+library(ggplot2)
+library(rjson)
+library(plotrix)
+library(plyr)
+```
+
+```{r read_migration_distributions, echo=FALSE}
+path = getwd()
+filename <- paste(path,"../../02_derived_data/mitosis_and_cell_number_data/mitosis_cell_number_distributions.json", sep = "/")
+#print(paste("Filename: ",filename))
+migration_json <- fromJSON(file = filename)
+#print(migration_json)
+```
+
+Test difference between ks.test form dgof and common ks.test with simple example
+
+```{r ks_test_toy, echo=TRUE}
+print("===common KS-Test====")
+res <- stats::ks.test(c(0,1), ecdf(c(0, 1)))
+print(res)
+print("===discrete KS-Test from dgof package====")
+res <- dgof::ks.test(c(0, 1), ecdf(c(0, 1)))
+print(res)
+```

@@ -1,0 +1,393 @@
+---
+title: "Nonparametric Goodness-of-Fit Tests for ISV cell numbers"
+author: "Wolfgang Giese"
+date: "February 25, 2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+library(dgof)
+library(ggplot2)
+library(rjson)
+library(plotrix)
+library(plyr)
+
+show_ks_details=TRUE
+```
+
+```{r read_migration_distributions, echo=FALSE}
+path = getwd()
+filename <- paste(path,"../../02_derived_data/mitosis_and_cell_number_data/mitosis_cell_number_distributions.json", sep = "/")
+#print(paste("Filename: ",filename))
+migration_json <- fromJSON(file = filename)
+#print(migration_json)
+```
+
+# Comparison of cell number distributions
+
+```{r plot_cell_number_distributions_control, echo=FALSE}
+
+res <- dgof::ks.test(migration_json$cell_number$control$aISV, migration_json$cell_number$control$vISV)
+
+
+text <- sprintf("p-value : %s", res$p.value)
+
+vessel_type <- c()
+vessel_type[1:length(migration_json$cell_number$control$aISV)] <- "aISV"
+vessel_type[length(migration_json$cell_number$control$aISV)+1:length(migration_json$cell_number$control$vISV)] <- "vISV"
+
+df <- data.frame(vessel_type, c(migration_json$cell_number$control$aISV,migration_json$cell_number$control$vISV))
+
+colnames(df) <- c("vessel_type","counts")
+mu <- ddply(df, "vessel_type", summarise, grp.mean=mean(counts))
+
+p <-  ggplot(df, aes(x=counts, fill=vessel_type, color=vessel_type) ) + 
+      geom_histogram(position="dodge", binwidth=0.5) +
+      geom_vline(data=mu, aes(xintercept=grp.mean, color=vessel_type),
+      linetype="dashed")
+
+p + labs(title = "Comparison control aISV vs. vISV",
+              subtitle = "Cell count per ISV",
+              caption =  sprintf("p-value : %s", res$p.value) )  + 
+    ylab("ISV count") + 
+    xlim(0,max(df$counts))+
+    scale_x_discrete(name ="number of cells per ISV", 
+    limits=1:max(df$counts) )+
+    scale_color_manual(values=c("red","blue","#999999")) +
+    scale_fill_manual(values=c("#FFDACC", "#CCF2F2", "#999999"))
+
+if (show_ks_details){
+  print("results of discrete KS-test:")
+  print(res)
+}
+```
+
+```{r plot_cell_number_distributions_WASP, echo=FALSE}
+
+res <- dgof::ks.test(migration_json$cell_number$`WaspI [100uM]`$aISV, migration_json$cell_number$`WaspI [100uM]`$vISV)
+
+text <- sprintf("p-value : %s", res$p.value)
+
+vessel_type <- c()
+vessel_type[1:length(migration_json$cell_number$`WaspI [100uM]`$aISV)] <- "aISV"
+vessel_type[length(migration_json$cell_number$`WaspI [100uM]`$aISV)+1:length(migration_json$cell_number$`WaspI [100uM]`$vISV)] <- "vISV"
+
+df <- data.frame(vessel_type, c(migration_json$cell_number$`WaspI [100uM]`$aISV,migration_json$cell_number$`WaspI [100uM]`$vISV))
+
+colnames(df) <- c("vessel_type","counts")
+mu <- ddply(df, "vessel_type", summarise, grp.mean=mean(counts))
+
+p <-  ggplot(df, aes(x=counts, fill=vessel_type, color=vessel_type) ) + 
+      geom_histogram(position="dodge", binwidth=0.5) +
+      geom_vline(data=mu, aes(xintercept=grp.mean, color=vessel_type),
+      linetype="dashed")
+
+p + labs(title = "Comparison WASP aISV vs. vISV",
+              subtitle = "Cell count per ISV",
+              caption =  sprintf("p-value : %s", res$p.value) )  + 
+    ylab("ISV count") + 
+    xlim(0,max(df$counts))+
+    scale_x_discrete(name ="number of cells per ISV", 
+    limits=1:max(df$counts) )+
+    scale_color_manual(values=c("red","blue","#999999")) +
+    scale_fill_manual(values=c("#FFDACC", "#CCF2F2", "#999999"))
+
+if (show_ks_details){
+  print("results of discrete KS-test:")
+  print(res)
+}
+```
+
+```{r plot_cell_number_distributions_Gata1, echo=FALSE}
+
+res <- dgof::ks.test(migration_json$cell_number$Gata1$aISV, migration_json$cell_number$Gata1$vISV)
+
+text <- sprintf("p-value : %s", res$p.value)
+
+vessel_type <- c()
+vessel_type[1:length(migration_json$cell_number$Gata1$aISV)] <- "aISV"
+vessel_type[length(migration_json$cell_number$Gata1$aISV)+1:length(migration_json$cell_number$Gata1$vISV)] <- "vISV"
+
+df <- data.frame(vessel_type, c(migration_json$cell_number$Gata1$aISV,migration_json$cell_number$Gata1$vISV))
+
+colnames(df) <- c("vessel_type","counts")
+mu <- ddply(df, "vessel_type", summarise, grp.mean=mean(counts))
+
+p <-  ggplot(df, aes(x=counts, fill=vessel_type, color=vessel_type) ) + 
+      geom_histogram(position="dodge", binwidth=0.5) +
+      geom_vline(data=mu, aes(xintercept=grp.mean, color=vessel_type),
+      linetype="dashed")
+
+p + labs(title = "Comparison Gata1 aISV vs. vISV",
+              subtitle = "Cell count per ISV",
+              caption =  sprintf("p-value : %s", res$p.value) )  + 
+    ylab("ISV count") + 
+    xlim(0,max(df$counts))+
+    scale_x_discrete(name ="number of cells per ISV", 
+    limits=1:max(df$counts) )+
+    scale_color_manual(values=c("red","blue","#999999")) +
+    scale_fill_manual(values=c("#FFDACC", "#CCF2F2", "#999999"))
+
+if (show_ks_details){
+  print("results of discrete KS-test:")
+  print(res)
+}
+```
+
+```{r plot_cell_number_distributions_Gata1_Wasp1, echo=FALSE}
+
+res <- dgof::ks.test(migration_json$cell_number$Gata1_Wasp1$aISV, migration_json$cell_number$Gata1_Wasp1$vISV)
+
+text <- sprintf("p-value : %s", res$p.value)
+
+vessel_type <- c()
+vessel_type[1:length(migration_json$cell_number$Gata1_Wasp1$aISV)] <- "aISV"
+vessel_type[length(migration_json$cell_number$Gata1_Wasp1$aISV)+1:length(migration_json$cell_number$Gata1_Wasp1$vISV)] <- "vISV"
+
+df <- data.frame(vessel_type, c(migration_json$cell_number$Gata1_Wasp1$aISV,migration_json$cell_number$Gata1_Wasp1$vISV))
+
+colnames(df) <- c("vessel_type","counts")
+mu <- ddply(df, "vessel_type", summarise, grp.mean=mean(counts))
+
+p <-  ggplot(df, aes(x=counts, fill=vessel_type, color=vessel_type) ) + 
+      geom_histogram(position="dodge", binwidth=0.5) +
+      geom_vline(data=mu, aes(xintercept=grp.mean, color=vessel_type),
+      linetype="dashed")
+
+p + labs(title = "Comparison Gata1-Wasp1 aISV vs. vISV",
+              subtitle = "Cell count per ISV",
+              caption =  sprintf("p-value : %s", res$p.value) )  + 
+    ylab("ISV count") + 
+    xlim(0,max(df$counts))+
+    scale_x_discrete(name ="number of cells per ISV", 
+    limits=1:max(df$counts) )+
+    scale_color_manual(values=c("red","blue","#999999")) +
+    scale_fill_manual(values=c("#FFDACC", "#CCF2F2", "#999999"))
+
+if (show_ks_details){
+  print("results of discrete KS-test:")
+  print(res)
+}
+```
+
+
+```{r plot_cell_number_distributions_WASP_vs_Control_aISV, echo=FALSE}
+
+res <- dgof::ks.test(migration_json$cell_number$control$aISV, migration_json$cell_number$`WaspI [100uM]`$aISV)
+
+text <- sprintf("p-value : %s", res$p.value)
+
+vessel_type <- c()
+vessel_type[1:length(migration_json$cell_number$control$aISV)] <- "control"
+vessel_type[length(migration_json$cell_number$control$aISV)+1:length(migration_json$cell_number$`WaspI [100uM]`$aISV)] <- "Wasp"
+
+df <- data.frame(vessel_type, c(migration_json$cell_number$control$aISV,migration_json$cell_number$`WaspI [100uM]`$aISV))
+
+colnames(df) <- c("condition","counts")
+mu <- ddply(df, "condition", summarise, grp.mean=mean(counts))
+
+p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) + 
+      geom_histogram(position="dodge", binwidth=0.5) +
+      geom_vline(data=mu, aes(xintercept=grp.mean, color=condition),
+      linetype="dashed")#
+
+p + labs(title = "Comparison control vs. WaspI [100uM] for aISVs",
+              subtitle = "Cell count per ISV",
+              caption =  sprintf("p-value : %s", res$p.value) )  + 
+    ylab("ISV count") + 
+    xlim(0,max(df$counts))+
+    scale_x_discrete(name ="number of cells per ISV", 
+    limits=1:max(df$counts) )+
+    scale_color_manual(values=c("red","blue","#999999")) +
+    scale_fill_manual(values=c("#FFDACC", "#CCF2F2", "#999999"))
+
+if (show_ks_details){
+  print("results of discrete KS-test:")
+  print(res)
+}
+```
+
+
+```{r plot_cell_number_distributions_WASP_vs_Control_vISV, echo=FALSE}
+
+res <- dgof::ks.test(migration_json$cell_number$control$vISV, migration_json$cell_number$`WaspI [100uM]`$vISV)
+
+text <- sprintf("p-value : %s", res$p.value)
+
+vessel_type <- c()
+vessel_type[1:length(migration_json$cell_number$control$vISV)] <- "control"
+vessel_type[length(migration_json$cell_number$control$vISV)+1:length(migration_json$cell_number$`WaspI [100uM]`$vISV)] <- "Wasp"
+
+df <- data.frame(vessel_type, c(migration_json$cell_number$control$vISV,migration_json$cell_number$`WaspI [100uM]`$vISV))
+
+colnames(df) <- c("condition","counts")
+mu <- ddply(df, "condition", summarise, grp.mean=mean(counts))
+
+p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) + 
+      geom_histogram(position="dodge", binwidth=0.5) +
+      geom_vline(data=mu, aes(xintercept=grp.mean, color=condition),
+      linetype="dashed")#
+
+p + labs(title = "Comparison control vs. WaspI [100uM] for vISVs",
+              subtitle = "Cell count per ISV",
+              caption =  sprintf("p-value : %s", res$p.value) )  + 
+    ylab("ISV count") + 
+    xlim(0,max(df$counts))+
+    scale_x_discrete(name ="number of cells per ISV", 
+    limits=1:max(df$counts) )+
+    scale_color_manual(values=c("red","blue","#999999")) +
+    scale_fill_manual(values=c("#FFDACC", "#CCF2F2", "#999999"))
+
+if (show_ks_details){
+  print("results of discrete KS-test:")
+  print(res)
+}
+```
+
+```{r plot_cell_number_distributions_Gata1_vs_Control_aISV, echo=FALSE}
+
+res <- dgof::ks.test(migration_json$cell_number$control$aISV, migration_json$cell_number$Gata1$aISV)
+
+text <- sprintf("p-value : %s", res$p.value)
+
+vessel_type <- c()
+vessel_type[1:length(migration_json$cell_number$control$aISV)] <- "control"
+vessel_type[length(migration_json$cell_number$control$aISV)+1:length(migration_json$cell_number$Gata1$aISV)] <- "Gata1"
+
+df <- data.frame(vessel_type, c(migration_json$cell_number$control$aISV,migration_json$cell_number$Gata1$aISV))
+
+colnames(df) <- c("condition","counts")
+mu <- ddply(df, "condition", summarise, grp.mean=mean(counts))
+
+p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) + 
+      geom_histogram(position="dodge", binwidth=0.5) +
+      geom_vline(data=mu, aes(xintercept=grp.mean, color=condition),
+      linetype="dashed")#
+
+p + labs(title = "Comparison control vs. Gata1 for aISVs",
+              subtitle = "Cell count per ISV",
+              caption =  sprintf("p-value : %s", res$p.value) )  + 
+    ylab("ISV count") + 
+    xlim(0,max(df$counts))+
+    scale_x_discrete(name ="number of cells per ISV", 
+    limits=1:max(df$counts) )+
+    scale_color_manual(values=c("red","blue","#999999")) +
+    scale_fill_manual(values=c("#FFDACC", "#CCF2F2", "#999999"))
+
+if (show_ks_details){
+  print("results of discrete KS-test:")
+  print(res)
+}
+```
+
+
+```{r plot_cell_number_distributions_Gata1_vs_Control_vISV, echo=FALSE}
+
+res <- dgof::ks.test(migration_json$cell_number$control$vISV, migration_json$cell_number$Gata1$vISV)
+
+text <- sprintf("p-value : %s", res$p.value)
+
+vessel_type <- c()
+vessel_type[1:length(migration_json$cell_number$control$vISV)] <- "control"
+vessel_type[length(migration_json$cell_number$control$vISV)+1:length(migration_json$cell_number$Gata1$vISV)] <- "Gata1"
+
+df <- data.frame(vessel_type, c(migration_json$cell_number$control$vISV,migration_json$cell_number$Gata1$vISV))
+
+colnames(df) <- c("condition","counts")
+mu <- ddply(df, "condition", summarise, grp.mean=mean(counts))
+
+p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) + 
+      geom_histogram(position="dodge", binwidth=0.5) +
+      geom_vline(data=mu, aes(xintercept=grp.mean, color=condition),
+      linetype="dashed")#
+
+p + labs(title = "Comparison control vs. Gata1 for vISVs",
+              subtitle = "Cell count per ISV",
+              caption =  sprintf("p-value : %s", res$p.value) )  + 
+    ylab("ISV count") + 
+    xlim(0,max(df$counts))+
+    scale_x_discrete(name ="number of cells per ISV", 
+    limits=1:max(df$counts) )+
+    scale_color_manual(values=c("red","blue","#999999")) +
+    scale_fill_manual(values=c("#FFDACC", "#CCF2F2", "#999999"))
+
+if (show_ks_details){
+  print("results of discrete KS-test:")
+  print(res)
+}
+```
+
+
+```{r plot_cell_number_distributions_Gata1_Wasp1_vs_Control_aISV, echo=FALSE}
+
+res <- dgof::ks.test(migration_json$cell_number$control$aISV, migration_json$cell_number$Gata1_Wasp1$aISV)
+
+text <- sprintf("p-value : %s", res$p.value)
+
+vessel_type <- c()
+vessel_type[1:length(migration_json$cell_number$control$aISV)] <- "control"
+vessel_type[length(migration_json$cell_number$control$aISV)+1:length(migration_json$cell_number$Gata1_Wasp1$aISV)] <- "Gata1_Wasp1"
+
+df <- data.frame(vessel_type, c(migration_json$cell_number$control$aISV,migration_json$cell_number$Gata1_Wasp1$aISV))
+
+colnames(df) <- c("condition","counts")
+mu <- ddply(df, "condition", summarise, grp.mean=mean(counts))
+
+p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) + 
+      geom_histogram(position="dodge", binwidth=0.5) +
+      geom_vline(data=mu, aes(xintercept=grp.mean, color=condition),
+      linetype="dashed")#
+
+p + labs(title = "Comparison control vs. Gata1-Wasp1 for aISVs",
+              subtitle = "Cell count per ISV",
+              caption =  sprintf("p-value : %s", res$p.value) )  + 
+    ylab("ISV count") + 
+    xlim(0,max(df$counts))+
+    scale_x_discrete(name ="number of cells per ISV", 
+    limits=1:max(df$counts) )+
+    scale_color_manual(values=c("red","blue","#999999")) +
+    scale_fill_manual(values=c("#FFDACC", "#CCF2F2", "#999999"))
+
+if (show_ks_details){
+  print("results of discrete KS-test:")
+  print(res)
+}
+```
+
+```{r plot_cell_number_distributions_Gata1_Wasp1_vs_Control_vISV, echo=FALSE}
+
+res <- dgof::ks.test(migration_json$cell_number$control$vISV, migration_json$cell_number$Gata1_Wasp1$vISV)
+
+text <- sprintf("p-value : %s", res$p.value)
+
+vessel_type <- c()
+vessel_type[1:length(migration_json$cell_number$control$vISV)] <- "control"
+vessel_type[length(migration_json$cell_number$control$vISV)+1:length(migration_json$cell_number$Gata1_Wasp1$vISV)] <- "Gata1_Wasp1"
+
+df <- data.frame(vessel_type, c(migration_json$cell_number$control$vISV,migration_json$cell_number$Gata1_Wasp1$vISV))
+
+colnames(df) <- c("condition","counts")
+mu <- ddply(df, "condition", summarise, grp.mean=mean(counts))
+
+p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) + 
+      geom_histogram(position="dodge", binwidth=0.5) +
+      geom_vline(data=mu, aes(xintercept=grp.mean, color=condition),
+      linetype="dashed")#
+
+p + labs(title = "Comparison control vs. Gata1-Wasp1 for vISVs",
+              subtitle = "Cell count per ISV",
+              caption =  sprintf("p-value : %s", res$p.value) )  + 
+    ylab("ISV count") + 
+    xlim(0,max(df$counts))+
+    scale_x_discrete(name ="number of cells per ISV", 
+    limits=1:max(df$counts) )+
+    scale_color_manual(values=c("red","blue","#999999")) +
+    scale_fill_manual(values=c("#FFDACC", "#CCF2F2", "#999999"))
+
+if (show_ks_details){
+  print("results of discrete KS-test:")
+  print(res)
+}
+```
