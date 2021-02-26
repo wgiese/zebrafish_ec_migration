@@ -101,7 +101,7 @@ migration_statistics_file:
 
 migration_distributions:
   type: zebrafish_ec_migration.io.dictionary_json_export.DictToJSONDataSet
-  filepath: data/04_feature/mitosis_distributions.json
+  filepath: data/04_feature/mitosis_cell_number_distributions.json
 
 mitosis_statistics:
   type: pandas.CSVDataSet

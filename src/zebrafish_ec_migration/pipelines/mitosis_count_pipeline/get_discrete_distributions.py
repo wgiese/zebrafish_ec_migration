@@ -40,6 +40,10 @@ def get_migration_distributions(preprocessed_key_file: pd.DataFrame, processed_m
             dist_vISV = np.array(vISV_df_all[attribute])
             dist_vISV = dist_vISV[~np.isnan(dist_vISV)]
 
+            if attribute == "cell_number":
+                dist_aISV = dist_aISV[dist_aISV > 0]
+                dist_vISV = dist_vISV[dist_vISV > 0]
+
             distributions_dict_group["aISV"] = list(dist_aISV)
             distributions_dict_group["vISV"] = list(dist_vISV)
             distributions_dict[analysis_group] = distributions_dict_group
