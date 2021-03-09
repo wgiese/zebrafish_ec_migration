@@ -135,6 +135,8 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
 
                 filename = parameters["data_dir"] + row["filename"]
 
+                #print("FILENAME: %s" % filename)
+
                 imaris_df = _read_IMARIS_cell_migration_data(filename)
 
                 object_data_statistics.at[counter,"imaris_df.size"] = imaris_df.size
