@@ -23,7 +23,8 @@ def align_cmso_migration_data(processed_key_file: pd.DataFrame, parameters: Dict
     fish_data_summary = pd.DataFrame()
     link_data_summary = pd.DataFrame()
 
-    aligned_objects = dict()
+    aligned_link_data = dict()
+    aligned_object_data = dict()
 
     for fish_number in processed_key_file["fish number"].unique():
 
@@ -51,7 +52,7 @@ def align_cmso_migration_data(processed_key_file: pd.DataFrame, parameters: Dict
                 link_data = pd.read_csv(row["link_data"])
                 movement_data_ = pd.merge(object_data, link_data, on='object_id')
 
-                movement_data_ = _align_tracks(movement_data_)
+                #movement_data_ = _align_tracks(movement_data_)
 
                 vessel_type = row["vessel_type"]
 
@@ -78,6 +79,11 @@ def align_cmso_migration_data(processed_key_file: pd.DataFrame, parameters: Dict
                 else:
                     movement_data = movement_data_.copy()
 
+            link_filename = "link_fish_%s_%s" % (fish_number, analysis_group)
+            object_filename = "object_fish_%s_%s" % (fish_number, analysis_group)
+            movement_data = _rotate_fish(movement_data)
+            aligned_link_data[link_filename] = movement_data[["object_id", "link_id"]]
+            aligned_object_data[object_filename] = movement_data[["object_id", "x", "y", "z", "frame"]]
             counter_statistics += 1
 
             fish_data_summary.at[counter_statistics, 'fish_number'] = fish_number
@@ -90,7 +96,7 @@ def align_cmso_migration_data(processed_key_file: pd.DataFrame, parameters: Dict
             # movement_data_summary.at[counter_statistics, 'folder'] = "/".join(key_row['filename'].split("/")[0:-1])
 
     # return key_aligned_objects, aligned_objects, fish_data_summary,track_data_summary
-    return fish_data_summary, link_data_summary
+    return fish_data_summary, link_data_summary, aligned_object_data, aligned_link_data
 
 def _align_tracks(df_stat, turn_x=False, turn_y=False):
 
@@ -282,3 +288,78 @@ def plot_link_lengths(fish_data_summary: pd.DataFrame, link_data_summary: pd.Dat
         plots["link_length_%s_%s.png" % ("ISV", analysis_group)] = fig
 
     return plots
+
+def _rotate_fish(movement_data, rotate_xy=True, rotate_xz=False, rotate_yz=False):
+
+    movement_data_rot = movement_data.copy()
+
+    alpha_rot = 0.0
+
+    if (rotate_xz):
+        aorta_data = movement_data_rot[movement_data_rot['vessel_type'] == 'aorta']
+        if ("x" in aorta_data.columns) and ("z" in aorta_data.columns):
+            if (len(aorta_data) > 3):
+                linear_aorta_fit = np.polyfit(x=np.array(aorta_data['x'], dtype=np.float32),
+                                              y=np.array(aorta_data['z'], dtype=np.float32), deg=1)
+
+                # calculate rotational angle and matrix
+                alpha_rot = -np.arctan(linear_aorta_fit[0])
+                alpha_rot = float(alpha_rot)
+            else:
+                print("not enough data for Aorta to rotate")
+        else:
+            print("not data for Aorta available")
+
+        for index, row in movement_data_rot.iterrows():
+            x = float(row['x'])
+            z = float(row['z'])
+            movement_data_rot.at[index, 'x'] = np.cos(alpha_rot) * x - np.sin(alpha_rot) * z
+            movement_data_rot.at[index, 'z'] = np.sin(alpha_rot) * x + np.cos(alpha_rot) * z
+
+    if (rotate_xy):
+
+        aorta_data = movement_data_rot[movement_data_rot['vessel_type'] == 'aorta']
+        if ("x" in aorta_data.columns) and ("y" in aorta_data.columns):
+            if (len(aorta_data) > 3):
+                linear_aorta_fit = np.polyfit(x=np.array(aorta_data['x'], dtype=np.float32),
+                                              y=np.array(aorta_data['y'], dtype=np.float32), deg=1)
+
+                # calculate rotational angle and matrix
+                alpha_rot = -np.arctan(linear_aorta_fit[0])
+                alpha_rot = float(alpha_rot)
+            else:
+                print("not enough data for Aorta to rotate")
+        else:
+            print("not data for Aorta available")
+
+        for index, row in movement_data_rot.iterrows():
+            x = float(row['x'])
+            y = float(row['y'])
+
+            movement_data_rot.at[index, 'x'] = np.cos(alpha_rot) * x - np.sin(alpha_rot) * y
+            movement_data_rot.at[index, 'y'] = np.sin(alpha_rot) * x + np.cos(alpha_rot) * y
+
+    aorta_data = movement_data_rot[movement_data_rot['vessel_type'] == 'aorta']
+
+    x_min = movement_data['x'].min()
+    y_min = movement_data['y'].min()
+    z_min = movement_data['z'].min()
+
+    y_mean_aorta = aorta_data['y'].mean()
+
+    # print("aorta mean:")
+    # print(y_mean_aorta)
+    # print("aorta data:")
+    # print(aorta_data['Y'])
+
+    for index, row in movement_data_rot.iterrows():
+        x = float(row['x'])
+        y = float(row['y'])
+        z = float(row['z'])
+
+        movement_data_rot.at[index, 'x'] = x - x_min
+        # movement_data_rot.at[index,'y'] = y - y_min
+        movement_data_rot.at[index, 'y'] = y - y_mean_aorta
+        movement_data_rot.at[index, 'z'] = z - z_min
+
+    return movement_data_rot

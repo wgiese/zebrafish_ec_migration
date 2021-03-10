@@ -13,7 +13,7 @@ attrs==20.3.0             # via black, jsonschema, pytest
 backcall==0.2.0           # via ipython
 binaryornot==0.4.4        # via cookiecutter
 black==v19.10b0           # via -r requirements.in
-bleach==3.2.1             # via nbconvert
+bleach==3.3.0             # via nbconvert
 cachetools==4.1.1         # via kedro
 certifi==2020.12.5        # via requests
 cffi==1.14.4              # via argon2-cffi

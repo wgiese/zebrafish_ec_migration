@@ -43,6 +43,14 @@ IMARIS_data:
   type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
   filepath: data/01_raw/IMARIS_data/
 
+CMSO_aligned_link_data:
+  type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
+  filepath: data/03_primary/CMSO_aligned_link_data/
+
+CMSO_aligned_object_data:
+  type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
+  filepath: data/03_primary/CMSO_aligned_object_data/
+
 #TODO check if unaligned_tracking_data still exists
 unaligned_tracking_data:
   type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
