@@ -1,23 +1,23 @@
 from kedro.pipeline import Pipeline, node
 
-from zebrafish_ec_migration.pipelines.mitosis_count_pipeline.process_mitosis_migration_file import (
-    process_mitosis_migration_file,
+from zebrafish_ec_migration.pipelines.cell_trajectory_analysis_pipeline.nodes import (
+    align_cmso_migration_data,
+    plot_link_lengths,
+    plot_link_lengths_hist,
 )
 
-from zebrafish_ec_migration.pipelines.mitosis_count_pipeline.get_discrete_distributions import (
-    get_migration_distributions,
-)
 
 
 def create_pipeline(**kwargs):
 
     return Pipeline(
         [
-	    #convert file to csv
-	    node(process_mitosis_migration_file, ["imaris_key_file", "preprocessed_mitosis_migration_file", "parameters"] ,
-             ["processed_migration_file", "migration_statistics_file"], name="process_key_file"),
-        node(get_migration_distributions,
-                 ["imaris_key_file", "processed_migration_file", "parameters"],
-                 "migration_distributions", name="get_migration_distributions"),
-        ]
-    )
+            node(align_cmso_migration_data,
+                 ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"],
+                 ["fish_data_summary", "link_data_summary"],
+                 name="align_cmso_migration_data"),
+            node(plot_link_lengths_hist, "link_data_summary", "link_data_hist_plot",
+                 name="plot_link_data_hist"),
+            node(plot_link_lengths, ["fish_data_summary", "link_data_summary"], "link_length_plot",
+                 name="plot_link_length"),
+        ])

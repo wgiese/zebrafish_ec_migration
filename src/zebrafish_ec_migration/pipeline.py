@@ -40,17 +40,17 @@ from kedro.pipeline import Pipeline, node
 
 from zebrafish_ec_migration.pipelines.FAIR_pipeline import pipeline as FAIR_pipeline
 from zebrafish_ec_migration.pipelines.mitosis_count_pipeline import pipeline as mitosis_count_pipeline
-
+from zebrafish_ec_migration.pipelines.cell_trajectory_analysis_pipeline import pipeline as cell_trajectory_analysis_pipeline
 
 from zebrafish_ec_migration.nodes.plot_migration_data import (
     plot_migration_data,
 )
 
-from zebrafish_ec_migration.nodes.load_cmso_migration_data import (
-    align_cmso_migration_data,
-    plot_link_lengths,
-    plot_link_lengths_hist,
-)
+#from zebrafish_ec_migration.nodes.load_cmso_migration_data import (
+#    align_cmso_migration_data,
+#    plot_link_lengths,
+#    plot_link_lengths_hist,
+#)
 
 
 from zebrafish_ec_migration.nodes.detect_mitosis_events import (
@@ -75,19 +75,20 @@ def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
 
     preprocess_pipeline = FAIR_pipeline.create_pipeline()
     mitosis_migration_pipeline = mitosis_count_pipeline.create_pipeline()
+    trajectory_analysis_pipeline = cell_trajectory_analysis_pipeline.create_pipeline()
 
     master_pipeline = Pipeline(
         [node(plot_migration_data,
               ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"],
               "trajectory_plots", name="plot_trajectories"),
-         node(align_cmso_migration_data,
-              ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"],
-              ["fish_data_summary", "link_data_summary"],
-              name = "align_cmso_migration_data"),
-         node(plot_link_lengths_hist, "link_data_summary",  "link_data_hist_plot",
-              name="plot_link_data_hist"),
-         node(plot_link_lengths, ["fish_data_summary", "link_data_summary"], "link_length_plot",
-              name="plot_link_length"),
+#         node(align_cmso_migration_data,
+#              ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"],
+#              ["fish_data_summary", "link_data_summary"],
+#              name = "align_cmso_migration_data"),
+#         node(plot_link_lengths_hist, "link_data_summary",  "link_data_hist_plot",
+#              name="plot_link_data_hist"),
+#         node(plot_link_lengths, ["fish_data_summary", "link_data_summary"], "link_length_plot",
+#              name="plot_link_length"),
          node(extract_migration_features,
               ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"],
               ["migration_features", "migration_data_statistics"], name="extract_migration_features_dpf1"),
@@ -98,4 +99,4 @@ def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
 
     # return {"__default__": preprocess_pipeline}
     return {"__default__": master_pipeline, "preprocess_pipeline": preprocess_pipeline,
-            "mitosis_migration_pipeline": mitosis_migration_pipeline}
+            "mitosis_migration_pipeline": mitosis_migration_pipeline, "trajectory_analysis_pipeline": trajectory_analysis_pipeline}
