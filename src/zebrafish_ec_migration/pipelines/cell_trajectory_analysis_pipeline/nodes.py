@@ -13,18 +13,26 @@ import seaborn as sns
 import logging
 from typing import Dict, List
 sys.path.append("./src/isv_analysis/classes/")
+import yaml
 #import extract_data as extract
 
 def align_cmso_migration_data(processed_key_file: pd.DataFrame, parameters: Dict, start_time, end_time):
     counter_statistics = 0
     counter_link_data = 0
 
-    key_aligned_objects = pd.DataFrame()
+    #aligned_trajectory_key_file = processed_key_file.copy()
+    aligned_trajectory_key_file = pd.DataFrame() #processed_key_file.copy()
     fish_data_summary = pd.DataFrame()
     link_data_summary = pd.DataFrame()
 
     aligned_link_data = dict()
     aligned_object_data = dict()
+
+    with open("./conf/base/catalog.yml") as file:
+        catalog_dict = yaml.load(file, Loader=yaml.FullLoader)
+
+    object_dir = catalog_dict['CMSO_aligned_object_data']['filepath']
+    link_dir = catalog_dict['CMSO_aligned_link_data']['filepath']
 
     for fish_number in processed_key_file["fish number"].unique():
 
@@ -79,12 +87,18 @@ def align_cmso_migration_data(processed_key_file: pd.DataFrame, parameters: Dict
                 else:
                     movement_data = movement_data_.copy()
 
-            link_filename = "link_fish_%s_%s" % (fish_number, analysis_group)
-            object_filename = "object_fish_%s_%s" % (fish_number, analysis_group)
+            link_filename = "link_fish_%s_%s.csv" % (fish_number, analysis_group)
+            object_filename = "object_fish_%s_%s.csv" % (fish_number, analysis_group)
             movement_data = _rotate_fish(movement_data)
             aligned_link_data[link_filename] = movement_data[["object_id", "link_id"]]
             aligned_object_data[object_filename] = movement_data[["object_id", "x", "y", "z", "frame"]]
-            counter_statistics += 1
+
+
+            aligned_trajectory_key_file.at[counter_statistics, "fish_number"] = fish_number
+            aligned_trajectory_key_file.at[counter_statistics, "analysis_group"] = analysis_group
+            aligned_trajectory_key_file.at[counter_statistics, "vessel_type"] = vessel_type
+            aligned_trajectory_key_file.at[counter_statistics, "object_data"] = object_dir + object_filename
+            aligned_trajectory_key_file.at[counter_statistics, "link_data"] = object_dir + object_filename
 
             fish_data_summary.at[counter_statistics, 'fish_number'] = fish_number
             fish_data_summary.at[counter_statistics, '#tracks'] = 0
@@ -95,8 +109,11 @@ def align_cmso_migration_data(processed_key_file: pd.DataFrame, parameters: Dict
             # movement_data_summary.at[counter_statistics, 'filename'] = key_row['filename'].split("/")[-1]
             # movement_data_summary.at[counter_statistics, 'folder'] = "/".join(key_row['filename'].split("/")[0:-1])
 
+            counter_statistics += 1
+
+
     # return key_aligned_objects, aligned_objects, fish_data_summary,track_data_summary
-    return fish_data_summary, link_data_summary, aligned_object_data, aligned_link_data
+    return aligned_trajectory_key_file, fish_data_summary, link_data_summary, aligned_object_data, aligned_link_data
 
 def _align_tracks(df_stat, turn_x=False, turn_y=False):
 

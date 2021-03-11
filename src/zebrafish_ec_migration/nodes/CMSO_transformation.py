@@ -84,6 +84,8 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
 
 
     processed_key_file = imaris_key_file.copy()
+    processed_key_file.rename(columns={'fish name': 'fish_name'}, inplace=True)
+    processed_key_file.rename(columns={'imaging orientation': 'imaging_orientation'}, inplace=True)
 
     imaris_data = dict()
 
@@ -127,7 +129,7 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
             print(df_single_fish)
 
             object_filename = 'objects_fish_%s_%s.csv' % (int(fish_number), analysis_group)
-            #object_data[filename] = objects_df
+            #object_data[filename] = objects_d am not sharing that piece about Kate to be disparaging about herf
 
             object_data_statistics.at[counter, "filename"] = object_filename
 

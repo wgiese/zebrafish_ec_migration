@@ -3,6 +3,7 @@ from typing import Dict, List
 import numpy as np
 import pylab as plt
 
+
 def plot_migration_data(processed_key_file: pd.DataFrame, parameters: Dict, start_time, end_time):
 
     trajectory_plots = dict()
@@ -17,12 +18,12 @@ def plot_migration_data(processed_key_file: pd.DataFrame, parameters: Dict, star
 
     counter_statistics = 0
 
-    for fish_number in processed_key_file["fish number"].unique():
+    for fish_number in processed_key_file["fish_number"].unique():
 
         if (np.isnan(fish_number)):
             continue
 
-        df_single_fish_all_groups = processed_key_file[processed_key_file['fish number'] == fish_number]
+        df_single_fish_all_groups = processed_key_file[processed_key_file['fish_number'] == fish_number]
 
         for analysis_group in df_single_fish_all_groups["analysis_group"].unique():
 

@@ -11,9 +11,9 @@ processed_key_file:
   type: pandas.CSVDataSet
   filepath: data/01_raw/processed_key_file.csv
 
-key_aligned_objects:
+aligned_trajectory_key_file:
   type: pandas.CSVDataSet
-  filepath: data/02_intermediate/key_aligned_objects.csv
+  filepath: data/02_intermediate/aligned_trajectory_key_file.csv
 
 CMSO_object_data:
   type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
@@ -79,6 +79,12 @@ link_data_hist_plot:
 trajectory_plots:
   type: zebrafish_ec_migration.io.matplotlib_figures.MatplotlibWriter
   filepath: data/02_intermediate/trajectory_plots/
+  save_args:
+    multiFile : True
+
+aligned_trajectory_plots:
+  type: zebrafish_ec_migration.io.matplotlib_figures.MatplotlibWriter
+  filepath: data/02_intermediate/aligned_trajectory_plots/
   save_args:
     multiFile : True
 
