@@ -1,0 +1,194 @@
+---
+title: "Nonparametric Goodness-of-Fit Tests for ISV cell migration from the aorta"
+author: "Wolfgang Giese"
+date: "February 25, 2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+library(dgof)
+library(ggplot2)
+library(rjson)
+library(plotrix)
+library(plyr)
+
+show_ks_details=TRUE
+```
+
+```{r read_migration_distributions, echo=FALSE}
+path = getwd()
+filename <- paste(path,"../../02_derived_data/mitosis_and_cell_number_data/mitosis_cell_number_distributions.json", sep = "/")
+#print(paste("Filename: ",filename))
+migration_json <- fromJSON(file = filename)
+```
+
+
+## Comparison of cell migration from the the aorta between conditions for aISVs
+
+```{r plot_migration_distributions_WASP_vs_Control_aISV, echo=FALSE}
+
+res <- dgof::ks.test(migration_json$migration_from_aorta$control$aISV, migration_json$migration_from_aorta$`WaspI [100uM]`$aISV)
+
+
+text <- sprintf("p-value : %s", res$p.value)
+
+condition <- c()
+condition[1:length(migration_json$migration_from_aorta$control$aISV)] <- "control"
+condition[length(migration_json$migration_from_aorta$control$aISV)+1:length(migration_json$migration_from_aorta$`WaspI [100uM]`$aISV)] <- "Wasp"
+
+df <- data.frame(condition, c(migration_json$migration_from_aorta$control$aISV,migration_json$migration_from_aorta$`WaspI [100uM]`$aISV))
+
+colnames(df) <- c("condition","counts")
+mu <- ddply(df, "condition", summarise, grp.mean=mean(counts))
+sigma <- ddply(df, "condition", summarise, grp.std=sd(counts))
+mu_sigma_cond1 <- paste(mu$condition[1],"mean :" ,mu$grp.mean[1], "sd :", sigma$grp.std[1], sep =" ")
+mu_sigma_cond2 <- paste(mu$condition[2],"mean :" ,mu$grp.mean[2], "sd :", sigma$grp.std[2], sep =" ")
+
+
+p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) + 
+      geom_histogram(position="dodge", binwidth=1.0) +
+      geom_vline(data=mu, aes(xintercept=grp.mean, color=condition),
+      linetype="dashed")
+
+p + labs(title = "Comparison control vs. WaspI [100uM] for aISVs",
+              subtitle = "Cell migration count per ISV",
+              caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_cond1, mu_sigma_cond2))  + 
+    ylab("ISV count") + 
+    xlim(0,max(df$counts))+
+    scale_x_discrete(name ="Cells migrated from the aorta per ISV", 
+    limits=0:max(df$counts) )+
+    scale_color_manual(values=c("black", "red", "#999999")) +
+    scale_fill_manual(values=c("grey", "#FFDACC", "#999999"))
+
+if (show_ks_details){
+  print("results of discrete KS-test:")
+  print(res)
+}
+```
+
+
+```{r plot_migration_distributions_Control_vs_Gata1_aISV, echo=FALSE}
+
+res <- dgof::ks.test(migration_json$migration_from_aorta$control$aISV, migration_json$migration_from_aorta$Gata1$aISV)
+
+
+text <- sprintf("p-value : %s", res$p.value)
+
+condition <- c()
+condition[1:length(migration_json$migration_from_aorta$control$aISV)] <- "control"
+condition[length(migration_json$migration_from_aorta$control$aISV)+1:length(migration_json$migration_from_aorta$Gata1$aISV)] <- "Gata1"
+
+df <- data.frame(condition, c(migration_json$migration_from_aorta$control$aISV,migration_json$migration_from_aorta$Gata1$aISV))
+
+colnames(df) <- c("condition","counts")
+mu <- ddply(df, "condition", summarise, grp.mean=mean(counts))
+sigma <- ddply(df, "condition", summarise, grp.std=sd(counts))
+mu_sigma_cond1 <- paste(mu$condition[1],"mean :" ,mu$grp.mean[1], "sd :", sigma$grp.std[1], sep =" ")
+mu_sigma_cond2 <- paste(mu$condition[2],"mean :" ,mu$grp.mean[2], "sd :", sigma$grp.std[2], sep =" ")
+
+
+p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) + 
+      geom_histogram(position="dodge", binwidth=1.0) +
+      geom_vline(data=mu, aes(xintercept=grp.mean, color=condition),
+      linetype="dashed")
+
+p + labs(title = "Comparison control vs. Gata1 for aISVs",
+              subtitle = "Cell migration count per ISV",
+              caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_cond1, mu_sigma_cond2))  + 
+    ylab("ISV count") + 
+    xlim(0,max(df$counts))+
+    scale_x_discrete(name ="Cells migrated from the aorta per ISV", 
+    limits=0:max(df$counts) )+
+    scale_color_manual(values=c("black", "red", "#999999")) +
+    scale_fill_manual(values=c("grey", "#FFDACC", "#999999"))
+
+if (show_ks_details){
+  print("results of discrete KS-test:")
+  print(res)
+}
+```
+
+
+```{r plot_migration_distributions_Control_vs_Gata1_Wasp1_aISV, echo=FALSE}
+
+res <- dgof::ks.test(migration_json$migration_from_aorta$control$aISV, migration_json$migration_from_aorta$Gata1_Wasp1$aISV)
+
+
+text <- sprintf("p-value : %s", res$p.value)
+
+condition <- c()
+condition[1:length(migration_json$migration_from_aorta$control$aISV)] <- "control"
+condition[length(migration_json$migration_from_aorta$control$aISV)+1:length(migration_json$migration_from_aorta$Gata1_Wasp1$aISV)] <- "Gata1-Wasp1"
+
+df <- data.frame(condition, c(migration_json$migration_from_aorta$control$aISV,migration_json$migration_from_aorta$Gata1_Wasp1$aISV))
+
+colnames(df) <- c("condition","counts")
+mu <- ddply(df, "condition", summarise, grp.mean=mean(counts))
+sigma <- ddply(df, "condition", summarise, grp.std=sd(counts))
+mu_sigma_cond1 <- paste(mu$condition[1],"mean :" ,mu$grp.mean[1], "sd :", sigma$grp.std[1], sep =" ")
+mu_sigma_cond2 <- paste(mu$condition[2],"mean :" ,mu$grp.mean[2], "sd :", sigma$grp.std[2], sep =" ")
+
+
+p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) + 
+      geom_histogram(position="dodge", binwidth=1.0) +
+      geom_vline(data=mu, aes(xintercept=grp.mean, color=condition),
+      linetype="dashed")
+
+p + labs(title = "Comparison control vs. Gata1-Wasp1 for aISVs",
+              subtitle = "Cell migration count per ISV",
+              caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_cond1, mu_sigma_cond2))  + 
+    ylab("ISV count") + 
+    xlim(0,max(df$counts))+
+    scale_x_discrete(name ="Cells migrated from the aorta per ISV", 
+    limits=0:max(df$counts) )+
+    scale_color_manual(values=c("black", "red", "#999999")) +
+    scale_fill_manual(values=c("grey", "#FFDACC", "#999999"))
+
+if (show_ks_details){
+  print("results of discrete KS-test:")
+  print(res)
+}
+```
+
+```{r plot_migration_distributions_Wasp1_vs_Gata1_Wasp1_aISV, echo=FALSE}
+
+res <- dgof::ks.test(migration_json$migration_from_aorta$`WaspI [100uM]`$aISV, migration_json$migration_from_aorta$Gata1_Wasp1$aISV)
+
+
+text <- sprintf("p-value : %s", res$p.value)
+
+condition <- c()
+condition[1:length(migration_json$migration_from_aorta$`WaspI [100uM]`$aISV)] <- "Wasp1"
+condition[length(migration_json$migration_from_aorta$`WaspI [100uM]`$aISV)+1:length(migration_json$migration_from_aorta$Gata1_Wasp1$aISV)] <- "Gata1-Wasp1"
+
+df <- data.frame(condition, c(migration_json$migration_from_aorta$`WaspI [100uM]`$aISV,migration_json$migration_from_aorta$Gata1_Wasp1$aISV))
+
+colnames(df) <- c("condition","counts")
+mu <- ddply(df, "condition", summarise, grp.mean=mean(counts))
+sigma <- ddply(df, "condition", summarise, grp.std=sd(counts))
+mu_sigma_cond1 <- paste(mu$condition[1],"mean :" ,mu$grp.mean[1], "sd :", sigma$grp.std[1], sep =" ")
+mu_sigma_cond2 <- paste(mu$condition[2],"mean :" ,mu$grp.mean[2], "sd :", sigma$grp.std[2], sep =" ")
+
+
+p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) + 
+      geom_histogram(position="dodge", binwidth=1.0) +
+      geom_vline(data=mu, aes(xintercept=grp.mean, color=condition),
+      linetype="dashed")
+
+p + labs(title = "Comparison `WaspI [100uM]` vs. Gata1-Wasp1 for aISVs",
+              subtitle = "Cell migration count per ISV",
+              caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_cond1, mu_sigma_cond2))  + 
+    ylab("ISV count") + 
+    xlim(0,max(df$counts))+
+    scale_x_discrete(name ="Cells migrated from the aorta per ISV", 
+    limits=0:max(df$counts) )+
+    scale_color_manual(values=c("black", "red", "#999999")) +
+    scale_fill_manual(values=c("grey", "#FFDACC", "#999999"))
+
+if (show_ks_details){
+  print("results of discrete KS-test:")
+  print(res)
+}
+```

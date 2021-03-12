@@ -1,5 +1,5 @@
 ---
-title: "Nonparametric Goodness-of-Fit Tests for ISV cell numbers"
+title: "Nonparametric Goodness-of-Fit Tests for ISV cell migration to the dorsal longitudinal anastomotic vessel (DLAV)"
 author: "Wolfgang Giese"
 date: "February 25, 2021"
 output: html_document
@@ -17,28 +17,28 @@ library(plyr)
 show_ks_details=TRUE
 ```
 
-```{r read_cell_number_distributions, echo=FALSE}
+```{r read_migration_distributions, echo=FALSE}
 path = getwd()
 filename <- paste(path,"../../02_derived_data/mitosis_and_cell_number_data/mitosis_cell_number_distributions.json", sep = "/")
 #print(paste("Filename: ",filename))
-cell_number_json <- fromJSON(file = filename)
-#print(cell_number_json)
+migration_json <- fromJSON(file = filename)
+print(migration_json)
 ```
 
-## Comparison of cell numbers aISV vs vISV for all conditions
+## Comparison of cell migration to DLAV, aISV vs vISV for all conditions
 
-```{r plot_cell_number_distributions_control, echo=FALSE}
+```{r plot_migration_distributions_control, echo=FALSE}
 
-res <- dgof::ks.test(cell_number_json$cell_number$control$aISV, cell_number_json$cell_number$control$vISV)
+res <- dgof::ks.test(migration_json$migration_to_dlav$control$aISV, migration_json$migration_to_dlav$control$vISV)
 
 
 text <- sprintf("p-value : %s", res$p.value)
 
 vessel_type <- c()
-vessel_type[1:length(cell_number_json$cell_number$control$aISV)] <- "aISV"
-vessel_type[length(cell_number_json$cell_number$control$aISV)+1:length(cell_number_json$cell_number$control$vISV)] <- "vISV"
+vessel_type[1:length(migration_json$migration_to_dlav$control$aISV)] <- "aISV"
+vessel_type[length(migration_json$migration_to_dlav$control$aISV)+1:length(migration_json$migration_to_dlav$control$vISV)] <- "vISV"
 
-df <- data.frame(vessel_type, c(cell_number_json$cell_number$control$aISV,cell_number_json$cell_number$control$vISV))
+df <- data.frame(vessel_type, c(migration_json$migration_to_dlav$control$aISV,migration_json$migration_to_dlav$control$vISV))
 
 colnames(df) <- c("vessel_type","counts")
 mu <- ddply(df, "vessel_type", summarise, grp.mean=mean(counts))
@@ -54,11 +54,11 @@ p <-  ggplot(df, aes(x=counts, fill=vessel_type, color=vessel_type) ) +
       #      panel.background = element_blank())
 
 p + labs(title = "Comparison control aISV vs. vISV",
-              subtitle = "Cell number count per ISV",
+              subtitle = "Cell migration count per ISV",
               caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_aISV, mu_sigma_vISV) )  + 
     ylab("ISV count") + 
     xlim(0,max(df$counts))+
-    scale_x_discrete(name ="Cell number per ISV", 
+    scale_x_discrete(name ="Cells migrated to DLAV per ISV", 
     limits=0:max(df$counts) )+
     scale_color_manual(values=c("red","blue","#999999")) +
     scale_fill_manual(values=c("#FFDACC", "#CCF2F2", "#999999"))
@@ -74,18 +74,18 @@ if (show_ks_details){
 #print(paste("Standard deviation for ", sigma$vessel_type[2],":" , sigma$grp.std[2],sep =" "))
 ```
 
-```{r plot_cell_number_distributions_Wasp, echo=FALSE}
+```{r plot_migration_distributions_Wasp, echo=FALSE}
 
-res <- dgof::ks.test(cell_number_json$cell_number$`WaspI [100uM]`$aISV, cell_number_json$cell_number$`WaspI [100uM]`$vISV)
+res <- dgof::ks.test(migration_json$migration_to_dlav$`WaspI [100uM]`$aISV, migration_json$migration_to_dlav$`WaspI [100uM]`$vISV)
 
 
 text <- sprintf("p-value : %s", res$p.value)
 
 vessel_type <- c()
-vessel_type[1:length(cell_number_json$cell_number$`WaspI [100uM]`$aISV)] <- "aISV"
-vessel_type[length(cell_number_json$cell_number$`WaspI [100uM]`$aISV)+1:length(cell_number_json$cell_number$`WaspI [100uM]`$vISV)] <- "vISV"
+vessel_type[1:length(migration_json$migration_to_dlav$`WaspI [100uM]`$aISV)] <- "aISV"
+vessel_type[length(migration_json$migration_to_dlav$`WaspI [100uM]`$aISV)+1:length(migration_json$migration_to_dlav$`WaspI [100uM]`$vISV)] <- "vISV"
 
-df <- data.frame(vessel_type, c(cell_number_json$cell_number$`WaspI [100uM]`$aISV,cell_number_json$cell_number$`WaspI [100uM]`$vISV))
+df <- data.frame(vessel_type, c(migration_json$migration_to_dlav$`WaspI [100uM]`$aISV,migration_json$migration_to_dlav$`WaspI [100uM]`$vISV))
 
 colnames(df) <- c("vessel_type","counts")
 mu <- ddply(df, "vessel_type", summarise, grp.mean=mean(counts))
@@ -99,11 +99,11 @@ p <-  ggplot(df, aes(x=counts, fill=vessel_type, color=vessel_type) ) +
       linetype="dashed")
 
 p + labs(title = "Comparison aISV vs. vISV for WaspI [100uM]",
-              subtitle = "Cell number count per ISV",
+              subtitle = "Cell migration count per ISV",
               caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_aISV, mu_sigma_vISV) )  + 
     ylab("ISV count") + 
     xlim(0,max(df$counts))+
-    scale_x_discrete(name ="Cell number count per ISV", 
+    scale_x_discrete(name ="Cells migrated to DLAV per ISV", 
     limits=0:max(df$counts) )+
     scale_color_manual(values=c("red","blue","#999999")) +
     scale_fill_manual(values=c("#FFDACC", "#CCF2F2", "#999999"))
@@ -114,18 +114,18 @@ if (show_ks_details){
 }
 ```
 
-```{r plot_cell_number_distributions_Gata1, echo=FALSE}
+```{r plot_migration_distributions_Gata1, echo=FALSE}
 
-res <- dgof::ks.test(cell_number_json$cell_number$Gata1$aISV, cell_number_json$cell_number$Gata1$vISV)
+res <- dgof::ks.test(migration_json$migration_to_dlav$Gata1$aISV, migration_json$migration_to_dlav$Gata1$vISV)
 
 
 text <- sprintf("p-value : %s", res$p.value)
 
 vessel_type <- c()
-vessel_type[1:length(cell_number_json$cell_number$Gata1$aISV)] <- "aISV"
-vessel_type[length(cell_number_json$cell_number$Gata1$aISV)+1:length(cell_number_json$cell_number$Gata1$vISV)] <- "vISV"
+vessel_type[1:length(migration_json$migration_to_dlav$Gata1$aISV)] <- "aISV"
+vessel_type[length(migration_json$migration_to_dlav$Gata1$aISV)+1:length(migration_json$migration_to_dlav$Gata1$vISV)] <- "vISV"
 
-df <- data.frame(vessel_type, c(cell_number_json$cell_number$Gata1$aISV,cell_number_json$cell_number$Gata1$vISV))
+df <- data.frame(vessel_type, c(migration_json$migration_to_dlav$Gata1$aISV,migration_json$migration_to_dlav$Gata1$vISV))
 
 colnames(df) <- c("vessel_type","counts")
 mu <- ddply(df, "vessel_type", summarise, grp.mean=mean(counts))
@@ -139,11 +139,11 @@ p <-  ggplot(df, aes(x=counts, fill=vessel_type, color=vessel_type) ) +
       linetype="dashed")
 
 p + labs(title = "Comparison aISV vs. vISV for Gata1",
-              subtitle = "Cell number count per ISV",
+              subtitle = "Cell migration count per ISV",
               caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_aISV, mu_sigma_vISV) )  + 
     ylab("ISV count") + 
     xlim(0,max(df$counts))+
-    scale_x_discrete(name ="Cell number count per ISV", 
+    scale_x_discrete(name ="Cells migrated to DLAV per ISV", 
     limits=0:max(df$counts) )+
     scale_color_manual(values=c("red","blue","#999999")) +
     scale_fill_manual(values=c("#FFDACC", "#CCF2F2", "#999999"))
@@ -154,18 +154,18 @@ if (show_ks_details){
 }
 ```
 
-```{r plot_cell_number_distributions_Gata1_Wasp1, echo=FALSE}
+```{r plot_migration_distributions_Gata1_Wasp1, echo=FALSE}
 
-res <- dgof::ks.test(cell_number_json$cell_number$Gata1_Wasp1$aISV, cell_number_json$cell_number$Gata1_Wasp1$vISV)
+res <- dgof::ks.test(migration_json$migration_to_dlav$Gata1_Wasp1$aISV, migration_json$migration_to_dlav$Gata1_Wasp1$vISV)
 
 
 text <- sprintf("p-value : %s", res$p.value)
 
 vessel_type <- c()
-vessel_type[1:length(cell_number_json$cell_number$Gata1_Wasp1$aISV)] <- "aISV"
-vessel_type[length(cell_number_json$cell_number$Gata1_Wasp1$aISV)+1:length(cell_number_json$cell_number$Gata1_Wasp1$vISV)] <- "vISV"
+vessel_type[1:length(migration_json$migration_to_dlav$Gata1_Wasp1$aISV)] <- "aISV"
+vessel_type[length(migration_json$migration_to_dlav$Gata1_Wasp1$aISV)+1:length(migration_json$migration_to_dlav$Gata1_Wasp1$vISV)] <- "vISV"
 
-df <- data.frame(vessel_type, c(cell_number_json$cell_number$Gata1_Wasp1$aISV,cell_number_json$cell_number$Gata1_Wasp1$vISV))
+df <- data.frame(vessel_type, c(migration_json$migration_to_dlav$Gata1_Wasp1$aISV,migration_json$migration_to_dlav$Gata1_Wasp1$vISV))
 
 colnames(df) <- c("vessel_type","counts")
 mu <- ddply(df, "vessel_type", summarise, grp.mean=mean(counts))
@@ -180,11 +180,11 @@ p <-  ggplot(df, aes(x=counts, fill=vessel_type, color=vessel_type) ) +
       linetype="dashed")
 
 p + labs(title = "Comparison aISV vs. vISV for Gata1-Wasp1",
-              subtitle = "Cell number count per ISV",
+              subtitle = "Cell migration count per ISV",
               caption =  sprintf("p-value :  %s \n %s \n %s", res$p.value, mu_sigma_aISV, mu_sigma_vISV) )  + 
     ylab("ISV count") + 
     xlim(0,max(df$counts))+
-    scale_x_discrete(name ="Cell number per ISV", 
+    scale_x_discrete(name ="Cells migrated to DLAV per ISV", 
     limits=0:max(df$counts) )+
     scale_color_manual(values=c("red","blue","#999999")) +
     scale_fill_manual(values=c("#FFDACC", "#CCF2F2", "#999999"))
@@ -195,20 +195,20 @@ if (show_ks_details){
 }
 ```
 
-## Comparison of cell number to DLAV between conditions for aISV and vISV
+## Comparison of cell migration to DLAV between conditions for aISV and vISV
 
-```{r plot_cell_number_distributions_WASP_vs_Control_aISV, echo=FALSE}
+```{r plot_migration_distributions_WASP_vs_Control_aISV, echo=FALSE}
 
-res <- dgof::ks.test(cell_number_json$cell_number$control$aISV, cell_number_json$cell_number$`WaspI [100uM]`$aISV)
+res <- dgof::ks.test(migration_json$migration_to_dlav$control$aISV, migration_json$migration_to_dlav$`WaspI [100uM]`$aISV)
 
 
 text <- sprintf("p-value : %s", res$p.value)
 
 condition <- c()
-condition[1:length(cell_number_json$cell_number$control$aISV)] <- "control"
-condition[length(cell_number_json$cell_number$control$aISV)+1:length(cell_number_json$cell_number$`WaspI [100uM]`$aISV)] <- "Wasp"
+condition[1:length(migration_json$migration_to_dlav$control$aISV)] <- "control"
+condition[length(migration_json$migration_to_dlav$control$aISV)+1:length(migration_json$migration_to_dlav$`WaspI [100uM]`$aISV)] <- "Wasp"
 
-df <- data.frame(condition, c(cell_number_json$cell_number$control$aISV,cell_number_json$cell_number$`WaspI [100uM]`$aISV))
+df <- data.frame(condition, c(migration_json$migration_to_dlav$control$aISV,migration_json$migration_to_dlav$`WaspI [100uM]`$aISV))
 
 colnames(df) <- c("condition","counts")
 mu <- ddply(df, "condition", summarise, grp.mean=mean(counts))
@@ -223,11 +223,11 @@ p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) +
       linetype="dashed")
 
 p + labs(title = "Comparison control vs. WaspI [100uM] for aISVs",
-              subtitle = "Cell number count per ISV",
+              subtitle = "Cell migration count per ISV",
               caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_cond1, mu_sigma_cond2))  + 
     ylab("ISV count") + 
     xlim(0,max(df$counts))+
-    scale_x_discrete(name ="Cell number count per ISV", 
+    scale_x_discrete(name ="Cells migrated to DLAV per ISV", 
     limits=0:max(df$counts) )+
     scale_color_manual(values=c("black", "red", "#999999")) +
     scale_fill_manual(values=c("grey", "#FFDACC", "#999999"))
@@ -238,18 +238,18 @@ if (show_ks_details){
 }
 ```
 
-```{r plot_cell_number_distributions_WASP_vs_Control_vISV, echo=FALSE}
+```{r plot_migration_distributions_WASP_vs_Control_vISV, echo=FALSE}
 
-res <- dgof::ks.test(cell_number_json$cell_number$control$vISV, cell_number_json$cell_number$`WaspI [100uM]`$vISV)
+res <- dgof::ks.test(migration_json$migration_to_dlav$control$vISV, migration_json$migration_to_dlav$`WaspI [100uM]`$vISV)
 
 
 text <- sprintf("p-value : %s", res$p.value)
 
 condition <- c()
-condition[1:length(cell_number_json$cell_number$control$vISV)] <- "control"
-condition[length(cell_number_json$cell_number$control$vISV)+1:length(cell_number_json$cell_number$`WaspI [100uM]`$vISV)] <- "Wasp"
+condition[1:length(migration_json$migration_to_dlav$control$vISV)] <- "control"
+condition[length(migration_json$migration_to_dlav$control$vISV)+1:length(migration_json$migration_to_dlav$`WaspI [100uM]`$vISV)] <- "Wasp"
 
-df <- data.frame(condition, c(cell_number_json$cell_number$control$vISV,cell_number_json$cell_number$`WaspI [100uM]`$vISV))
+df <- data.frame(condition, c(migration_json$migration_to_dlav$control$vISV,migration_json$migration_to_dlav$`WaspI [100uM]`$vISV))
 
 colnames(df) <- c("condition","counts")
 mu <- ddply(df, "condition", summarise, grp.mean=mean(counts))
@@ -264,11 +264,11 @@ p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) +
       linetype="dashed")
 
 p + labs(title = "Comparison control vs. WaspI [100uM] for vISVs",
-              subtitle = "Cell number count per ISV",
+              subtitle = "Cell migration count per ISV",
               caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_cond1, mu_sigma_cond2))  + 
     ylab("ISV count") + 
     xlim(0,max(df$counts))+
-    scale_x_discrete(name ="Cell number count per ISV", 
+    scale_x_discrete(name ="Cells migrated to DLAV per ISV", 
     limits=0:max(df$counts) )+
     scale_color_manual(values=c("black", "blue", "#999999")) +
     scale_fill_manual(values=c("grey", "#CCF2F2", "#999999"))
@@ -280,18 +280,18 @@ if (show_ks_details){
 ```
 
 
-```{r plot_cell_number_distributions_Control_vs_Gata1_aISV, echo=FALSE}
+```{r plot_migration_distributions_Control_vs_Gata1_aISV, echo=FALSE}
 
-res <- dgof::ks.test(cell_number_json$cell_number$control$aISV, cell_number_json$cell_number$Gata1$aISV)
+res <- dgof::ks.test(migration_json$migration_to_dlav$control$aISV, migration_json$migration_to_dlav$Gata1$aISV)
 
 
 text <- sprintf("p-value : %s", res$p.value)
 
 condition <- c()
-condition[1:length(cell_number_json$cell_number$control$aISV)] <- "control"
-condition[length(cell_number_json$cell_number$control$aISV)+1:length(cell_number_json$cell_number$Gata1$aISV)] <- "Gata1"
+condition[1:length(migration_json$migration_to_dlav$control$aISV)] <- "control"
+condition[length(migration_json$migration_to_dlav$control$aISV)+1:length(migration_json$migration_to_dlav$Gata1$aISV)] <- "Gata1"
 
-df <- data.frame(condition, c(cell_number_json$cell_number$control$aISV,cell_number_json$cell_number$Gata1$aISV))
+df <- data.frame(condition, c(migration_json$migration_to_dlav$control$aISV,migration_json$migration_to_dlav$Gata1$aISV))
 
 colnames(df) <- c("condition","counts")
 mu <- ddply(df, "condition", summarise, grp.mean=mean(counts))
@@ -306,11 +306,11 @@ p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) +
       linetype="dashed")
 
 p + labs(title = "Comparison control vs. Gata1 for aISVs",
-              subtitle = "Cell number count per ISV",
+              subtitle = "Cell migration count per ISV",
               caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_cond1, mu_sigma_cond2))  + 
     ylab("ISV count") + 
     xlim(0,max(df$counts))+
-    scale_x_discrete(name ="Cell number count per ISV", 
+    scale_x_discrete(name ="Cells migrated to DLAV per ISV", 
     limits=0:max(df$counts) )+
     scale_color_manual(values=c("black", "red", "#999999")) +
     scale_fill_manual(values=c("grey", "#FFDACC", "#999999"))
@@ -321,18 +321,18 @@ if (show_ks_details){
 }
 ```
 
-```{r plot_cell_number_distributions_Control_vs_Gata1_vISV, echo=FALSE}
+```{r plot_migration_distributions_Control_vs_Gata1_vISV, echo=FALSE}
 
-res <- dgof::ks.test(cell_number_json$cell_number$control$vISV, cell_number_json$cell_number$Gata1$vISV)
+res <- dgof::ks.test(migration_json$migration_to_dlav$control$vISV, migration_json$migration_to_dlav$Gata1$vISV)
 
 
 text <- sprintf("p-value : %s", res$p.value)
 
 condition <- c()
-condition[1:length(cell_number_json$cell_number$control$vISV)] <- "control"
-condition[length(cell_number_json$cell_number$control$vISV)+1:length(cell_number_json$cell_number$Gata1$vISV)] <- "Gata1"
+condition[1:length(migration_json$migration_to_dlav$control$vISV)] <- "control"
+condition[length(migration_json$migration_to_dlav$control$vISV)+1:length(migration_json$migration_to_dlav$Gata1$vISV)] <- "Gata1"
 
-df <- data.frame(condition, c(cell_number_json$cell_number$control$vISV,cell_number_json$cell_number$Gata1$vISV))
+df <- data.frame(condition, c(migration_json$migration_to_dlav$control$vISV,migration_json$migration_to_dlav$Gata1$vISV))
 
 colnames(df) <- c("condition","counts")
 mu <- ddply(df, "condition", summarise, grp.mean=mean(counts))
@@ -347,11 +347,11 @@ p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) +
       linetype="dashed")
 
 p + labs(title = "Comparison control vs. Gata1 for vISVs",
-              subtitle = "Cell number count per ISV",
+              subtitle = "Cell migration count per ISV",
               caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_cond1, mu_sigma_cond2))  + 
     ylab("ISV count") + 
     xlim(0,max(df$counts))+
-    scale_x_discrete(name ="Cell number count per ISV", 
+    scale_x_discrete(name ="Cells migrated to DLAV per ISV", 
     limits=0:max(df$counts) )+
     scale_color_manual(values=c("black", "blue", "#999999")) +
     scale_fill_manual(values=c("grey", "#CCF2F2", "#999999"))
@@ -362,18 +362,18 @@ if (show_ks_details){
 }
 ```
 
-```{r plot_cell_number_distributions_Control_vs_Gata1_Wasp1_aISV, echo=FALSE}
+```{r plot_migration_distributions_Control_vs_Gata1_Wasp1_aISV, echo=FALSE}
 
-res <- dgof::ks.test(cell_number_json$cell_number$control$aISV, cell_number_json$cell_number$Gata1_Wasp1$aISV)
+res <- dgof::ks.test(migration_json$migration_to_dlav$control$aISV, migration_json$migration_to_dlav$Gata1_Wasp1$aISV)
 
 
 text <- sprintf("p-value : %s", res$p.value)
 
 condition <- c()
-condition[1:length(cell_number_json$cell_number$control$aISV)] <- "control"
-condition[length(cell_number_json$cell_number$control$aISV)+1:length(cell_number_json$cell_number$Gata1_Wasp1$aISV)] <- "Gata1-Wasp1"
+condition[1:length(migration_json$migration_to_dlav$control$aISV)] <- "control"
+condition[length(migration_json$migration_to_dlav$control$aISV)+1:length(migration_json$migration_to_dlav$Gata1_Wasp1$aISV)] <- "Gata1-Wasp1"
 
-df <- data.frame(condition, c(cell_number_json$cell_number$control$aISV,cell_number_json$cell_number$Gata1_Wasp1$aISV))
+df <- data.frame(condition, c(migration_json$migration_to_dlav$control$aISV,migration_json$migration_to_dlav$Gata1_Wasp1$aISV))
 
 colnames(df) <- c("condition","counts")
 mu <- ddply(df, "condition", summarise, grp.mean=mean(counts))
@@ -388,11 +388,11 @@ p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) +
       linetype="dashed")
 
 p + labs(title = "Comparison control vs. Gata1-Wasp1 for aISVs",
-              subtitle = "Cell number count per ISV",
+              subtitle = "Cell migration count per ISV",
               caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_cond1, mu_sigma_cond2))  + 
     ylab("ISV count") + 
     xlim(0,max(df$counts))+
-    scale_x_discrete(name ="Cell number per ISV", 
+    scale_x_discrete(name ="Cells migrated to DLAV per ISV", 
     limits=0:max(df$counts) )+
     scale_color_manual(values=c("black", "red", "#999999")) +
     scale_fill_manual(values=c("grey", "#FFDACC", "#999999"))
@@ -403,18 +403,18 @@ if (show_ks_details){
 }
 ```
 
-```{r plot_cell_number_distributions_Control_vs_Gata1_Wasp1_vISV, echo=FALSE}
+```{r plot_migration_distributions_Control_vs_Gata1_Wasp1_vISV, echo=FALSE}
 
-res <- dgof::ks.test(cell_number_json$cell_number$control$vISV, cell_number_json$cell_number$Gata1_Wasp1$vISV)
+res <- dgof::ks.test(migration_json$migration_to_dlav$control$vISV, migration_json$migration_to_dlav$Gata1_Wasp1$vISV)
 
 
 text <- sprintf("p-value : %s", res$p.value)
 
 condition <- c()
-condition[1:length(cell_number_json$cell_number$control$vISV)] <- "control"
-condition[length(cell_number_json$cell_number$control$vISV)+1:length(cell_number_json$cell_number$Gata1_Wasp1$vISV)] <- "Gata1-Wasp1"
+condition[1:length(migration_json$migration_to_dlav$control$vISV)] <- "control"
+condition[length(migration_json$migration_to_dlav$control$vISV)+1:length(migration_json$migration_to_dlav$Gata1_Wasp1$vISV)] <- "Gata1-Wasp1"
 
-df <- data.frame(condition, c(cell_number_json$cell_number$control$vISV,cell_number_json$cell_number$Gata1_Wasp1$vISV))
+df <- data.frame(condition, c(migration_json$migration_to_dlav$control$vISV,migration_json$migration_to_dlav$Gata1_Wasp1$vISV))
 
 colnames(df) <- c("condition","counts")
 mu <- ddply(df, "condition", summarise, grp.mean=mean(counts))
@@ -429,11 +429,11 @@ p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) +
       linetype="dashed")
 
 p + labs(title = "Comparison control vs. Gata1-Wasp1 for vISVs",
-              subtitle = "Cell number count per ISV",
+              subtitle = "Cell migration count per ISV",
               caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_cond1, mu_sigma_cond2))  + 
     ylab("ISV count") + 
     xlim(0,max(df$counts))+
-    scale_x_discrete(name ="Cell number per ISV", 
+    scale_x_discrete(name ="Cells migrated to DLAV per ISV", 
     limits=0:max(df$counts) )+
     scale_color_manual(values=c("black", "blue", "#999999")) +
     scale_fill_manual(values=c("grey", "#CCF2F2", "#999999"))
@@ -445,18 +445,18 @@ if (show_ks_details){
 ```
 
 
-```{r plot_cell_number_distributions_Wasp1_vs_Gata1_Wasp1_aISV, echo=FALSE}
+```{r plot_migration_distributions_Wasp1_vs_Gata1_Wasp1_aISV, echo=FALSE}
 
-res <- dgof::ks.test(cell_number_json$cell_number$`WaspI [100uM]`$aISV, cell_number_json$cell_number$Gata1_Wasp1$aISV)
+res <- dgof::ks.test(migration_json$migration_to_dlav$`WaspI [100uM]`$aISV, migration_json$migration_to_dlav$Gata1_Wasp1$aISV)
 
 
 text <- sprintf("p-value : %s", res$p.value)
 
 condition <- c()
-condition[1:length(cell_number_json$cell_number$`WaspI [100uM]`$aISV)] <- "Wasp1"
-condition[length(cell_number_json$cell_number$`WaspI [100uM]`$aISV)+1:length(cell_number_json$cell_number$Gata1_Wasp1$aISV)] <- "Gata1-Wasp1"
+condition[1:length(migration_json$migration_to_dlav$`WaspI [100uM]`$aISV)] <- "Wasp1"
+condition[length(migration_json$migration_to_dlav$`WaspI [100uM]`$aISV)+1:length(migration_json$migration_to_dlav$Gata1_Wasp1$aISV)] <- "Gata1-Wasp1"
 
-df <- data.frame(condition, c(cell_number_json$cell_number$`WaspI [100uM]`$aISV,cell_number_json$cell_number$Gata1_Wasp1$aISV))
+df <- data.frame(condition, c(migration_json$migration_to_dlav$`WaspI [100uM]`$aISV,migration_json$migration_to_dlav$Gata1_Wasp1$aISV))
 
 colnames(df) <- c("condition","counts")
 mu <- ddply(df, "condition", summarise, grp.mean=mean(counts))
@@ -471,11 +471,11 @@ p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) +
       linetype="dashed")
 
 p + labs(title = "Comparison `WaspI [100uM]` vs. Gata1-Wasp1 for aISVs",
-              subtitle = "Cell number count per ISV",
+              subtitle = "Cell migration count per ISV",
               caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_cond1, mu_sigma_cond2))  + 
     ylab("ISV count") + 
     xlim(0,max(df$counts))+
-    scale_x_discrete(name ="Cell number per ISV", 
+    scale_x_discrete(name ="Cells migrated to DLAV per ISV", 
     limits=0:max(df$counts) )+
     scale_color_manual(values=c("black", "red", "#999999")) +
     scale_fill_manual(values=c("grey", "#FFDACC", "#999999"))
@@ -486,18 +486,18 @@ if (show_ks_details){
 }
 ```
 
-```{r plot_cell_number_distributions_Wasp1_vs_Gata1_Wasp1_vISV, echo=FALSE}
+```{r plot_migration_distributions_Wasp1_vs_Gata1_Wasp1_vISV, echo=FALSE}
 
-res <- dgof::ks.test(cell_number_json$cell_number$`WaspI [100uM]`$vISV, cell_number_json$cell_number$Gata1_Wasp1$vISV)
+res <- dgof::ks.test(migration_json$migration_to_dlav$`WaspI [100uM]`$vISV, migration_json$migration_to_dlav$Gata1_Wasp1$vISV)
 
 
 text <- sprintf("p-value : %s", res$p.value)
 
 condition <- c()
-condition[1:length(cell_number_json$cell_number$`WaspI [100uM]`$vISV)] <- "Wasp1"
-condition[length(cell_number_json$cell_number$`WaspI [100uM]`$vISV)+1:length(cell_number_json$cell_number$Gata1_Wasp1$vISV)] <- "Gata1-Wasp1"
+condition[1:length(migration_json$migration_to_dlav$`WaspI [100uM]`$vISV)] <- "Wasp1"
+condition[length(migration_json$migration_to_dlav$`WaspI [100uM]`$vISV)+1:length(migration_json$migration_to_dlav$Gata1_Wasp1$vISV)] <- "Gata1-Wasp1"
 
-df <- data.frame(condition, c(cell_number_json$cell_number$`WaspI [100uM]`$vISV,cell_number_json$cell_number$Gata1_Wasp1$vISV))
+df <- data.frame(condition, c(migration_json$migration_to_dlav$`WaspI [100uM]`$vISV,migration_json$migration_to_dlav$Gata1_Wasp1$vISV))
 
 colnames(df) <- c("condition","counts")
 mu <- ddply(df, "condition", summarise, grp.mean=mean(counts))
@@ -512,11 +512,11 @@ p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) +
       linetype="dashed")
 
 p + labs(title = "Comparison `WaspI [100uM]` vs. Gata1-Wasp1 for vISVs",
-              subtitle = "Cell number count per ISV",
+              subtitle = "Cell migration count per ISV",
               caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_cond1, mu_sigma_cond2))  + 
     ylab("ISV count") + 
     xlim(0,max(df$counts))+
-    scale_x_discrete(name ="Cell number per ISV", 
+    scale_x_discrete(name ="Cells migrated to DLAV per ISV", 
     limits=0:max(df$counts) )+
     scale_color_manual(values=c("black", "blue", "#999999")) +
     scale_fill_manual(values=c("grey", "#CCF2F2", "#999999"))
