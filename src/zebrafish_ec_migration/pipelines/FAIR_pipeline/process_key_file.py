@@ -16,6 +16,9 @@ def process_key_file(parameters: Dict) -> pd.DataFrame:
     processed_key_file = processed_key_file[
         ["filename", "fish number", "vessel_type", "dpf", "imaging orientation", "analysis_group"]]
 
+    processed_key_file.rename(columns={'fish number': 'fish_number'}, inplace=True)
+    processed_key_file.rename(columns={'imaging orientation': 'imaging_orientation'}, inplace=True)
+
     return processed_key_file
 
 

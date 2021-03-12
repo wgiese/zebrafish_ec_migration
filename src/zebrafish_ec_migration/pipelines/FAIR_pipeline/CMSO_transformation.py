@@ -84,8 +84,7 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
 
 
     processed_key_file = imaris_key_file.copy()
-    processed_key_file.rename(columns={'fish name': 'fish_name'}, inplace=True)
-    processed_key_file.rename(columns={'imaging orientation': 'imaging_orientation'}, inplace=True)
+
 
     imaris_data = dict()
 
@@ -111,12 +110,12 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
     cmso_link_dir = catalog_dict['CMSO_link_data']['filepath']
     cmso_track_dir = catalog_dict['CMSO_track_data']['filepath']
 
-    for fish_number in imaris_key_file["fish number"].unique():
+    for fish_number in imaris_key_file["fish_number"].unique():
 
         if (np.isnan(fish_number)):
             continue
 
-        df_single_fish_all_groups = imaris_key_file[imaris_key_file['fish number'] == fish_number]
+        df_single_fish_all_groups = imaris_key_file[imaris_key_file['fish_number'] == fish_number]
 
         for analysis_group in df_single_fish_all_groups["analysis_group"].unique():
 

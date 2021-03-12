@@ -4,7 +4,7 @@ import numpy as np
 import pylab as plt
 
 
-def plot_migration_data(processed_key_file: pd.DataFrame, parameters: Dict, start_time, end_time):
+def plot_trajectory_data(processed_key_file: pd.DataFrame, parameters: Dict, start_time, end_time):
 
     trajectory_plots = dict()
 
@@ -48,6 +48,8 @@ def plot_migration_data(processed_key_file: pd.DataFrame, parameters: Dict, star
                 #    vessel_type = vessel_type_
 
                 vessel_type = row["vessel_type"]
+
+                print(movement_data_.head())
 
                 movement_data_["vessel_type"] = [vessel_type for x in movement_data_["x"]]
 

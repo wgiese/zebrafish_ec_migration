@@ -42,9 +42,6 @@ from zebrafish_ec_migration.pipelines.FAIR_pipeline import pipeline as FAIR_pipe
 from zebrafish_ec_migration.pipelines.mitosis_count_pipeline import pipeline as mitosis_count_pipeline
 from zebrafish_ec_migration.pipelines.cell_trajectory_analysis_pipeline import pipeline as cell_trajectory_analysis_pipeline
 
-from zebrafish_ec_migration.nodes.plot_migration_data import (
-    plot_migration_data,
-)
 
 #from zebrafish_ec_migration.nodes.load_cmso_migration_data import (
 #    align_cmso_migration_data,
@@ -78,9 +75,7 @@ def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
     trajectory_analysis_pipeline = cell_trajectory_analysis_pipeline.create_pipeline()
 
     master_pipeline = Pipeline(
-        [node(plot_migration_data,
-              ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"],
-              "trajectory_plots", name="plot_trajectories"),
+        [
 #         node(align_cmso_migration_data,
 #              ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"],
 #              ["fish_data_summary", "link_data_summary"],
