@@ -16,7 +16,7 @@ sys.path.append("./src/isv_analysis/classes/")
 import yaml
 #import extract_data as extract
 
-def align_cmso_migration_data(processed_key_file: pd.DataFrame, parameters: Dict, start_time, end_time):
+def align_cmso_trajectory_data(processed_key_file: pd.DataFrame, parameters: Dict, start_time, end_time):
     counter_statistics = 0
     counter_link_data = 0
 
@@ -34,12 +34,12 @@ def align_cmso_migration_data(processed_key_file: pd.DataFrame, parameters: Dict
     object_dir = catalog_dict['CMSO_aligned_object_data']['filepath']
     link_dir = catalog_dict['CMSO_aligned_link_data']['filepath']
 
-    for fish_number in processed_key_file["fish number"].unique():
+    for fish_number in processed_key_file["fish_number"].unique():
 
         if (np.isnan(fish_number)):
             continue
 
-        df_single_fish_all_groups = processed_key_file[processed_key_file['fish number'] == fish_number]
+        df_single_fish_all_groups = processed_key_file[processed_key_file['fish_number'] == fish_number]
 
         for analysis_group in df_single_fish_all_groups["analysis_group"].unique():
 
@@ -87,29 +87,34 @@ def align_cmso_migration_data(processed_key_file: pd.DataFrame, parameters: Dict
                 else:
                     movement_data = movement_data_.copy()
 
-            link_filename = "link_fish_%s_%s.csv" % (fish_number, analysis_group)
-            object_filename = "object_fish_%s_%s.csv" % (fish_number, analysis_group)
+            print("rotate fish data")
             movement_data = _rotate_fish(movement_data)
-            aligned_link_data[link_filename] = movement_data[["object_id", "link_id"]]
-            aligned_object_data[object_filename] = movement_data[["object_id", "x", "y", "z", "frame"]]
 
+            for vessel_type in movement_data["vessel_type"].unique():
 
-            aligned_trajectory_key_file.at[counter_statistics, "fish_number"] = fish_number
-            aligned_trajectory_key_file.at[counter_statistics, "analysis_group"] = analysis_group
-            aligned_trajectory_key_file.at[counter_statistics, "vessel_type"] = vessel_type
-            aligned_trajectory_key_file.at[counter_statistics, "object_data"] = object_dir + object_filename
-            aligned_trajectory_key_file.at[counter_statistics, "link_data"] = object_dir + object_filename
+                movement_data_vessel = movement_data[movement_data["vessel_type"]==vessel_type]
 
-            fish_data_summary.at[counter_statistics, 'fish_number'] = fish_number
-            fish_data_summary.at[counter_statistics, '#tracks'] = 0
-            fish_data_summary.at[counter_statistics, 'analysis_group'] = analysis_group
+                link_filename = "link_fish_%s_%s_%s.csv" % (fish_number, vessel_type, analysis_group)
+                object_filename = "object_fish_%s_%s_%s.csv" % (fish_number, vessel_type, analysis_group)
+                aligned_link_data[link_filename] = movement_data_vessel[["object_id", "link_id"]]
+                aligned_object_data[object_filename] = movement_data_vessel[["object_id", "x", "y", "z", "frame"]]
+
+                aligned_trajectory_key_file.at[counter_statistics, "fish_number"] = fish_number
+                aligned_trajectory_key_file.at[counter_statistics, "analysis_group"] = analysis_group
+                aligned_trajectory_key_file.at[counter_statistics, "vessel_type"] = vessel_type
+                aligned_trajectory_key_file.at[counter_statistics, "object_data"] = object_dir + object_filename
+                aligned_trajectory_key_file.at[counter_statistics, "link_data"] = object_dir + object_filename
+
+                fish_data_summary.at[counter_statistics, 'fish_number'] = fish_number
+                fish_data_summary.at[counter_statistics, '#tracks'] = 0
+                fish_data_summary.at[counter_statistics, 'analysis_group'] = analysis_group
             # fish_data_summary.at[counter_statistics, 'start_track'] = movement_data
             #fish_data_summary.at[counter_statistics, 'dpf'] = key_row['dpf']
 
             # movement_data_summary.at[counter_statistics, 'filename'] = key_row['filename'].split("/")[-1]
             # movement_data_summary.at[counter_statistics, 'folder'] = "/".join(key_row['filename'].split("/")[0:-1])
 
-            counter_statistics += 1
+                counter_statistics += 1
 
 
     # return key_aligned_objects, aligned_objects, fish_data_summary,track_data_summary
@@ -147,164 +152,6 @@ def _align_tracks(df_stat, turn_x=False, turn_y=False):
 
     return df_stat_rot
 
-
-def plot_link_lengths_hist(link_data_summary: pd.DataFrame):
-
-    plots = dict()
-
-    for analysis_group in link_data_summary["analysis_group"].unique():
-
-        link_data_summary_ = link_data_summary[link_data_summary["analysis_group"] == analysis_group]
-
-
-        for vessel_type in link_data_summary_["vessel_type"].unique():
-
-
-            link_data_summary_sub = link_data_summary_[link_data_summary_["vessel_type"] == vessel_type]
-
-            fig, ax = plt.subplots(figsize=(5, 5))
-
-
-
-            sns.histplot(x = "link_length", data = link_data_summary_sub, ax=ax, binwidth=6, binrange=[0,144])#,  binwidth=15, ax=ax)
-
-            ax.set_xlim(0,144.0)
-            ax.set_ylim(0,100.0)
-            ax.set_xlabel("track length in hours")
-            ax.set_ylabel("counts")
-
-            ax.set_xticks(np.arange(0,144,12))
-            ax.set_xticklabels(np.arange(0,24,2))
-
-            ax.axvline(x=6, color="r", linestyle="dashed")
-
-            plots["link_length_hist_%s_%s.pdf" % (vessel_type, analysis_group)] = fig
-            plots["link_length_hist_%s_%s.png" % (vessel_type, analysis_group)] = fig
-
-        link_data_summary_sub = link_data_summary_[(link_data_summary_["vessel_type"] == "aISV") | (link_data_summary_["vessel_type"] == "vISV")]
-
-        fig, ax = plt.subplots(figsize=(5, 5))
-
-        sns.histplot(x="link_length", data=link_data_summary_sub, ax=ax, binwidth=6,
-                     binrange=[0, 144])  # ,  binwidth=15, ax=ax)
-
-        ax.set_xlim(0, 144.0)
-        ax.set_ylim(0, 200.0)
-        ax.set_xlabel("track length in hours")
-        ax.set_ylabel("counts")
-
-        ax.set_xticks(np.arange(0, 144, 12))
-        ax.set_xticklabels(np.arange(0, 24, 2))
-
-        ax.axvline(x=6, color="r", linestyle="dashed")
-
-        plots["link_length_hist_%s_%s.pdf" % ("ISV", analysis_group)] = fig
-        plots["link_length_hist_%s_%s.png" % ("ISV", analysis_group)] = fig
-
-    return plots
-
-def plot_link_lengths(fish_data_summary: pd.DataFrame, link_data_summary: pd.DataFrame):
-
-    plots = dict()
-
-    for analysis_group in link_data_summary["analysis_group"].unique():
-
-        link_data_summary_ = link_data_summary[link_data_summary["analysis_group"] == analysis_group]
-
-        # all vessel types separately
-
-        for vessel_type in link_data_summary_["vessel_type"].unique():
-            link_data_summary_sub = link_data_summary_[link_data_summary_["vessel_type"] == vessel_type]
-
-            fig, ax = plt.subplots(figsize=(10, 10))
-
-            height = 2.0
-            color = 'goldenrod'
-            tick_positions = []
-            tick_labels = []
-            for fish_number in link_data_summary_sub["fish_number"].unique():
-
-                link_data_plot = link_data_summary_sub[link_data_summary_sub["fish_number"]==fish_number]
-                link_data_plot = link_data_plot.sort_values(by=['start_frame'])
-
-                print("plot track length of fish %s" % fish_number)
-
-                for unique_id in  link_data_plot["unique_id"].unique():
-
-                    single_link = link_data_plot[link_data_plot["unique_id"] == unique_id]
-
-                    ax.plot([single_link["start_frame"].iloc[0], single_link["end_frame"].iloc[0]], [height,height], color = color)
-                    height += 10.0
-
-                #if color == "r":
-                #    color = "b"
-                #else:
-                #    color = "r"
-
-                height += 50.0
-                #ax.axhline(height, color ='k', linestyle = 'dashed')
-                linewidth = 5.0
-                tick_positions.append(height)
-                ax.plot([link_data_plot["start_frame"].min()+linewidth/2.0 - 2.0, link_data_plot["end_frame"].max()-linewidth/2.0 +2.0],[height,height], color='k', linewidth=linewidth)
-                height += 100.0
-                tick_labels.append(int(fish_number))
-            #ax.set(ylabel=None,yticklabels=[] )
-
-            ax.set_ylabel("fish ID")
-            ax.set_yticks(tick_positions)
-            ax.set_yticklabels(tick_labels)
-
-            ax.set_xlim(0,144.0)
-            ax.set_xlabel("time in hpf")
-
-            ax.set_xticks(np.arange(0, 144, 12))
-            ax.set_xticklabels(np.arange(24, 48, 2))
-
-            plots["link_length_%s_%s.pdf" % (vessel_type, analysis_group)] = fig
-            plots["link_length_%s_%s.png" % (vessel_type, analysis_group)] = fig
-
-
-        link_data_summary_sub = link_data_summary_[(link_data_summary_["vessel_type"] == "aISV") | (link_data_summary_["vessel_type"] == "vISV")]
-
-        fig, ax = plt.subplots(figsize=(10, 10))
-        height = 2.0
-        color = 'goldenrod'
-        tick_positions = []
-        tick_labels = []
-        for fish_number in link_data_summary_sub["fish_number"].unique():
-
-            link_data_plot = link_data_summary_sub[link_data_summary_sub["fish_number"]==fish_number]
-            link_data_plot = link_data_plot.sort_values(by=['start_frame'])
-
-            print("plot track length of fish %s" % fish_number)
-
-            for unique_id in  link_data_plot["unique_id"].unique():
-
-                single_link = link_data_plot[link_data_plot["unique_id"] == unique_id]
-                ax.plot([single_link["start_frame"].iloc[0], single_link["end_frame"].iloc[0]],[height,height], color = color)
-                height += 10.0
-
-            height += 50.0
-            linewidth = 5.0
-            tick_positions.append(height)
-            ax.plot([link_data_plot["start_frame"].min()+linewidth/2.0 - 2.0, link_data_plot["end_frame"].max()-linewidth/2.0 +2.0],[height,height], color='k', linewidth=linewidth)
-            height += 100.0
-            tick_labels.append(int(fish_number))
-
-        ax.set_ylabel("fish ID")
-        ax.set_yticks(tick_positions)
-        ax.set_yticklabels(tick_labels)
-
-        ax.set_xlim(0,144.0)
-        ax.set_xlabel("time in hpf")
-
-        ax.set_xticks(np.arange(0, 144, 12))
-        ax.set_xticklabels(np.arange(24, 48, 2))
-
-        plots["link_length_%s_%s.pdf" % ("ISV", analysis_group)] = fig
-        plots["link_length_%s_%s.png" % ("ISV", analysis_group)] = fig
-
-    return plots
 
 def _rotate_fish(movement_data, rotate_xy=True, rotate_xz=False, rotate_yz=False):
 

@@ -1,7 +1,10 @@
 from kedro.pipeline import Pipeline, node
 
-from zebrafish_ec_migration.pipelines.cell_trajectory_analysis_pipeline.nodes import (
-    align_cmso_migration_data,
+from zebrafish_ec_migration.pipelines.cell_trajectory_analysis_pipeline.align_zebrafish_trajectory_data import (
+    align_cmso_trajectory_data,
+)
+
+from zebrafish_ec_migration.pipelines.cell_trajectory_analysis_pipeline.evaluate_data_abundance import (
     plot_link_lengths,
     plot_link_lengths_hist,
 )
@@ -15,7 +18,7 @@ def create_pipeline(**kwargs):
 
     return Pipeline(
         [
-            node(align_cmso_migration_data,
+            node(align_cmso_trajectory_data,
                  ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"],
                  ["aligned_trajectory_key_file", "fish_data_summary", "link_data_summary", "CMSO_aligned_object_data", "CMSO_aligned_link_data"],
                  name="align_cmso_migration_data"),
