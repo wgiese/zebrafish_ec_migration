@@ -102,7 +102,7 @@ def align_cmso_trajectory_data(processed_key_file: pd.DataFrame, parameters: Dic
                 aligned_trajectory_key_file.at[counter_statistics, "fish_number"] = fish_number
                 aligned_trajectory_key_file.at[counter_statistics, "analysis_group"] = analysis_group
                 aligned_trajectory_key_file.at[counter_statistics, "vessel_type"] = vessel_type
-                aligned_trajectory_key_file.at[counter_statistics, "object_data"] = object_dir + object_filename
+                aligned_trajectory_key_file.at[counter_statistics, "object_data"] = link_dir + link_filename
                 aligned_trajectory_key_file.at[counter_statistics, "link_data"] = object_dir + object_filename
 
                 fish_data_summary.at[counter_statistics, 'fish_number'] = fish_number
