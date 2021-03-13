@@ -125,6 +125,8 @@ def _plot_trajectory(movement_data, parameters):
 
     for vessel_type in movement_data['vessel_type'].unique():
         vessel_df = movement_data[movement_data['vessel_type'] == vessel_type]
+        vessel_df = vessel_df.sort_values(by=["frame"])
+
         for link_id in vessel_df["link_id"].unique():
             temp = vessel_df[vessel_df["link_id"] == link_id]
 

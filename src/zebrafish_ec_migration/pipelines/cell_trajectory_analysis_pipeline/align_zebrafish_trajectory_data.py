@@ -34,7 +34,7 @@ def align_cmso_trajectory_data(processed_key_file: pd.DataFrame, parameters: Dic
     object_dir = catalog_dict['CMSO_aligned_object_data']['filepath']
     link_dir = catalog_dict['CMSO_aligned_link_data']['filepath']
 
-    for fish_number in processed_key_file["fish_number"].unique():
+    for fish_number in processed_key_file["fish_number"].unique()[:3]:
 
         if (np.isnan(fish_number)):
             continue
@@ -153,7 +153,7 @@ def _align_tracks(df_stat, turn_x=False, turn_y=False):
     return df_stat_rot
 
 
-def _rotate_fish(movement_data, rotate_xy=True, rotate_xz=False, rotate_yz=False):
+def _rotate_fish(movement_data, rotate_xy=True, rotate_xz=True, rotate_yz=False):
 
     movement_data_rot = movement_data.copy()
 
@@ -174,11 +174,13 @@ def _rotate_fish(movement_data, rotate_xy=True, rotate_xz=False, rotate_yz=False
         else:
             print("not data for Aorta available")
 
-        for index, row in movement_data_rot.iterrows():
-            x = float(row['x'])
-            z = float(row['z'])
-            movement_data_rot.at[index, 'x'] = np.cos(alpha_rot) * x - np.sin(alpha_rot) * z
-            movement_data_rot.at[index, 'z'] = np.sin(alpha_rot) * x + np.cos(alpha_rot) * z
+        movement_data_rot['x'] = np.cos(alpha_rot) * movement_data_rot['x'] - np.sin(alpha_rot) * movement_data_rot['z']
+        movement_data_rot['z'] = np.sin(alpha_rot) * movement_data_rot['x'] + np.cos(alpha_rot) * movement_data_rot['z']
+        #for index, row in movement_data_rot.iterrows():
+        #    x = float(row['x'])
+        #    z = float(row['z'])
+            #movement_data_rot.at[index, 'x'] = np.cos(alpha_rot) * x - np.sin(alpha_rot) * z
+            #movement_data_rot.at[index, 'z'] = np.sin(alpha_rot) * x + np.cos(alpha_rot) * z
 
     if (rotate_xy):
 
@@ -196,12 +198,14 @@ def _rotate_fish(movement_data, rotate_xy=True, rotate_xz=False, rotate_yz=False
         else:
             print("not data for Aorta available")
 
-        for index, row in movement_data_rot.iterrows():
-            x = float(row['x'])
-            y = float(row['y'])
+        movement_data_rot['x'] = np.cos(alpha_rot) * movement_data_rot['x'] - np.sin(alpha_rot) * movement_data_rot['y']
+        movement_data_rot['y'] = np.sin(alpha_rot) * movement_data_rot['x'] + np.cos(alpha_rot) * movement_data_rot['y']
+        #for index, row in movement_data_rot.iterrows():
+        #    x = float(row['x'])
+        #    y = float(row['y'])
 
-            movement_data_rot.at[index, 'x'] = np.cos(alpha_rot) * x - np.sin(alpha_rot) * y
-            movement_data_rot.at[index, 'y'] = np.sin(alpha_rot) * x + np.cos(alpha_rot) * y
+            #movement_data_rot.at[index, 'x'] = np.cos(alpha_rot) * x - np.sin(alpha_rot) * yyy
+            #movement_data_rot.at[index, 'y'] = np.sin(alpha_rot) * x + np.cos(alpha_rot) * y
 
     aorta_data = movement_data_rot[movement_data_rot['vessel_type'] == 'aorta']
 
@@ -212,18 +216,22 @@ def _rotate_fish(movement_data, rotate_xy=True, rotate_xz=False, rotate_yz=False
     y_mean_aorta = aorta_data['y'].mean()
 
     # print("aorta mean:")
-    # print(y_mean_aorta)
+    # print(y_mean_aorta)1
     # print("aorta data:")
     # print(aorta_data['Y'])
 
+
+    movement_data_rot['x'] = movement_data_rot['x'] - x_min
+    movement_data_rot['y'] = movement_data_rot['y'] - y_mean_aorta
+    movement_data_rot['z'] = movement_data_rot['z'] - z_min
     for index, row in movement_data_rot.iterrows():
         x = float(row['x'])
         y = float(row['y'])
         z = float(row['z'])
 
-        movement_data_rot.at[index, 'x'] = x - x_min
-        # movement_data_rot.at[index,'y'] = y - y_min
-        movement_data_rot.at[index, 'y'] = y - y_mean_aorta
-        movement_data_rot.at[index, 'z'] = z - z_min
+        #movement_data_rot.at[index, 'x'] = x - x_min
+        ## movement_data_rot.at[index,'y'] = y - y_min
+        #movement_data_rot.at[index, 'y'] = y - y_mean_aorta
+        #movement_data_rot.at[index, 'z'] = z - z_min
 
     return movement_data_rot
