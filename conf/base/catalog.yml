@@ -125,3 +125,9 @@ mitosis_statistics:
 trajectory_features:
   type: pandas.CSVDataSet
   filepath: data/04_feature/trajectory_features.csv
+
+velocity_plots:
+  type: zebrafish_ec_migration.io.matplotlib_figures.MatplotlibWriter
+  filepath: data/08_reporting/ec_velocities/
+  save_args:
+    multiFile: True

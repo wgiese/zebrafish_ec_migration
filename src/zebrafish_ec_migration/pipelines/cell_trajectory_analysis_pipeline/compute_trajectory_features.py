@@ -35,13 +35,12 @@ def compute_trajectory_features(aligned_trajector_key_file: pd.DataFrame, parame
                 movement_data['step_size_x'] = dist.x
                 movement_data['step_size_y'] = dist.y
                 movement_data['fish_number'] = fish_number
-                movement_data['vessel_typ'] = row['vessel_type']
+                movement_data['vessel_type'] = row['vessel_type']
+                movement_data['analysis_group'] = analysis_group
 
                 if len(features_df.columns) > 1:
                     features_df = movement_data.append(features_df)
                 else:
                     features_df = movement_data.copy()
-
-
 
     return features_df#, data_statistics_df

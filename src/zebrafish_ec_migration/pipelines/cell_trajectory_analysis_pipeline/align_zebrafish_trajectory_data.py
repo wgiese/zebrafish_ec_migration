@@ -34,7 +34,7 @@ def align_cmso_trajectory_data(processed_key_file: pd.DataFrame, parameters: Dic
     object_dir = catalog_dict['CMSO_aligned_object_data']['filepath']
     link_dir = catalog_dict['CMSO_aligned_link_data']['filepath']
 
-    for fish_number in processed_key_file["fish_number"].unique()[:3]:
+    for fish_number in processed_key_file["fish_number"].unique():
 
         if (np.isnan(fish_number)):
             continue
