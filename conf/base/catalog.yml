@@ -120,3 +120,8 @@ migration_distributions:
 mitosis_statistics:
   type: pandas.CSVDataSet
   filepath: data/03_primary/mitosis_statistics.csv
+
+
+trajectory_features:
+  type: pandas.CSVDataSet
+  filepath: data/04_feature/trajectory_features.csv

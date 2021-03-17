@@ -50,13 +50,13 @@ from zebrafish_ec_migration.pipelines.cell_trajectory_analysis_pipeline import p
 #)
 
 
-from zebrafish_ec_migration.nodes.detect_mitosis_events import (
-    extract_potential_mitosis_events,
-)
+#from zebrafish_ec_migration.nodes.detect_mitosis_events import (
+#    extract_potential_mitosis_events,
+#)
 
-from zebrafish_ec_migration.nodes.extract_cell_migration_features import (
-    extract_migration_features,
-)
+#from zebrafish_ec_migration.nodes.extract_cell_migration_features import (
+#    extract_migration_features,
+#)
 
 
 def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
@@ -84,9 +84,9 @@ def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
 #              name="plot_link_data_hist"),
 #         node(plot_link_lengths, ["fish_data_summary", "link_data_summary"], "link_length_plot",
 #              name="plot_link_length"),
-         node(extract_migration_features,
-              ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"],
-              ["migration_features", "migration_data_statistics"], name="extract_migration_features_dpf1"),
+         #node(extract_migration_features,
+         #     ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"],
+         #     ["migration_features", "migration_data_statistics"], name="extract_migration_features_dpf1"),
          #node(extract_potential_mitosis_events,
          #     ["processed_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"], "mitosis_events",
          #     name="detect_mitosis_events"),

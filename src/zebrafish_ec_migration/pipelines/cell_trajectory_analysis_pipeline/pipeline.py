@@ -13,6 +13,10 @@ from zebrafish_ec_migration.pipelines.cell_trajectory_analysis_pipeline.plot_tra
     plot_trajectory_data,
 )
 
+from zebrafish_ec_migration.pipelines.cell_trajectory_analysis_pipeline.compute_trajectory_features import (
+    compute_trajectory_features,
+)
+
 
 def create_pipeline(**kwargs):
 
@@ -29,4 +33,7 @@ def create_pipeline(**kwargs):
             node(plot_trajectory_data,
                  ["aligned_trajectory_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"],
                  "aligned_trajectory_plots", name="plot_aligned_trajectories"),
+            node(compute_trajectory_features, ["aligned_trajectory_key_file", "parameters",
+                 "params:start_time_dpf1", "params:end_time_dpf1"], "trajectory_features",
+                 name="compute_trajectory_features")
         ])
