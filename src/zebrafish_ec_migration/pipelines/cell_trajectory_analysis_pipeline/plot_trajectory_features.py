@@ -14,7 +14,9 @@ def plot_velocities(trajectory_features: pd.DataFrame, parameters: Dict, start_t
         trajectory_features_group = trajectory_features[trajectory_features["analysis_group"] == analysis_group]
         for vessel_type in ['aISV','vISV']:
 
-            trajectory_features_vessel = trajectory_features_group[trajectory_features_group["vessel_type"] == vessel_type].dropna()
+            trajectory_features_vessel = trajectory_features_group[trajectory_features_group["vessel_type"] == vessel_type]
+            trajectory_features_vessel = trajectory_features_vessel.sort_values(by="frame").dropna()
+            print(trajectory_features_vessel)
 
             fig, ax = plt.subplots(figsize=(18, 6))
             sns.lineplot( x="frame", y="step_size_y", data=trajectory_features_vessel, ax=ax)
