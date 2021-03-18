@@ -8,7 +8,8 @@ def compute_trajectory_features(aligned_trajector_key_file: pd.DataFrame, parame
     features_df = pd.DataFrame()
     data_statistics_df = pd.DataFrame()
     counter = 0
-    interval = 12
+    frame_interval = 12.0
+    time_interval = frame_interval*10.0/60.0
 
     for fish_number in aligned_trajector_key_file["fish_number"].unique():
 
@@ -31,14 +32,20 @@ def compute_trajectory_features(aligned_trajector_key_file: pd.DataFrame, parame
 
                 for link_id in movement_data["link_id"].unique():
                     movement_data_ = movement_data[movement_data["link_id"]==link_id]
-                    dist = movement_data_.diff(interval).fillna(np.nan)
+                    dist = movement_data_.diff(frame_interval).fillna(np.nan)
+                    dist_step = movement_data_.diff(1).fillna(np.nan)
 
                     movement_data_['step_size'] = np.sqrt(dist.x**2 + dist.y**2)
-                    movement_data_['step_size_x'] = dist.x
-                    movement_data_['step_size_y'] = dist.y
+                    movement_data_['step_size_x'] = dist_step.x
+                    movement_data_['step_size_y'] = dist_step.y
+                    movement_data_['velocity_micron_per_h'] = np.sqrt(dist.x**2 + dist.y**2)/time_interval
+                    movement_data_['vd_velocity_micron_per_h'] = -dist.y/time_interval
+                    #movement_data_['step_size_y'] = dist.y
                     movement_data_['fish_number'] = fish_number
                     movement_data_['vessel_type'] = row['vessel_type']
                     movement_data_['analysis_group'] = analysis_group
+                    movement_data_['time_in_hpf'] = 24.0 + 10.0 * movement_data_['frame']/60.0
+                    movement_data_['time_in_min'] = 10 * movement_data_['frame']
 
                     if len(features_df.columns) > 1:
                         features_df = movement_data_.append(features_df)

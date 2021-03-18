@@ -131,3 +131,9 @@ velocity_plots:
   filepath: data/08_reporting/ec_velocities/
   save_args:
     multiFile: True
+
+biphasic_velocity_plots:
+  type: zebrafish_ec_migration.io.matplotlib_figures.MatplotlibWriter
+  filepath: data/08_reporting/biphasic_ec_velocities/
+  save_args:
+    multiFile: True

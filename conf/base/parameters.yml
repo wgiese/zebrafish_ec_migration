@@ -15,7 +15,7 @@ time_resolution : 1
 start_time_dpf1 : 24
 end_time_dpf1 : 48
 start_time_anastomosis : 26
-end_time_anastomosis : 32
+end_time_anastomosis : 28
 start_time_remodeling : 32
 end_time_remodeling : 40
 start_time_dpf2 : 48
@@ -35,6 +35,9 @@ analysis_groups : ["control","WaspI [100uM]","Gata1","Gata1_Wasp1"]
 
 vessel_types: ["aISV", "vISV", "aorta", "dlav"]
 vessel_type_colors: {"aorta": "red", "dlav": "blue", "aISV": "orange", "vISV": "c", "either_ISV": "purple"}
+
+dev_phases: {"anastomosis \n (26h - 28h)": [26.0,28.0], "secondary sprouting \n (28h - 30h)": [28.0,30.0],
+             "vessel remodelling \n (30h - 34h)": [30.0,34.0], "junction maturation \n (34h - 44h)": [34.0,44.0]}
 
 
 time_distance_weight : 1.0
