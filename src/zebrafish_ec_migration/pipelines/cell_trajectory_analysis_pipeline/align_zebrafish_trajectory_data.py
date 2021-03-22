@@ -20,8 +20,7 @@ def align_cmso_trajectory_data(processed_key_file: pd.DataFrame, parameters: Dic
     counter_statistics = 0
     counter_link_data = 0
 
-    #aligned_trajectory_key_file = processed_key_file.copy()
-    aligned_trajectory_key_file = pd.DataFrame() #processed_key_file.copy()
+    aligned_trajectory_key_file = pd.DataFrame()
     fish_data_summary = pd.DataFrame()
     link_data_summary = pd.DataFrame()
 
@@ -60,7 +59,8 @@ def align_cmso_trajectory_data(processed_key_file: pd.DataFrame, parameters: Dic
                 link_data = pd.read_csv(row["link_data"])
                 movement_data_ = pd.merge(object_data, link_data, on='object_id')
 
-                #movement_data_ = _align_tracks(movement_data_)
+                if (row["imaging_orientation"] == "LU"):
+                    movement_data_ = _align_tracks(movement_data_, turn_y=True)
 
                 vessel_type = row["vessel_type"]
 
@@ -120,9 +120,17 @@ def align_cmso_trajectory_data(processed_key_file: pd.DataFrame, parameters: Dic
     # return key_aligned_objects, aligned_objects, fish_data_summary,track_data_summary
     return aligned_trajectory_key_file, fish_data_summary, link_data_summary, aligned_object_data, aligned_link_data
 
-def _align_tracks(df_stat, turn_x=False, turn_y=False):
+def _align_tracks(movement_data, turn_x=False, turn_y=False):
 
-    df_stat_rot = pd.DataFrame()
+
+    movement_data_ = movement_data.copy()
+
+    if turn_x:
+        movement_data_['x'] = -np.array(movement_data_['x'])
+    if turn_y:
+        movement_data_['y'] = -np.array(movement_data_['y'])
+
+    '''df_stat_rot = pd.DataFrame()
 
     for link_id in df_stat["link_id"].unique():
         link = df_stat[df_stat["link_id"] == link_id]
@@ -149,8 +157,9 @@ def _align_tracks(df_stat, turn_x=False, turn_y=False):
             df_stat_rot = df_stat_rot.append(temp, ignore_index=True)
         else:
             df_stat_rot = temp.copy()
+            '''
 
-    return df_stat_rot
+    return movement_data_
 
 
 def _rotate_fish(movement_data, rotate_xy=True, rotate_xz=True, rotate_yz=False):

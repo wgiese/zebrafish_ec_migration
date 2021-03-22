@@ -122,11 +122,21 @@ mitosis_statistics:
   filepath: data/03_primary/mitosis_statistics.csv
 
 
-trajectory_features:
+trajectory_features_set1:
   type: pandas.CSVDataSet
-  filepath: data/04_feature/trajectory_features.csv
+  filepath: data/04_feature/trajectory_features_set1.csv
+
+trajectory_features_set2:
+  type: pandas.CSVDataSet
+  filepath: data/04_feature/trajectory_features_set2.csv
 
 velocity_plots:
+  type: zebrafish_ec_migration.io.matplotlib_figures.MatplotlibWriter
+  filepath: data/08_reporting/ec_velocities/
+  save_args:
+    multiFile: True
+
+hourly_velocity_plots:
   type: zebrafish_ec_migration.io.matplotlib_figures.MatplotlibWriter
   filepath: data/08_reporting/ec_velocities/
   save_args:

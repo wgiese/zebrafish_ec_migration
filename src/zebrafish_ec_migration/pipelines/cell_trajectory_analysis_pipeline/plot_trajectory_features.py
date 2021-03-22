@@ -9,27 +9,12 @@ def plot_velocities(trajectory_features: pd.DataFrame, parameters: Dict, start_t
 
     velocity_plots = dict()
 
-    #plt.rcParams.update({'font.size': 16})
-
-    #for analysis_group in trajectory_features["analysis_group"].unique():
-    #    trajectory_features_group = trajectory_features[trajectory_features["analysis_group"] == analysis_group]
-    #    for vessel_type in ['aISV','vISV']:
-
-    #        trajectory_features_vessel = trajectory_features_group[trajectory_features_group["vessel_type"] == vessel_type]
-    #        trajectory_features_vessel = trajectory_features_vessel.sort_values(by="frame").dropna()
-    #        print(trajectory_features_vessel)
-
-    #        fig, ax = plt.subplots(figsize=(18, 6))
-    #        sns.lineplot( x="frame", y="step_size_y", data=trajectory_features_vessel, ax=ax)
-
-    #        velocity_plots["velocity_%s_%s.png" % (vessel_type, analysis_group)] = fig
-
     vessel_colors = parameters['vessel_type_colors']
     feature = "vd_velocity_micron_per_h"
     #feature = "step_size_y"
 
     for analysis_group in trajectory_features["analysis_group"].unique():
-        fig, ax = plt.subplots(figsize=(15, 10))
+        fig, ax = plt.subplots(figsize=(20, 10))
 
         ax.set_xlim(parameters["start_plot_dpf1"], parameters["end_plot_dpf1"])
         ax.set_ylim(-5, 7)
@@ -38,6 +23,47 @@ def plot_velocities(trajectory_features: pd.DataFrame, parameters: Dict, start_t
             plot_df = trajectory_features[trajectory_features["analysis_group"] == analysis_group]
             plot_df = plot_df[plot_df['vessel_type'] == vessel_type]
             plot_df = plot_df.sort_values(by="frame").dropna()
+            plot_df = plot_df[plot_df['time_in_hpf'] >= parameters["start_plot_dpf1"]]
+            plot_df = plot_df[plot_df['time_in_hpf'] <= parameters["end_plot_dpf1"]]
+            #sns.lineplot(x='time_in_hpf', y=feature, data=plot_df, ax=ax, ci=95, color=vessel_colors[vessel_type])
+            sns.pointplot(x='time_in_hpf', y=feature, data=plot_df, ax=ax, color=vessel_colors[vessel_type])
+
+        ax.set_xlabel("time post fertilization [h]")
+        ax.set_ylabel("velocity [$\mathrm{\mu}$m/h]")
+
+        #ax.set_xticks(np.arange(parameters["start_plot_dpf1"], parameters["end_plot_dpf1"], 4))
+        ax.set_xticks(np.arange(0,len(plot_df['time_in_hpf'].unique()),12))
+
+        ax.spines['right'].set_visible(False)
+        ax.spines['top'].set_visible(False)
+
+        ax.axhline(0.0, color="black")
+        velocity_plots["velocity_%s.png" % analysis_group] = fig
+
+    return velocity_plots
+
+def plot_velocities_hourly(trajectory_features: pd.DataFrame, parameters: Dict, start_time, end_time):
+
+    velocity_plots = dict()
+
+    vessel_colors = parameters['vessel_type_colors']
+    feature = "vd_velocity_micron_per_h"
+    #feature = "step_size_y"
+    time_values = np.arange(26,47,1)
+
+    for analysis_group in trajectory_features["analysis_group"].unique():
+        fig, ax = plt.subplots(figsize=(20, 10))
+
+        ax.set_xlim(parameters["start_plot_dpf1"], parameters["end_plot_dpf1"])
+        ax.set_ylim(-5, 7)
+
+        for vessel_type in ['aISV','vISV']:
+            plot_df = trajectory_features[trajectory_features["analysis_group"] == analysis_group]
+            plot_df = plot_df[plot_df['vessel_type'] == vessel_type]
+            plot_df = plot_df.sort_values(by="frame").dropna()
+
+            plot_df = plot_df[plot_df['time_in_hpf'].isin(time_values)]
+
             sns.lineplot(x='time_in_hpf', y=feature, data=plot_df, ax=ax, ci=95, color=vessel_colors[vessel_type])
             #sns.pointplot(x='time_in_hpf', y=feature, data=plot_df, ax=ax, color=vessel_colors[vessel_type])
 
@@ -50,7 +76,7 @@ def plot_velocities(trajectory_features: pd.DataFrame, parameters: Dict, start_t
         ax.spines['top'].set_visible(False)
 
         ax.axhline(0.0, color="black")
-        velocity_plots["velocity_%s.png" % analysis_group] = fig
+        velocity_plots["hourly_velocity_%s.png" % analysis_group] = fig
 
     return velocity_plots
 

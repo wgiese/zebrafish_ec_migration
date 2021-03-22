@@ -8,16 +8,6 @@ def plot_trajectory_data(processed_key_file: pd.DataFrame, parameters: Dict, sta
 
     trajectory_plots = dict()
 
-
-
-    #oriented_trajectory_plots = dict()
-
-    #ex = extract.ExtractData(parameters["data_dir"], key_filename='Key.xlsx')
-    #f = extract_features.ExtractFeatures()
-    #geo = extract_geometry.ExtractGeometry()
-
-    counter_statistics = 0
-
     for fish_number in processed_key_file["fish_number"].unique():
 
         if (np.isnan(fish_number)):
@@ -32,7 +22,6 @@ def plot_trajectory_data(processed_key_file: pd.DataFrame, parameters: Dict, sta
             movement_data = pd.DataFrame(data=[], columns = ["x","y","z","link_id","object_id", "vessel_type"])
             for index,row in df_single_fish.iterrows():
 
-                #print("Object data: %s" % row["object_data"])
                 if not isinstance(row["object_data"], str):
                      continue
 
@@ -40,15 +29,7 @@ def plot_trajectory_data(processed_key_file: pd.DataFrame, parameters: Dict, sta
                 link_data = pd.read_csv( row["link_data"])
                 movement_data_ = pd.merge(object_data, link_data, on='object_id')
 
-                #vessel_type_ = row["vessel_type"]
-
-                #if vessel_type_ == "isv":
-                #    vessel_type = row["isv_type"]
-                #else:
-                #    vessel_type = vessel_type_
-
                 vessel_type = row["vessel_type"]
-
                 print(movement_data_.head())
 
                 movement_data_["vessel_type"] = [vessel_type for x in movement_data_["x"]]
@@ -58,47 +39,13 @@ def plot_trajectory_data(processed_key_file: pd.DataFrame, parameters: Dict, sta
                 else:
                     movement_data = movement_data_.copy()
 
-
-
-
-            #print("=================================================")
-            #print("fish number: %s" % int(fish_number))
-            #print("=================================================")
-
-            #movement_data, key_row = ex.get_movement_data(fish_number, df_key, parameters["data_dir"], start_time,
-            #                                              end_time, analysis_group)
-
-            #print(parameters["data_dir"])
-
-            #if (np.isnan(key_row['dpf'])):
-                # print("Error !!!!!!!!!!!!!!!")
-            #    print("Fish %s does not have a dpf entry!!!!!!!!!!!!!!!" % fish_number)
-            #    continue
-
-            #print("=========================================")
-            #print("movement_data (head)")
-            #print("=========================================")
-            #print(movement_data.head())
-
-            #cwd = os.getcwd()
-            #print("cwd: %s" % cwd)
-
-            #'''
-            #rotate fish
-            #'''
             if (len(movement_data['x']) < 3):
                 continue
 
             trajectory_plots["trajectories_fish_%s.pdf" % fish_number] = _plot_trajectory(movement_data,parameters)
             trajectory_plots["trajectories_fish_%s.png" % fish_number] = _plot_trajectory(movement_data,parameters)
 
-            #movement_data = geo.rotate_fish(movement_data, rotate_XY=True, rotate_XZ=True)
-
-            #oriented_trajectory_plots["oriented_trajectories_fish_ % s.pdf" % fish_number] = geo.plot_trajectories2(movement_data,parameters)
-            #oriented_trajectory_plots["oriented_trajectories_fish_ % s.png" % fish_number] = geo.plot_trajectories2(movement_data,parameters)
-
-
-    return trajectory_plots#, oriented_trajectory_plots
+    return trajectory_plots
 
 def _plot_trajectory(movement_data, parameters):
 
