@@ -43,22 +43,6 @@ from zebrafish_ec_migration.pipelines.mitosis_count_pipeline import pipeline as 
 from zebrafish_ec_migration.pipelines.cell_trajectory_analysis_pipeline import pipeline as cell_trajectory_analysis_pipeline
 
 
-#from zebrafish_ec_migration.nodes.load_cmso_migration_data import (
-#    align_cmso_migration_data,
-#    plot_link_lengths,
-#    plot_link_lengths_hist,
-#)
-
-
-#from zebrafish_ec_migration.nodes.detect_mitosis_events import (
-#    extract_potential_mitosis_events,
-#)
-
-#from zebrafish_ec_migration.nodes.extract_cell_migration_features import (
-#    extract_migration_features,
-#)
-
-
 def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
     """Create the project's pipeline.
 
@@ -70,7 +54,9 @@ def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
 
     """
 
+    #pipeline for FAIRification
     preprocess_pipeline = FAIR_pipeline.create_pipeline()
+
     mitosis_migration_pipeline = mitosis_count_pipeline.create_pipeline()
     trajectory_analysis_pipeline = cell_trajectory_analysis_pipeline.create_pipeline()
 
@@ -92,6 +78,5 @@ def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
          #     name="detect_mitosis_events"),
          ])
 
-    # return {"__default__": preprocess_pipeline}
     return {"__default__": master_pipeline, "preprocess_pipeline": preprocess_pipeline,
             "mitosis_migration_pipeline": mitosis_migration_pipeline, "trajectory_analysis_pipeline": trajectory_analysis_pipeline}

@@ -1,9 +1,14 @@
 import pandas as pd
-import numpy as np
-from typing import Dict, List
+from typing import Dict
 
 
 def process_key_file(parameters: Dict) -> pd.DataFrame:
+    '''
+        reads original key file and extracts all rows with relevant experimental conditions,
+        here imaging start 1 dpf (= days post fertilization) and treatment control morpholino,
+        Wasp1 [100 $\mu$M] morpholino, Gata1 morpholino, Wasp1 [100 $\mu$M] and Gata1 morpholino
+    '''
+
     default_load_args = {"engine": "xlrd", "skiprows": 1}
     df_key = pd.read_excel(parameters["key_file"], **default_load_args)
 
@@ -23,6 +28,11 @@ def process_key_file(parameters: Dict) -> pd.DataFrame:
 
 
 def preprocess_mitosis_migration_file(parameters: Dict) -> pd.DataFrame:
+    '''
+        reads original mitosis/ migration/ cell number count file (excel table), extracts counts
+        and reformats into a csv spreadsheet
+    '''
+
 
     mitosis_migration_filename = parameters["mitosis_migration_file"]
     print("Mitosis migration filename: %s" % mitosis_migration_filename)
@@ -34,24 +44,20 @@ def preprocess_mitosis_migration_file(parameters: Dict) -> pd.DataFrame:
 
 
 def _specify_analysis_groups(df_key):
-    # TODO: remove some code chunks here since many columns are not needed anymore
 
-    df_key = df_key.rename(columns={'File name': 'filename'})
-
-    df_key = df_key[~df_key['filename'].isnull()]
-
-    #df_key['imaging start [dpf]'] = df_key.loc[:, 'dpf']
-
-    df_key = df_key[df_key["dpf"] == 1]
-
+    df_key.rename(columns={'File name': 'filename'})
     df_key.rename(index=str, columns={'vessel type': 'vessel_type'}, inplace=True)
+    df_key = df_key[~df_key['filename'].isnull()]
+    df_key['filename'] = [fn_['filename'][fn_['filename'].find('Statistics on cell migration') - 1:] for _, fn_ in
+                          df_key.iterrows()]
+
+
+    # extract only fish with imaging start at 1 dpf (= days post fertilization)
+    df_key = df_key[df_key["dpf"] == 1]
 
     df_key['vessel_type'] = ['aorta' if d_['Aorta'] else ('dlav' if d_['DLAV'] else (
         'aISV' if d_['aISV'] else ('vISV' if d_['vISV'] else ('either_ISV' if d_['ISV'] else 'none')))) for _, d_ in
                              df_key.iterrows()]  # vessel type
-
-    df_key['filename'] = [fn_['filename'][fn_['filename'].find('Statistics on cell migration') - 1:] for _, fn_ in
-                          df_key.iterrows()]
 
     processed_key_file = df_key.copy()
 
@@ -91,14 +97,20 @@ def _specify_analysis_groups(df_key):
 
     df_control["analysis_group"] = pd.Series(["control" for i in range(len(df_control))], index=df_control.index)
 
+    print("Number of control morpholinos %s" % len(df_control["fish number"].unique()))
+
     # filtering for wasp
     df_wasp_100 = processed_key_file[processed_key_file['WaspI [100uM] (merged)'] == 1]
 
     for cond in wasp_100_false:
         df_wasp_100 = df_wasp_100[df_wasp_100[cond] != 1]
 
+
     df_wasp_100["analysis_group"] = pd.Series(['WaspI [100uM]' for i in range(len(df_wasp_100))],
                                               index=df_wasp_100.index)
+
+    print("Number of Wasp1 100 [$\mu$M] morpholinos %s" % len(df_wasp_100["fish number"].unique()))
+
     # filtering for gata
     df_gata1 = processed_key_file[processed_key_file['Gata1'] == 1]
 
@@ -106,6 +118,8 @@ def _specify_analysis_groups(df_key):
         df_gata1 = df_gata1[df_gata1[cond] != 1]
 
     df_gata1["analysis_group"] = pd.Series(['Gata1' for i in range(len(df_gata1))], index=df_gata1.index)
+
+    print("Number of Gata1 morpholinos %s" % len(df_gata1["fish number"].unique()))
 
     # filtering for wasp and gata
     df_wasp_gata1 = processed_key_file[processed_key_file['Gata1'] == 1]
@@ -117,5 +131,7 @@ def _specify_analysis_groups(df_key):
 
     df_wasp_gata1["analysis_group"] = pd.Series(['Gata1_Wasp1' for i in range(len(df_wasp_gata1))],
                                                 index=df_wasp_gata1.index)
+
+    print("Number of Gata1 and Wasp1 100 [$\mu$M] morpholinos %s" % len(df_wasp_gata1["fish number"].unique()))
 
     return pd.concat([df_control, df_wasp_100, df_gata1, df_wasp_gata1], ignore_index=True)
