@@ -13,8 +13,11 @@ def plot_velocities(trajectory_features: pd.DataFrame, parameters: Dict, start_t
     feature = "vd_velocity_micron_per_h"
     #feature = "step_size_y"
 
+    paper_rc = {'lines.linewidth': 1, 'lines.markersize': 4}
+    sns.set_context("paper", rc=paper_rc)
+
     for analysis_group in trajectory_features["analysis_group"].unique():
-        fig, ax = plt.subplots(figsize=(20, 10))
+        fig, ax = plt.subplots(figsize=(10, 5))
 
         ax.set_xlim(parameters["start_plot_dpf1"], parameters["end_plot_dpf1"])
         ax.set_ylim(-5, 7)
@@ -25,20 +28,22 @@ def plot_velocities(trajectory_features: pd.DataFrame, parameters: Dict, start_t
             plot_df = plot_df.sort_values(by="frame").dropna()
             plot_df = plot_df[plot_df['time_in_hpf'] >= parameters["start_plot_dpf1"]]
             plot_df = plot_df[plot_df['time_in_hpf'] <= parameters["end_plot_dpf1"]]
-            #sns.lineplot(x='time_in_hpf', y=feature, data=plot_df, ax=ax, ci=95, color=vessel_colors[vessel_type])
-            sns.pointplot(x='time_in_hpf', y=feature, data=plot_df, ax=ax, color=vessel_colors[vessel_type])
+            #sns.lineplot(x='time_in_hpf', y=feature, data=plot_df, ax=ax, ci=95, style="vessel_type", markers=True, color=vessel_colors[vessel_type])
+            sns.lineplot(x='time_in_hpf', y=feature, data=plot_df, ax=ax, ci=95, color=vessel_colors[vessel_type])
+            #sns.pointplot(x='time_in_hpf', y=feature, data=plot_df, ax=ax, color=vessel_colors[vessel_type])
 
         ax.set_xlabel("time post fertilization [h]")
         ax.set_ylabel("velocity [$\mathrm{\mu}$m/h]")
 
-        #ax.set_xticks(np.arange(parameters["start_plot_dpf1"], parameters["end_plot_dpf1"], 4))
-        ax.set_xticks(np.arange(0,len(plot_df['time_in_hpf'].unique()),12))
+        ax.set_xticks(np.arange(parameters["start_plot_dpf1"], parameters["end_plot_dpf1"], 4))
+        #ax.set_xticks(np.arange(0,len(plot_df['time_in_hpf'].unique()),12))
 
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
 
         ax.axhline(0.0, color="black")
         velocity_plots["velocity_%s.png" % analysis_group] = fig
+        velocity_plots["velocity_%s.pdf" % analysis_group] = fig
 
     return velocity_plots
 
@@ -130,6 +135,6 @@ def plot_biphasic_velocities(trajectory_features: pd.DataFrame, parameters: Dict
             #hue = "smoker"
 
         velocity_plots["biphasic_velocity_%s.png" % analysis_group] = fig
-
+        velocity_plots["biphasic_velocity_%s.pdf" % analysis_group] = fig
 
     return velocity_plots
