@@ -86,7 +86,9 @@ def plot_link_lengths(fish_data_summary: pd.DataFrame, link_data_summary: pd.Dat
             fig, ax = plt.subplots(figsize=(10, 10))
 
             height = 2.0
-            color = 'goldenrod'
+            #color = 'goldenrod'
+            #color = 'gainsboro'
+            color = 'burlywood'
             tick_positions = []
             tick_labels = []
             for fish_number in link_data_summary_sub["fish_number"].unique():
@@ -100,7 +102,7 @@ def plot_link_lengths(fish_data_summary: pd.DataFrame, link_data_summary: pd.Dat
 
                     single_link = link_data_plot[link_data_plot["unique_id"] == unique_id]
 
-                    ax.plot([single_link["start_frame"].iloc[0], single_link["end_frame"].iloc[0]], [height,height], color = color)
+                    ax.plot([single_link["start_frame"].iloc[0], single_link["end_frame"].iloc[0]], [height,height], color = color, marker = 'x', ms = 1, mec = 'k', mfc = 'k')
                     height += 10.0
 
                 #if color == "r":
@@ -135,7 +137,7 @@ def plot_link_lengths(fish_data_summary: pd.DataFrame, link_data_summary: pd.Dat
 
         fig, ax = plt.subplots(figsize=(10, 10))
         height = 2.0
-        color = 'goldenrod'
+        #color = 'goldenrod'
         tick_positions = []
         tick_labels = []
         for fish_number in link_data_summary_sub["fish_number"].unique():
@@ -148,7 +150,7 @@ def plot_link_lengths(fish_data_summary: pd.DataFrame, link_data_summary: pd.Dat
             for unique_id in  link_data_plot["unique_id"].unique():
 
                 single_link = link_data_plot[link_data_plot["unique_id"] == unique_id]
-                ax.plot([single_link["start_frame"].iloc[0], single_link["end_frame"].iloc[0]],[height,height], color = color)
+                ax.plot([single_link["start_frame"].iloc[0], single_link["end_frame"].iloc[0]],[height,height], color = color, marker = 'x', ms = 1, mec = 'k', mfc = 'k' )
                 height += 10.0
 
             height += 50.0
