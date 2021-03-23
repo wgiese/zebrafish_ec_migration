@@ -22,7 +22,6 @@ path = getwd()
 filename <- paste(path,"../../02_derived_data/mitosis_and_cell_number_data/mitosis_cell_number_distributions.json", sep = "/")
 #print(paste("Filename: ",filename))
 migration_json <- fromJSON(file = filename)
-print(migration_json)
 ```
 
 ## Comparison of cell migration to DLAV, aISV vs vISV for all conditions
