@@ -22,6 +22,7 @@ from zebrafish_ec_migration.pipelines.cell_trajectory_analysis_pipeline.plot_tra
     plot_velocities,
     plot_velocities_hourly,
     plot_biphasic_velocities,
+    plot_biphasic_velocities_with_stat_test,
 )
 
 
@@ -57,5 +58,10 @@ def create_pipeline(**kwargs):
             node(plot_biphasic_velocities, ["trajectory_features_set1", "parameters",
                                             "params:start_time_dpf1", "params:end_time_dpf1"],
                  "biphasic_velocity_plots",
-                 name="plot_biphasic_velocities")
+                 name="plot_biphasic_velocities"),
+            node(plot_biphasic_velocities_with_stat_test, ["trajectory_features_set1", "parameters",
+                                            "params:start_time_dpf1", "params:end_time_dpf1"],
+                 ["biphasic_velocity_with_stat_plots", "biphasic_velocity_statistics"],
+                 name="plot_biphasic_velocities_with_stats")
+
         ])
