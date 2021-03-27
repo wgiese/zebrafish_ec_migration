@@ -154,6 +154,7 @@ def plot_biphasic_velocities_with_stat_test(trajectory_features: pd.DataFrame, p
     plt.rcParams.update({'font.size': 16})
 
     dev_phases = parameters["dev_phases"]
+    dev_phases_list = list(dev_phases.keys())
     vessel_colors = parameters['vessel_type_colors']
     feature = "vd_velocity_micron_per_h"
 
@@ -182,7 +183,7 @@ def plot_biphasic_velocities_with_stat_test(trajectory_features: pd.DataFrame, p
             sns.pointplot(x='dev_phase', y=feature, data=plot_df, ax=ax,
                           color=vessel_colors[vessel_type_A], linestyles="dashed", capsize=0.05, scale=1.5, ci=95)
 
-            dev_phases_list = plot_df['dev_phase'].unique()
+
 
             #for dev_phase_A in plot_df['dev_phase'].unique():
             for i in range(len(dev_phases_list)):
@@ -242,9 +243,80 @@ def plot_biphasic_velocities_with_stat_test(trajectory_features: pd.DataFrame, p
         #ind = np.arange(4)
         #label_diff(0, 2, "***", ind, [3.0, 3.0, 3.0, 3.0])
 
-        ax.set_ylim(-1.0, 6.0)
+        ## comparison vISV dev_phase_1 against dev_phase_3
+
+        conds = trajectory_features_phases[trajectory_features_phases['vessel_type'] == "vISV"]
+        conds = conds.sort_values(by="frame").dropna()
+        cond_A = conds[conds['dev_phase'] == dev_phases_list[0]]
+        cond_B = conds[conds['dev_phase'] == dev_phases_list[2]]
+        result = stats.ttest_ind(cond_A[feature], cond_B[feature], equal_var=False)
+
+        y = max(cond_A[feature].mean(),cond_B[feature].mean()) +0.5
+        #ax.annotate("***", xy=(1, y + 2.0), zorder=10)
+        #ax.annotate('', xy=(0, y), xytext=(2, y), arrowprops=props)
+        significance = "ns"
+        if result[1] < 0.05:
+            significance = "*"
+        if result[1] < 0.005:
+            significance = "**"
+        if result[1] < 0.0005:
+            significance = "***"
+
+        x1, x2, h = 0, 2, 0.2
+        ax.plot([x1, x1, x2, x2], [y, y + h, y + h, y], lw=1.5, c='k')
+        ax.text((x1 + x2) * .5, y + h, significance, ha='center', va='bottom', color='k')
+
+        ## comparison aISV dev_phase_1 against dev_phase_3
+
+        conds = trajectory_features_phases[trajectory_features_phases['vessel_type'] == "aISV"]
+        conds = conds.sort_values(by="frame").dropna()
+        cond_A = conds[conds['dev_phase'] == dev_phases_list[0]]
+        cond_B = conds[conds['dev_phase'] == dev_phases_list[2]]
+        result = stats.ttest_ind(cond_A[feature], cond_B[feature], equal_var=False)
+
+        y = min(cond_A[feature].mean(), cond_B[feature].mean()) - 0.5
+        # ax.annotate("***", xy=(1, y + 2.0), zorder=10)
+        # ax.annotate('', xy=(0, y), xytext=(2, y), arrowprops=props)
+        significance = "ns"
+        if result[1] < 0.05:
+            significance = "*"
+        if result[1] < 0.005:
+            significance = "**"
+        if result[1] < 0.0005:
+            significance = "***"
+
+        x1, x2, h = 0, 2, 0.2
+        ax.plot([x1, x1, x2, x2], [y, y - h, y - h, y], lw=1.5, c='k')
+        ax.text((x1 + x2) * .5, y - h, significance, ha='center', va='bottom', color='k')
+        # comparison of remodelling phase
+
+        conds = trajectory_features_phases[trajectory_features_phases['dev_phase'] == dev_phases_list[2]]
+        conds = conds.sort_values(by="frame").dropna()
+        cond_A = conds[conds['vessel_type'] == "aISV"]
+        cond_B = conds[conds['vessel_type'] == "vISV"]
+        result = stats.ttest_ind(cond_A[feature], cond_B[feature], equal_var=False)
+
+        y1 = cond_A[feature].mean()
+        y2 = cond_B[feature].mean()
+        # ax.annotate("***", xy=(1, y + 2.0), zorder=10)
+        # ax.annotate('', xy=(0, y), xytext=(2, y), arrowprops=props)
+        significance = "ns"
+        if result[1] < 0.05:
+            significance = "*"
+        if result[1] < 0.005:
+            significance = "**"
+        if result[1] < 0.0005:
+            significance = "***"
+
+        x, h = 2.1, 0.1
+        ax.plot([x , x + h , x + h, x], [y1, y1, y2, y2], lw=1.5, c='k')
+        ax.text(x+2*h, (y1 + y2) * 0.5, significance, ha='center', va='bottom', color='k')
+
+        ax.set_ylim(-1.5, 6.5)
         ax.set_xlabel("developmental phases")
         ax.set_ylabel("velocity [$\mathrm{\mu}$m/h]")
+
+
 
         # for vessel_type in ['aISV', 'vISV']:
 
