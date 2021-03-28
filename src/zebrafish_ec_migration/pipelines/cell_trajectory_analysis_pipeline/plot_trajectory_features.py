@@ -151,6 +151,8 @@ def plot_biphasic_velocities_with_stat_test(trajectory_features: pd.DataFrame, p
     stat_ind = 0
     stat_test = "Welch’s t-test"
 
+    time_values = np.arange(26, 47, 2)
+
     plt.rcParams.update({'font.size': 16})
 
     dev_phases = parameters["dev_phases"]
@@ -164,10 +166,14 @@ def plot_biphasic_velocities_with_stat_test(trajectory_features: pd.DataFrame, p
         trajectory_features_phases_ = []
         for dev_phase in dev_phases:
             time_interval = dev_phases[dev_phase]
+
             trajectory_features_phase = trajectory_features_group[
                 trajectory_features_group["time_in_hpf"] >= time_interval[0]]
             trajectory_features_phase = trajectory_features_phase[
                 trajectory_features_phase["time_in_hpf"] <= time_interval[1]]
+
+            trajectory_features_phase = trajectory_features_phase[trajectory_features_phase['time_in_hpf'].isin(time_values)]
+
             trajectory_features_phase["dev_phase"] = dev_phase
             trajectory_features_phases_.append(trajectory_features_phase)
 
@@ -251,7 +257,7 @@ def plot_biphasic_velocities_with_stat_test(trajectory_features: pd.DataFrame, p
         cond_B = conds[conds['dev_phase'] == dev_phases_list[2]]
         result = stats.ttest_ind(cond_A[feature], cond_B[feature], equal_var=False)
 
-        y = max(cond_A[feature].mean(),cond_B[feature].mean()) +0.5
+        y = max(cond_A[feature].mean(),cond_B[feature].mean()) + 1.0
         #ax.annotate("***", xy=(1, y + 2.0), zorder=10)
         #ax.annotate('', xy=(0, y), xytext=(2, y), arrowprops=props)
         significance = "ns"
@@ -274,7 +280,7 @@ def plot_biphasic_velocities_with_stat_test(trajectory_features: pd.DataFrame, p
         cond_B = conds[conds['dev_phase'] == dev_phases_list[2]]
         result = stats.ttest_ind(cond_A[feature], cond_B[feature], equal_var=False)
 
-        y = min(cond_A[feature].mean(), cond_B[feature].mean()) - 0.5
+        y = min(cond_A[feature].mean(), cond_B[feature].mean()) - 0.55
         # ax.annotate("***", xy=(1, y + 2.0), zorder=10)
         # ax.annotate('', xy=(0, y), xytext=(2, y), arrowprops=props)
         significance = "ns"
