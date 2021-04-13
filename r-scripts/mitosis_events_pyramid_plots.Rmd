@@ -1,0 +1,179 @@
+---
+title: "Pyramid plots for ISV mitosis events"
+author: "Wolfgang Giese"
+date: "March 17, 2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(rjson)
+library(plotrix)
+library(tidyverse)
+library(rlist)
+```
+
+## Pyramid plots for ISV mitosis events
+
+
+```{r read_mitosis_events, echo=FALSE}
+path = getwd()
+filename <- paste(path,"../../02_derived_data/mitosis_and_cell_number_data/mitosis_cell_number_distributions.json", sep = "/")
+#print(paste("Filename: ",filename))
+mitosis_json <- fromJSON(file = filename)
+```
+
+```{r plot_mitosis_events_control, echo=FALSE}
+
+aISV_control_table <- table(mitosis_json$mitosis_events$control$aISV)
+vISV_control_table <- table(mitosis_json$mitosis_events$control$vISV)
+vISV_control_table <- data.frame(vISV_control_table)
+colnames(vISV_control_table) <- c("value","counts_control_vISV")
+#print(data.frame(vISV_table))
+aISV_control_table <- data.frame(aISV_control_table)
+colnames(aISV_control_table) <- c("value","counts_control_aISV")
+#print(data.frame(aISV_table))
+
+count_control_table <- merge(aISV_control_table, vISV_control_table, all=TRUE)
+count_control_table[is.na(count_control_table)] <- 0
+
+count_control_table ["frequency_control_aISV"] <- 100*count_control_table ["counts_control_aISV"]/sum(count_control_table["counts_control_aISV"])
+count_control_table ["frequency_control_vISV"] <- 100*count_control_table ["counts_control_vISV"]/sum(count_control_table["counts_control_vISV"])
+print(count_control_table)
+
+
+
+pyramid.plot(count_control_table$frequency_control_aISV, count_control_table$frequency_control_vISV, 
+             laxlab = c(0,20,40,60,80,100),
+             raxlab = c(0,20,40,60,80,100),
+             main = "control", 
+             top.labels = c("aISV", "mitosis events", "  vISV "),  label=count_control_table$value,
+             gap = 5, labelcex = 1.6, unit=text(0,-2,"normalized counts (%)",cex=1.6), lxcol="#FFDACC", rxcol = "#CCF2F2")
+
+```
+
+
+
+```{r plot_mitosis_events_distributions_control_vs_Wasp1, echo=FALSE}
+
+aISV_Wasp1_table <- table(mitosis_json$mitosis_events$`WaspI [100uM]`$aISV)
+vISV_Wasp1_table <- table(mitosis_json$mitosis_events$`WaspI [100uM]`$vISV)
+
+
+vISV_Wasp1_table <- data.frame(vISV_Wasp1_table)
+colnames(vISV_Wasp1_table) <- c("value","counts_Wasp1_vISV")
+aISV_Wasp1_table <- data.frame(aISV_Wasp1_table)
+colnames(aISV_Wasp1_table) <- c("value","counts_Wasp1_aISV")
+
+count_Wasp1_table <- merge(aISV_Wasp1_table, vISV_Wasp1_table, all=TRUE)
+count_Wasp1_table [is.na(count_Wasp1_table )] <- 0
+count_Wasp1_table ["frequency_Wasp1_aISV"] <- 100*count_Wasp1_table["counts_Wasp1_aISV"]/sum(count_Wasp1_table["counts_Wasp1_aISV"])
+count_Wasp1_table ["frequency_Wasp1_vISV"] <- 100*count_Wasp1_table["counts_Wasp1_vISV"]/sum(count_Wasp1_table["counts_Wasp1_vISV"])
+
+count_table <- merge(count_control_table, count_Wasp1_table, all=TRUE)
+count_table[is.na(count_table)] <- 0
+
+
+
+print(count_table)
+
+
+pyramid.plot(count_table$frequency_control_aISV,count_table$frequency_control_vISV, 
+             laxlab = c(0,20,40,60,80,100),
+             raxlab = c(0,20,40,60,80,100),
+             main = "control vs. Wasp1", 
+             top.labels = c("aISV", "mitosis events", "  vISV "), label=count_table$value, 
+             gap = 5, labelcex = 1.6, unit=text(0,-2,"normalized counts (%)",cex=1.6), lxcol="#E2E2E2", rxcol = "#E2E2E2")
+
+pyramid.plot(count_table$frequency_Wasp1_aISV,count_table$frequency_Wasp1_vISV,
+             laxlab = c(0,20,40,60,80,100),
+             raxlab = c(0,20,40,60,80,100),
+             main = "control vs. Wasp1", 
+             top.labels =  c("aISV", "mitosis events", "  vISV "), label=count_table$value, space = 0.4,
+             gap = 5, labelcex = 1.6, unit=text(0,-2,"Normalized counts (%)",cex=1.6), lxcol="#FFDACC", rxcol = "#CCF2F2",
+             add = TRUE)
+
+```
+
+```{r plot_mitosis_events_control_vs_Gata1, echo=FALSE}
+
+aISV_Gata1_table <- table(mitosis_json$mitosis_events$Gata1$aISV)
+vISV_Gata1_table <- table(mitosis_json$mitosis_events$Gata1$vISV)
+
+
+vISV_Gata1_table <- data.frame(vISV_Gata1_table)
+colnames(vISV_Gata1_table) <- c("value","counts_Gata1_vISV")
+aISV_Gata1_table <- data.frame(aISV_Gata1_table)
+colnames(aISV_Gata1_table) <- c("value","counts_Gata1_aISV")
+
+count_Gata1_table <- merge(aISV_Gata1_table, vISV_Gata1_table, all=TRUE)
+count_Gata1_table [is.na(count_Gata1_table )] <- 0
+count_Gata1_table ["frequency_Gata1_aISV"] <- 100*count_Gata1_table["counts_Gata1_aISV"]/sum(count_Gata1_table["counts_Gata1_aISV"])
+count_Gata1_table ["frequency_Gata1_vISV"] <- 100*count_Gata1_table["counts_Gata1_vISV"]/sum(count_Gata1_table["counts_Gata1_vISV"])
+
+count_table <- merge(count_control_table, count_Gata1_table, all=TRUE)
+count_table[is.na(count_table)] <- 0
+
+
+
+print(count_table)
+
+
+pyramid.plot(count_table$frequency_control_aISV,count_table$frequency_control_vISV, 
+             laxlab = c(0,20,40,60,80,100),
+             raxlab = c(0,20,40,60,80,100),
+             main = "control vs. Gata1", 
+             top.labels = c("aISV", "mitosis events", "  vISV "), label=count_table$value, 
+             gap = 5, labelcex = 1.6, unit=text(0,-2,"normalized counts (%)",cex=1.6), lxcol="#E2E2E2", rxcol = "#E2E2E2")
+
+pyramid.plot(count_table$frequency_Gata1_aISV,count_table$frequency_Gata1_vISV,
+             laxlab = c(0,20,40,60,80,100),
+             raxlab = c(0,20,40,60,80,100),
+             main = "control vs. Gata1", 
+             top.labels =  c("aISV", "mitosis events", "  vISV "), label=count_table$value, space = 0.4,
+             gap = 5, labelcex = 1.6, unit=text(0,-2,"Normalized counts (%)",cex=1.6), lxcol="#FFDACC", rxcol = "#CCF2F2",
+             add = TRUE)
+
+```
+
+```{r plot_mitosis_events_control_vs_Gata1_Wasp1, echo=FALSE}
+
+aISV_Gata1_Wasp1_table <- table(mitosis_json$mitosis_events$Gata1_Wasp1$aISV)
+vISV_Gata1_Wasp1_table <- table(mitosis_json$mitosis_events$Gata1_Wasp1$vISV)
+
+
+vISV_Gata1_Wasp1_table <- data.frame(vISV_Gata1_Wasp1_table)
+colnames(vISV_Gata1_Wasp1_table) <- c("value","counts_Gata1_Wasp1_vISV")
+aISV_Gata1_Wasp1_table <- data.frame(aISV_Gata1_Wasp1_table)
+colnames(aISV_Gata1_Wasp1_table) <- c("value","counts_Gata1_Wasp1_aISV")
+
+count_Gata1_Wasp1_table <- merge(aISV_Gata1_Wasp1_table, vISV_Gata1_Wasp1_table, all=TRUE)
+count_Gata1_Wasp1_table [is.na(count_Gata1_Wasp1_table )] <- 0
+count_Gata1_Wasp1_table ["frequency_Gata1_Wasp1_aISV"] <- 100*count_Gata1_Wasp1_table["counts_Gata1_Wasp1_aISV"]/sum(count_Gata1_Wasp1_table["counts_Gata1_Wasp1_aISV"])
+count_Gata1_Wasp1_table ["frequency_Gata1_Wasp1_vISV"] <- 100*count_Gata1_Wasp1_table["counts_Gata1_Wasp1_vISV"]/sum(count_Gata1_Wasp1_table["counts_Gata1_Wasp1_vISV"])
+
+count_table <- merge(count_control_table, count_Gata1_Wasp1_table, all=TRUE)
+count_table[is.na(count_table)] <- 0
+
+
+
+print(count_table)
+
+
+pyramid.plot(count_table$frequency_control_aISV,count_table$frequency_control_vISV, 
+             laxlab = c(0,20,40,60,80,100),
+             raxlab = c(0,20,40,60,80,100),
+             main = "control vs. Gata1-Wasp1", 
+             top.labels = c("aISV", "mitosis events", "  vISV "), label=count_table$value, 
+             gap = 5, labelcex = 1.6, unit=text(0,-2,"normalized counts (%)",cex=1.6), lxcol="#E2E2E2", rxcol = "#E2E2E2")
+
+pyramid.plot(count_table$frequency_Gata1_Wasp1_aISV,count_table$frequency_Gata1_Wasp1_vISV,
+             laxlab = c(0,20,40,60,80,100),
+             raxlab = c(0,20,40,60,80,100),
+             main = "control vs. Gata1-Wasp1", 
+             top.labels =  c("aISV", "mitosis events", "  vISV "), label=count_table$value, space = 0.4,
+             gap = 5, labelcex = 1.6, unit=text(0,-2,"Normalized counts (%)",cex=1.6), lxcol="#FFDACC", rxcol = "#CCF2F2",
+             add = TRUE)
+
+```

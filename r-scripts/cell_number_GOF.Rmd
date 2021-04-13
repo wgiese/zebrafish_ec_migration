@@ -23,6 +23,11 @@ filename <- paste(path,"../../02_derived_data/mitosis_and_cell_number_data/mitos
 #print(paste("Filename: ",filename))
 cell_number_json <- fromJSON(file = filename)
 #print(cell_number_json)
+subfolder <- "statistics_plots/"
+color_aISV <- "#FFDACC"
+color_vISV <- "#CCF2F2"
+color_control_background <- "#E2E2E2"
+
 ```
 
 ## Comparison of cell numbers aISV vs vISV for all conditions
@@ -46,6 +51,8 @@ sigma <- ddply(df, "vessel_type", summarise, grp.std=sd(counts))
 mu_sigma_aISV <- paste(mu$vessel_type[1],"mean :" ,mu$grp.mean[1], "sd :", sigma$grp.std[1], sep =" ")
 mu_sigma_vISV <- paste(mu$vessel_type[2],"mean :" ,mu$grp.mean[2], "sd :", sigma$grp.std[2], sep =" ")
 
+pdf(paste0(subfolder, 'cell_number_control_GOF.pdf'))
+
 p <-  ggplot(df, aes(x=counts, fill=vessel_type, color=vessel_type) ) + 
       geom_histogram(position="dodge", binwidth=1.0) +
       geom_vline(data=mu, aes(xintercept=grp.mean, color=vessel_type),
@@ -53,7 +60,7 @@ p <-  ggplot(df, aes(x=counts, fill=vessel_type, color=vessel_type) ) +
       #theme(axis.line = element_line(),
       #      panel.background = element_blank())
 
-p + labs(title = "Comparison control aISV vs. vISV",
+p <- p + labs(title = "Comparison control aISV vs. vISV",
               subtitle = "Cell number count per ISV",
               caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_aISV, mu_sigma_vISV) )  + 
     ylab("ISV count") + 
@@ -61,12 +68,19 @@ p + labs(title = "Comparison control aISV vs. vISV",
     scale_x_discrete(name ="Cell number per ISV", 
     limits=0:max(df$counts) )+
     scale_color_manual(values=c("red","blue","#999999")) +
-    scale_fill_manual(values=c("#FFDACC", "#CCF2F2", "#999999"))
+    scale_fill_manual(values=c(color_aISV, color_vISV, "#999999"))
+
+p
+
+dev.off()
+
+p
 
 if (show_ks_details){
   print("results of discrete KS-test:")
   print(res)
 }
+
 #print(paste("vessel type", mu$vessel_type[1],"mean :" ,mu$grp.mean[1], "sd :", sigma$grp.std[1], sep =" "))
 #print(paste("vessel type", mu$vessel_type[2],"mean :" ,mu$grp.mean[2], "sd :", sigma$grp.std[2], sep =" "))
 #print(paste("Standard deviation for ", sigma$vessel_type[1],":" , sigma$grp.std[1],sep =" "))
@@ -93,12 +107,14 @@ sigma <- ddply(df, "vessel_type", summarise, grp.std=sd(counts))
 mu_sigma_aISV <- paste(mu$vessel_type[1],"mean :" ,mu$grp.mean[1], "sd :", sigma$grp.std[1], sep =" ")
 mu_sigma_vISV <- paste(mu$vessel_type[2],"mean :" ,mu$grp.mean[2], "sd :", sigma$grp.std[2], sep =" ")
 
+pdf(paste0(subfolder, 'cell_number_Wasp1_GOF.pdf'))
+
 p <-  ggplot(df, aes(x=counts, fill=vessel_type, color=vessel_type) ) + 
       geom_histogram(position="dodge", binwidth=1.0) +
       geom_vline(data=mu, aes(xintercept=grp.mean, color=vessel_type),
       linetype="dashed")
 
-p + labs(title = "Comparison aISV vs. vISV for WaspI [100uM]",
+p <- p + labs(title = "Comparison aISV vs. vISV for WaspI [100uM]",
               subtitle = "Cell number count per ISV",
               caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_aISV, mu_sigma_vISV) )  + 
     ylab("ISV count") + 
@@ -106,7 +122,13 @@ p + labs(title = "Comparison aISV vs. vISV for WaspI [100uM]",
     scale_x_discrete(name ="Cell number count per ISV", 
     limits=0:max(df$counts) )+
     scale_color_manual(values=c("red","blue","#999999")) +
-    scale_fill_manual(values=c("#FFDACC", "#CCF2F2", "#999999"))
+    scale_fill_manual(values=c(color_aISV, color_vISV, "#999999"))
+
+p
+
+dev.off()
+
+p
 
 if (show_ks_details){
   print("results of discrete KS-test:")
@@ -133,12 +155,14 @@ sigma <- ddply(df, "vessel_type", summarise, grp.std=sd(counts))
 mu_sigma_aISV <- paste(mu$vessel_type[1],"mean :" ,mu$grp.mean[1], "sd :", sigma$grp.std[1], sep =" ")
 mu_sigma_vISV <- paste(mu$vessel_type[2],"mean :" ,mu$grp.mean[2], "sd :", sigma$grp.std[2], sep =" ")
 
+pdf(paste0(subfolder, 'cell_number_Gata1_GOF.pdf'))
+
 p <-  ggplot(df, aes(x=counts, fill=vessel_type, color=vessel_type) ) + 
       geom_histogram(position="dodge", binwidth=1.0) +
       geom_vline(data=mu, aes(xintercept=grp.mean, color=vessel_type),
       linetype="dashed")
 
-p + labs(title = "Comparison aISV vs. vISV for Gata1",
+p <- p + labs(title = "Comparison aISV vs. vISV for Gata1",
               subtitle = "Cell number count per ISV",
               caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_aISV, mu_sigma_vISV) )  + 
     ylab("ISV count") + 
@@ -146,7 +170,13 @@ p + labs(title = "Comparison aISV vs. vISV for Gata1",
     scale_x_discrete(name ="Cell number count per ISV", 
     limits=0:max(df$counts) )+
     scale_color_manual(values=c("red","blue","#999999")) +
-    scale_fill_manual(values=c("#FFDACC", "#CCF2F2", "#999999"))
+    scale_fill_manual(values=c(color_aISV, color_vISV, "#999999"))
+
+p
+
+dev.off()
+
+p
 
 if (show_ks_details){
   print("results of discrete KS-test:")
@@ -173,13 +203,14 @@ sigma <- ddply(df, "vessel_type", summarise, grp.std=sd(counts))
 mu_sigma_aISV <- paste(mu$vessel_type[1],"mean :" ,mu$grp.mean[1], "sd :", sigma$grp.std[1], sep =" ")
 mu_sigma_vISV <- paste(mu$vessel_type[2],"mean :" ,mu$grp.mean[2], "sd :", sigma$grp.std[2], sep =" ")
 
+pdf(paste0(subfolder, 'cell_number_Gata1-Wasp1_GOF.pdf'))
 
 p <-  ggplot(df, aes(x=counts, fill=vessel_type, color=vessel_type) ) + 
       geom_histogram(position="dodge", binwidth=1.0) +
       geom_vline(data=mu, aes(xintercept=grp.mean, color=vessel_type),
       linetype="dashed")
 
-p + labs(title = "Comparison aISV vs. vISV for Gata1-Wasp1",
+p <- p + labs(title = "Comparison aISV vs. vISV for Gata1-Wasp1",
               subtitle = "Cell number count per ISV",
               caption =  sprintf("p-value :  %s \n %s \n %s", res$p.value, mu_sigma_aISV, mu_sigma_vISV) )  + 
     ylab("ISV count") + 
@@ -187,7 +218,13 @@ p + labs(title = "Comparison aISV vs. vISV for Gata1-Wasp1",
     scale_x_discrete(name ="Cell number per ISV", 
     limits=0:max(df$counts) )+
     scale_color_manual(values=c("red","blue","#999999")) +
-    scale_fill_manual(values=c("#FFDACC", "#CCF2F2", "#999999"))
+    scale_fill_manual(values=c(color_aISV, color_vISV, "#999999"))
+
+p
+
+dev.off()
+
+p
 
 if (show_ks_details){
   print("results of discrete KS-test:")
@@ -216,13 +253,14 @@ sigma <- ddply(df, "condition", summarise, grp.std=sd(counts))
 mu_sigma_cond1 <- paste(mu$condition[1],"mean :" ,mu$grp.mean[1], "sd :", sigma$grp.std[1], sep =" ")
 mu_sigma_cond2 <- paste(mu$condition[2],"mean :" ,mu$grp.mean[2], "sd :", sigma$grp.std[2], sep =" ")
 
+pdf(paste0(subfolder, 'cell_number_control_vs_Wasp1_aISV_GOF.pdf'))
 
 p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) + 
       geom_histogram(position="dodge", binwidth=1.0) +
       geom_vline(data=mu, aes(xintercept=grp.mean, color=condition),
       linetype="dashed")
 
-p + labs(title = "Comparison control vs. WaspI [100uM] for aISVs",
+p <- p + labs(title = "Comparison control vs. WaspI [100uM] for aISVs",
               subtitle = "Cell number count per ISV",
               caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_cond1, mu_sigma_cond2))  + 
     ylab("ISV count") + 
@@ -230,7 +268,14 @@ p + labs(title = "Comparison control vs. WaspI [100uM] for aISVs",
     scale_x_discrete(name ="Cell number count per ISV", 
     limits=0:max(df$counts) )+
     scale_color_manual(values=c("black", "red", "#999999")) +
-    scale_fill_manual(values=c("grey", "#FFDACC", "#999999"))
+    scale_fill_manual(values=c(color_control_background, color_aISV, "#999999"))
+
+p
+
+dev.off()
+
+p
+
 
 if (show_ks_details){
   print("results of discrete KS-test:")
@@ -258,12 +303,14 @@ mu_sigma_cond1 <- paste(mu$condition[1],"mean :" ,mu$grp.mean[1], "sd :", sigma$
 mu_sigma_cond2 <- paste(mu$condition[2],"mean :" ,mu$grp.mean[2], "sd :", sigma$grp.std[2], sep =" ")
 
 
+pdf(paste0(subfolder, 'cell_number_control_vs_Wasp1_vISV_GOF.pdf'))
+
 p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) + 
       geom_histogram(position="dodge", binwidth=1.0) +
       geom_vline(data=mu, aes(xintercept=grp.mean, color=condition),
       linetype="dashed")
 
-p + labs(title = "Comparison control vs. WaspI [100uM] for vISVs",
+p <- p + labs(title = "Comparison control vs. WaspI [100uM] for vISVs",
               subtitle = "Cell number count per ISV",
               caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_cond1, mu_sigma_cond2))  + 
     ylab("ISV count") + 
@@ -271,7 +318,13 @@ p + labs(title = "Comparison control vs. WaspI [100uM] for vISVs",
     scale_x_discrete(name ="Cell number count per ISV", 
     limits=0:max(df$counts) )+
     scale_color_manual(values=c("black", "blue", "#999999")) +
-    scale_fill_manual(values=c("grey", "#CCF2F2", "#999999"))
+    scale_fill_manual(values=c(color_control_background, color_vISV, "#999999"))
+
+p
+
+dev.off()
+
+p
 
 if (show_ks_details){
   print("results of discrete KS-test:")
@@ -299,13 +352,14 @@ sigma <- ddply(df, "condition", summarise, grp.std=sd(counts))
 mu_sigma_cond1 <- paste(mu$condition[1],"mean :" ,mu$grp.mean[1], "sd :", sigma$grp.std[1], sep =" ")
 mu_sigma_cond2 <- paste(mu$condition[2],"mean :" ,mu$grp.mean[2], "sd :", sigma$grp.std[2], sep =" ")
 
+pdf(paste0(subfolder, 'cell_number_control_vs_Gata1_aISV_GOF.pdf'))
 
 p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) + 
       geom_histogram(position="dodge", binwidth=1.0) +
       geom_vline(data=mu, aes(xintercept=grp.mean, color=condition),
       linetype="dashed")
 
-p + labs(title = "Comparison control vs. Gata1 for aISVs",
+p <- p + labs(title = "Comparison control vs. Gata1 for aISVs",
               subtitle = "Cell number count per ISV",
               caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_cond1, mu_sigma_cond2))  + 
     ylab("ISV count") + 
@@ -313,7 +367,12 @@ p + labs(title = "Comparison control vs. Gata1 for aISVs",
     scale_x_discrete(name ="Cell number count per ISV", 
     limits=0:max(df$counts) )+
     scale_color_manual(values=c("black", "red", "#999999")) +
-    scale_fill_manual(values=c("grey", "#FFDACC", "#999999"))
+    scale_fill_manual(values=c(color_control_background, color_aISV, "#999999"))
+p
+
+dev.off()
+
+p
 
 if (show_ks_details){
   print("results of discrete KS-test:")
@@ -340,13 +399,14 @@ sigma <- ddply(df, "condition", summarise, grp.std=sd(counts))
 mu_sigma_cond1 <- paste(mu$condition[1],"mean :" ,mu$grp.mean[1], "sd :", sigma$grp.std[1], sep =" ")
 mu_sigma_cond2 <- paste(mu$condition[2],"mean :" ,mu$grp.mean[2], "sd :", sigma$grp.std[2], sep =" ")
 
+pdf(paste0(subfolder, 'cell_number_control_vs_Gata1_vISV_GOF.pdf'))
 
 p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) + 
       geom_histogram(position="dodge", binwidth=1.0) +
       geom_vline(data=mu, aes(xintercept=grp.mean, color=condition),
       linetype="dashed")
 
-p + labs(title = "Comparison control vs. Gata1 for vISVs",
+p <- p + labs(title = "Comparison control vs. Gata1 for vISVs",
               subtitle = "Cell number count per ISV",
               caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_cond1, mu_sigma_cond2))  + 
     ylab("ISV count") + 
@@ -354,7 +414,13 @@ p + labs(title = "Comparison control vs. Gata1 for vISVs",
     scale_x_discrete(name ="Cell number count per ISV", 
     limits=0:max(df$counts) )+
     scale_color_manual(values=c("black", "blue", "#999999")) +
-    scale_fill_manual(values=c("grey", "#CCF2F2", "#999999"))
+    scale_fill_manual(values=c(color_control_background, color_vISV, "#999999"))
+
+p
+
+dev.off()
+
+p
 
 if (show_ks_details){
   print("results of discrete KS-test:")
@@ -381,13 +447,14 @@ sigma <- ddply(df, "condition", summarise, grp.std=sd(counts))
 mu_sigma_cond1 <- paste(mu$condition[1],"mean :" ,mu$grp.mean[1], "sd :", sigma$grp.std[1], sep =" ")
 mu_sigma_cond2 <- paste(mu$condition[2],"mean :" ,mu$grp.mean[2], "sd :", sigma$grp.std[2], sep =" ")
 
+pdf(paste0(subfolder, 'cell_number_control_vs_Gata1_Wasp1_aISV_GOF.pdf'))
 
 p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) + 
       geom_histogram(position="dodge", binwidth=1.0) +
       geom_vline(data=mu, aes(xintercept=grp.mean, color=condition),
       linetype="dashed")
 
-p + labs(title = "Comparison control vs. Gata1-Wasp1 for aISVs",
+p <- p + labs(title = "Comparison control vs. Gata1-Wasp1 for aISVs",
               subtitle = "Cell number count per ISV",
               caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_cond1, mu_sigma_cond2))  + 
     ylab("ISV count") + 
@@ -395,7 +462,14 @@ p + labs(title = "Comparison control vs. Gata1-Wasp1 for aISVs",
     scale_x_discrete(name ="Cell number per ISV", 
     limits=0:max(df$counts) )+
     scale_color_manual(values=c("black", "red", "#999999")) +
-    scale_fill_manual(values=c("grey", "#FFDACC", "#999999"))
+    scale_fill_manual(values=c(color_control_background, color_aISV, "#999999"))
+
+p
+
+dev.off()
+
+p
+
 
 if (show_ks_details){
   print("results of discrete KS-test:")
@@ -422,13 +496,14 @@ sigma <- ddply(df, "condition", summarise, grp.std=sd(counts))
 mu_sigma_cond1 <- paste(mu$condition[1],"mean :" ,mu$grp.mean[1], "sd :", sigma$grp.std[1], sep =" ")
 mu_sigma_cond2 <- paste(mu$condition[2],"mean :" ,mu$grp.mean[2], "sd :", sigma$grp.std[2], sep =" ")
 
+pdf(paste0(subfolder, 'cell_number_control_vs_Gata1_Wasp1_vISV_GOF.pdf'))
 
 p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) + 
       geom_histogram(position="dodge", binwidth=1.0) +
       geom_vline(data=mu, aes(xintercept=grp.mean, color=condition),
       linetype="dashed")
 
-p + labs(title = "Comparison control vs. Gata1-Wasp1 for vISVs",
+p <- p + labs(title = "Comparison control vs. Gata1-Wasp1 for vISVs",
               subtitle = "Cell number count per ISV",
               caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_cond1, mu_sigma_cond2))  + 
     ylab("ISV count") + 
@@ -436,7 +511,14 @@ p + labs(title = "Comparison control vs. Gata1-Wasp1 for vISVs",
     scale_x_discrete(name ="Cell number per ISV", 
     limits=0:max(df$counts) )+
     scale_color_manual(values=c("black", "blue", "#999999")) +
-    scale_fill_manual(values=c("grey", "#CCF2F2", "#999999"))
+    scale_fill_manual(values=c(color_control_background, color_vISV, "#999999"))
+
+p
+
+dev.off()
+
+p
+
 
 if (show_ks_details){
   print("results of discrete KS-test:")
@@ -464,13 +546,14 @@ sigma <- ddply(df, "condition", summarise, grp.std=sd(counts))
 mu_sigma_cond1 <- paste(mu$condition[1],"mean :" ,mu$grp.mean[1], "sd :", sigma$grp.std[1], sep =" ")
 mu_sigma_cond2 <- paste(mu$condition[2],"mean :" ,mu$grp.mean[2], "sd :", sigma$grp.std[2], sep =" ")
 
+pdf(paste0(subfolder, 'cell_number_Wasp1_vs_Gata1_Wasp1_aISV_GOF.pdf'))
 
 p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) + 
       geom_histogram(position="dodge", binwidth=1.0) +
       geom_vline(data=mu, aes(xintercept=grp.mean, color=condition),
       linetype="dashed")
 
-p + labs(title = "Comparison `WaspI [100uM]` vs. Gata1-Wasp1 for aISVs",
+p <- p + labs(title = "Comparison `WaspI [100uM]` vs. Gata1-Wasp1 for aISVs",
               subtitle = "Cell number count per ISV",
               caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_cond1, mu_sigma_cond2))  + 
     ylab("ISV count") + 
@@ -478,7 +561,14 @@ p + labs(title = "Comparison `WaspI [100uM]` vs. Gata1-Wasp1 for aISVs",
     scale_x_discrete(name ="Cell number per ISV", 
     limits=0:max(df$counts) )+
     scale_color_manual(values=c("black", "red", "#999999")) +
-    scale_fill_manual(values=c("grey", "#FFDACC", "#999999"))
+    scale_fill_manual(values=c(color_control_background, color_aISV, "#999999"))
+
+p
+
+dev.off()
+
+p
+
 
 if (show_ks_details){
   print("results of discrete KS-test:")
@@ -505,13 +595,14 @@ sigma <- ddply(df, "condition", summarise, grp.std=sd(counts))
 mu_sigma_cond1 <- paste(mu$condition[1],"mean :" ,mu$grp.mean[1], "sd :", sigma$grp.std[1], sep =" ")
 mu_sigma_cond2 <- paste(mu$condition[2],"mean :" ,mu$grp.mean[2], "sd :", sigma$grp.std[2], sep =" ")
 
+pdf(paste0(subfolder, 'cell_number_Wasp1_vs_Gata1_Wasp1_vISV_GOF.pdf'))
 
 p <-  ggplot(df, aes(x=counts, fill=condition, color=condition) ) + 
       geom_histogram(position="dodge", binwidth=1.0) +
       geom_vline(data=mu, aes(xintercept=grp.mean, color=condition),
       linetype="dashed")
 
-p + labs(title = "Comparison `WaspI [100uM]` vs. Gata1-Wasp1 for vISVs",
+p <- p + labs(title = "Comparison `WaspI [100uM]` vs. Gata1-Wasp1 for vISVs",
               subtitle = "Cell number count per ISV",
               caption =  sprintf("p-value : %s \n %s \n %s", res$p.value, mu_sigma_cond1, mu_sigma_cond2))  + 
     ylab("ISV count") + 
@@ -519,7 +610,13 @@ p + labs(title = "Comparison `WaspI [100uM]` vs. Gata1-Wasp1 for vISVs",
     scale_x_discrete(name ="Cell number per ISV", 
     limits=0:max(df$counts) )+
     scale_color_manual(values=c("black", "blue", "#999999")) +
-    scale_fill_manual(values=c("grey", "#CCF2F2", "#999999"))
+    scale_fill_manual(values=c(color_control_background, color_vISV, "#999999"))
+
+p
+
+dev.off()
+
+p
 
 if (show_ks_details){
   print("results of discrete KS-test:")

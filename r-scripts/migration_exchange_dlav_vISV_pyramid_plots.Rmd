@@ -1,0 +1,243 @@
+---
+title: "Pyramid plots for vISV migration exchange with dlav"
+author: "Wolfgang Giese"
+date: "March 17, 2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(rjson)
+library(plotrix)
+library(tidyverse)
+
+
+```
+
+# Pyramid plots for exchange between venous intersegmental vessels (vISVs) and the dorsal longitudinal anastomotic vessel (DLAV)
+
+```{r read_migration_from_dlav, echo=FALSE}
+path = getwd()
+filename <- paste(path,"../../02_derived_data/mitosis_and_cell_number_data/mitosis_cell_number_distributions.json", sep = "/")
+#print(paste("Filename: ",filename))
+migration_json <- fromJSON(file = filename)
+subfolder <- "pyramid_plots/"
+color_aISV <- "#FFDACC"
+color_vISV <- "#CCF2F2"
+color_control_background <- "#E2E2E2"
+```
+
+```{r plot_migration_from_to_dlav_control, echo=FALSE}
+
+from_dlav_control_table <- table(migration_json$migration_from_dlav$control$vISV)
+from_dlav_control_table <- data.frame(from_dlav_control_table)
+colnames(from_dlav_control_table) <- c("value","counts_control_from_dlav")
+
+to_dlav_control_table <- table(migration_json$migration_to_dlav$control$vISV)
+to_dlav_control_table <- data.frame(to_dlav_control_table)
+colnames(to_dlav_control_table) <- c("value","counts_control_to_dlav")
+
+count_control_table <- merge(from_dlav_control_table, to_dlav_control_table, all=TRUE)
+count_control_table[is.na(count_control_table)] <- 0
+
+count_control_table ["frequency_control_from_dlav"] <- 100*count_control_table ["counts_control_from_dlav"]/sum(count_control_table["counts_control_from_dlav"])
+count_control_table ["frequency_control_to_dlav"] <- 100*count_control_table ["counts_control_to_dlav"]/sum(count_control_table["counts_control_to_dlav"])
+#print(count_control_table)
+
+pdf(paste0(subfolder, 'migration_from_dlav_distributions_control_vISV.pdf'))
+
+pyramid.plot(count_control_table$frequency_control_from_dlav, count_control_table$frequency_control_to_dlav, 
+             laxlab = c(0,20,40,60,80,100),
+             raxlab = c(0,20,40,60,80,100),
+             main = "exchange of vISVs with DLAV: control", 
+             top.labels = c("immigration", "count", "emigration"),  label=count_control_table$value,
+             gap = 5, labelcex = 1.6, unit=text(0,-2,"normalized counts (%)",cex=1.6), lxcol=color_vISV, rxcol = color_vISV)
+
+dev.off()
+
+pyramid.plot(count_control_table$frequency_control_from_dlav, count_control_table$frequency_control_to_dlav, 
+             laxlab = c(0,20,40,60,80,100),
+             raxlab = c(0,20,40,60,80,100),
+             main = "exchange of vISVs with DLAV: control", 
+             top.labels = c("immigration", "count", "emigration"),  label=count_control_table$value,
+             gap = 5, labelcex = 1.6, unit=text(0,-2,"normalized counts (%)",cex=1.6), lxcol=color_vISV, rxcol = color_vISV)
+
+
+```
+
+```{r plot_migration_from_dlav_distributions_control_vs_Wasp1, echo=FALSE}
+
+from_dlav_Wasp1_table <- table(migration_json$migration_from_dlav$`WaspI [100uM]`$vISV)
+to_dlav_Wasp1_table <- table(migration_json$migration_to_dlav$`WaspI [100uM]`$vISV)
+
+
+to_dlav_Wasp1_table <- data.frame(to_dlav_Wasp1_table)
+colnames(to_dlav_Wasp1_table) <- c("value","counts_Wasp1_to_dlav")
+from_dlav_Wasp1_table <- data.frame(from_dlav_Wasp1_table)
+colnames(from_dlav_Wasp1_table) <- c("value","counts_Wasp1_from_dlav")
+
+count_Wasp1_table <- merge(from_dlav_Wasp1_table, to_dlav_Wasp1_table, all=TRUE)
+count_Wasp1_table [is.na(count_Wasp1_table )] <- 0
+count_Wasp1_table ["frequency_Wasp1_from_dlav"] <- 100*count_Wasp1_table["counts_Wasp1_from_dlav"]/sum(count_Wasp1_table["counts_Wasp1_from_dlav"])
+count_Wasp1_table ["frequency_Wasp1_to_dlav"] <- 100*count_Wasp1_table["counts_Wasp1_to_dlav"]/sum(count_Wasp1_table["counts_Wasp1_to_dlav"])
+
+count_table <- merge(count_control_table, count_Wasp1_table, all=TRUE)
+count_table[is.na(count_table)] <- 0
+
+print(count_table)
+
+
+pdf(paste0(subfolder, 'migration_from_dlav_distributions_control_vs_Wasp1_vISV.pdf'))
+
+pyramid.plot(count_table$frequency_control_from_dlav,count_table$frequency_control_to_dlav, 
+             laxlab = c(0,20,40,60,80,100),
+             raxlab = c(0,20,40,60,80,100),
+             main = "exchange of vISVs with DLAV: control vs. Wasp1", 
+             top.labels = c("immigration", "counts", "emigration"), label=count_table$value, 
+             gap = 5, labelcex = 1.6, unit=text(0,-2,"normalized counts (%)",cex=1.6), lxcol=color_control_background, rxcol = color_control_background)
+
+pyramid.plot(count_table$frequency_Wasp1_from_dlav,count_table$frequency_Wasp1_to_dlav,
+             laxlab = c(0,20,40,60,80,100),
+             raxlab = c(0,20,40,60,80,100),
+             #top.labels =  c("from_dlav", "migration from dlav", "  to_dlav "), 
+             label=count_table$value, space = 0.4,
+             gap = 5, labelcex = 1.6, unit=text(0,-2,"Normalized counts (%)",cex=1.6), lxcol=color_vISV, rxcol = color_vISV,
+             add = TRUE)
+dev.off()
+
+pyramid.plot(count_table$frequency_control_from_dlav,count_table$frequency_control_to_dlav, 
+             laxlab = c(0,20,40,60,80,100),
+             raxlab = c(0,20,40,60,80,100),
+             main = "exchange of vISVs with DLAV: control vs. Wasp1", 
+             top.labels = c("immigration", "counts", "emigration"), label=count_table$value, 
+             gap = 5, labelcex = 1.6, unit=text(0,-2,"normalized counts (%)",cex=1.6), lxcol=color_control_background, rxcol = color_control_background)
+
+pyramid.plot(count_table$frequency_Wasp1_from_dlav,count_table$frequency_Wasp1_to_dlav,
+             laxlab = c(0,20,40,60,80,100),
+             raxlab = c(0,20,40,60,80,100),
+             label=count_table$value, space = 0.4,
+             gap = 5, labelcex = 1.6, unit=text(0,-2,"Normalized counts (%)",cex=1.6), lxcol=color_vISV, rxcol = color_vISV,
+             add = TRUE)
+
+```
+
+```{r plot_migration_from_dlav_distributions_control_vs_Gata1, echo=FALSE}
+
+from_dlav_Gata1_table <- table(migration_json$migration_from_dlav$Gata1$vISV)
+to_dlav_Gata1_table <- table(migration_json$migration_to_dlav$Gata1$vISV)
+
+
+to_dlav_Gata1_table <- data.frame(to_dlav_Gata1_table)
+colnames(to_dlav_Gata1_table) <- c("value","counts_Gata1_to_dlav")
+from_dlav_Gata1_table <- data.frame(from_dlav_Gata1_table)
+colnames(from_dlav_Gata1_table) <- c("value","counts_Gata1_from_dlav")
+
+count_Gata1_table <- merge(from_dlav_Gata1_table, to_dlav_Gata1_table, all=TRUE)
+count_Gata1_table [is.na(count_Gata1_table )] <- 0
+count_Gata1_table ["frequency_Gata1_from_dlav"] <- 100*count_Gata1_table["counts_Gata1_from_dlav"]/sum(count_Gata1_table["counts_Gata1_from_dlav"])
+count_Gata1_table ["frequency_Gata1_to_dlav"] <- 100*count_Gata1_table["counts_Gata1_to_dlav"]/sum(count_Gata1_table["counts_Gata1_to_dlav"])
+
+count_table <- merge(count_control_table, count_Gata1_table, all=TRUE)
+count_table[is.na(count_table)] <- 0
+
+print(count_table)
+
+pdf(paste0(subfolder, 'migration_from_dlav_distributions_control_vs_Gata1_vISV.pdf'))
+
+pyramid.plot(count_table$frequency_control_from_dlav,count_table$frequency_control_to_dlav, 
+             laxlab = c(0,20,40,60,80,100),
+             raxlab = c(0,20,40,60,80,100),
+             main = "exchange of vISVs with DLAV: control vs. Gata1", 
+             top.labels = c("immigration", "counts", "emigration"), label=count_table$value, 
+             gap = 5, labelcex = 1.6, unit=text(0,-2,"normalized counts (%)",cex=1.6), lxcol=color_control_background, rxcol = color_control_background)
+
+pyramid.plot(count_table$frequency_Gata1_from_dlav,count_table$frequency_Gata1_to_dlav,
+             laxlab = c(0,20,40,60,80,100),
+             raxlab = c(0,20,40,60,80,100),
+             main = "exchange with DLAV: control vs. Gata1",  
+             label=count_table$value, space = 0.4,
+             gap = 5, labelcex = 1.6, unit=text(0,-2,"Normalized counts (%)",cex=1.6), lxcol=color_vISV, rxcol = color_vISV,
+             add = TRUE)
+
+dev.off()
+
+
+pyramid.plot(count_table$frequency_control_from_dlav,count_table$frequency_control_to_dlav, 
+             laxlab = c(0,20,40,60,80,100),
+             raxlab = c(0,20,40,60,80,100),
+             main = "exchange of vISVs with DLAV: control vs. Gata1", 
+             top.labels = c("immigration", "counts", "emigration"), label=count_table$value, 
+             gap = 5, labelcex = 1.6, unit=text(0,-2,"normalized counts (%)",cex=1.6), lxcol=color_control_background, rxcol = color_control_background)
+
+pyramid.plot(count_table$frequency_Gata1_from_dlav,count_table$frequency_Gata1_to_dlav,
+             laxlab = c(0,20,40,60,80,100),
+             raxlab = c(0,20,40,60,80,100),
+             main = "exchange with DLAV: control vs. Gata1",  
+             label=count_table$value, space = 0.4,
+             gap = 5, labelcex = 1.6, unit=text(0,-2,"Normalized counts (%)",cex=1.6), lxcol=color_vISV, rxcol = color_vISV,
+             add = TRUE)
+
+```
+
+```{r plot_migration_from_dlav_distributions_control_vs_Gata1_Wasp1, echo=FALSE}
+
+from_dlav_Gata1_Wasp1_table <- table(migration_json$migration_from_dlav$Gata1_Wasp1$vISV)
+to_dlav_Gata1_Wasp1_table <- table(migration_json$migration_to_dlav$Gata1_Wasp1$vISV)
+
+
+to_dlav_Gata1_Wasp1_table <- data.frame(to_dlav_Gata1_Wasp1_table)
+colnames(to_dlav_Gata1_Wasp1_table) <- c("value","counts_Gata1_Wasp1_to_dlav")
+from_dlav_Gata1_Wasp1_table <- data.frame(from_dlav_Gata1_Wasp1_table)
+colnames(from_dlav_Gata1_Wasp1_table) <- c("value","counts_Gata1_Wasp1_from_dlav")
+
+count_Gata1_Wasp1_table <- merge(from_dlav_Gata1_Wasp1_table, to_dlav_Gata1_Wasp1_table, all=TRUE)
+count_Gata1_Wasp1_table [is.na(count_Gata1_Wasp1_table )] <- 0
+count_Gata1_Wasp1_table ["frequency_Gata1_Wasp1_from_dlav"] <- 100*count_Gata1_Wasp1_table["counts_Gata1_Wasp1_from_dlav"]/sum(count_Gata1_Wasp1_table["counts_Gata1_Wasp1_from_dlav"])
+count_Gata1_Wasp1_table ["frequency_Gata1_Wasp1_to_dlav"] <- 100*count_Gata1_Wasp1_table["counts_Gata1_Wasp1_to_dlav"]/sum(count_Gata1_Wasp1_table["counts_Gata1_Wasp1_to_dlav"])
+
+count_table <- merge(count_control_table, count_Gata1_Wasp1_table, all=TRUE)
+count_table[is.na(count_table)] <- 0
+
+print(count_table)
+
+
+pdf(paste0(subfolder, 'migration_from_dlav_distributions_control_vs_Wasp1-Gata1_vISV.pdf'))
+
+
+pyramid.plot(count_table$frequency_control_from_dlav,count_table$frequency_control_to_dlav, 
+             laxlab = c(0,20,40,60,80,100),
+             raxlab = c(0,20,40,60,80,100),
+             main = "exchange of vISVs with DLAV: control vs. Gata1-Wasp1", 
+             top.labels = c("immigration", "counts", "emigration"), label=count_table$value, 
+             gap = 5, labelcex = 1.6, unit=text(0,-2,"normalized counts (%)",cex=1.6), lxcol=color_control_background, rxcol = color_control_background)
+
+pyramid.plot(count_table$frequency_Gata1_Wasp1_from_dlav,count_table$frequency_Gata1_Wasp1_to_dlav,
+             laxlab = c(0,20,40,60,80,100),
+             raxlab = c(0,20,40,60,80,100),
+             main = "exchange of vISVs with DLAV: control vs. Gata1-Wasp1",
+             label=count_table$value, space = 0.4,
+             gap = 5, labelcex = 1.6, unit=text(0,-2,"Normalized counts (%)",cex=1.6), lxcol=color_vISV, rxcol = color_vISV,
+             add = TRUE)
+
+dev.off()
+
+pyramid.plot(count_table$frequency_control_from_dlav,count_table$frequency_control_to_dlav, 
+             laxlab = c(0,20,40,60,80,100),
+             raxlab = c(0,20,40,60,80,100),
+             main = "exchange of vISVs with DLAV: control vs. Gata1-Wasp1", 
+             top.labels = c("immigration", "counts", "emigration"), label=count_table$value, 
+             gap = 5, labelcex = 1.6, unit=text(0,-2,"normalized counts (%)",cex=1.6), lxcol=color_control_background, rxcol = color_control_background)
+
+pyramid.plot(count_table$frequency_Gata1_Wasp1_from_dlav,count_table$frequency_Gata1_Wasp1_to_dlav,
+             laxlab = c(0,20,40,60,80,100),
+             raxlab = c(0,20,40,60,80,100),
+             main = "exchange of vISVs with DLAV: control vs. Gata1-Wasp1",
+             label=count_table$value, space = 0.4,
+             gap = 5, labelcex = 1.6, unit=text(0,-2,"Normalized counts (%)",cex=1.6), lxcol=color_vISV, rxcol = color_vISV,
+             add = TRUE)
+
+
+```
+
+
