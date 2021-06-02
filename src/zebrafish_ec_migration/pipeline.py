@@ -78,5 +78,5 @@ def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
          #     name="detect_mitosis_events"),
          ])
 
-    return {"__default__": master_pipeline, "preprocess_pipeline": preprocess_pipeline,
+    return {"__default__": trajectory_analysis_pipeline, "preprocess_pipeline": preprocess_pipeline,
             "mitosis_migration_pipeline": mitosis_migration_pipeline, "trajectory_analysis_pipeline": trajectory_analysis_pipeline}

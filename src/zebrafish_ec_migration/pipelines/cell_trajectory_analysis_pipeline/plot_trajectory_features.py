@@ -170,7 +170,7 @@ def plot_biphasic_velocities_with_stat_test(trajectory_features: pd.DataFrame, p
             trajectory_features_phase = trajectory_features_group[
                 trajectory_features_group["time_in_hpf"] >= time_interval[0]]
             trajectory_features_phase = trajectory_features_phase[
-                trajectory_features_phase["time_in_hpf"] <= time_interval[1]]
+                trajectory_features_phase["time_in_hpf"] < time_interval[1]]
 
             trajectory_features_phase = trajectory_features_phase[trajectory_features_phase['time_in_hpf'].isin(time_values)]
 
@@ -263,9 +263,9 @@ def plot_biphasic_velocities_with_stat_test(trajectory_features: pd.DataFrame, p
         significance = "ns"
         if result[1] < 0.05:
             significance = "*"
-        if result[1] < 0.005:
+        if result[1] < 0.01:
             significance = "**"
-        if result[1] < 0.0005:
+        if result[1] < 0.001:
             significance = "***"
 
         x1, x2, h = 0, 2, 0.2
@@ -286,9 +286,9 @@ def plot_biphasic_velocities_with_stat_test(trajectory_features: pd.DataFrame, p
         significance = "ns"
         if result[1] < 0.05:
             significance = "*"
-        if result[1] < 0.005:
+        if result[1] < 0.01:
             significance = "**"
-        if result[1] < 0.0005:
+        if result[1] < 0.001:
             significance = "***"
 
         x1, x2, h = 0, 2, 0.2
