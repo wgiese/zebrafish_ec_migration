@@ -3,6 +3,8 @@
 # Documentation for this file format can be found in "The Data Catalog"
 # Link: https://kedro.readthedocs.io/en/stable/04_user_guide/04_data_catalog.html
 
+# key files with meto information on the data (ingput)
+
 imaris_key_file:
   type: pandas.CSVDataSet
   filepath: data/01_raw/imaris_key_file.csv
@@ -14,6 +16,14 @@ processed_key_file:
 aligned_trajectory_key_file:
   type: pandas.CSVDataSet
   filepath: data/02_intermediate/aligned_trajectory_key_file.csv
+  
+# conversion of IMARIS data into csv file format
+  
+IMARIS_data:
+  type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
+  filepath: data/01_raw/IMARIS_data/  
+
+# output data according to the CMSO (Cell migration standard organisation)
 
 CMSO_object_data:
   type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
@@ -39,9 +49,7 @@ CMSO_track_data:
   type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
   filepath: data/01_raw/CMSO_track_data/
 
-IMARIS_data:
-  type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
-  filepath: data/01_raw/IMARIS_data/
+
 
 CMSO_aligned_link_data:
   type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
@@ -52,9 +60,11 @@ CMSO_aligned_object_data:
   filepath: data/03_primary/CMSO_aligned_object_data/
 
 #TODO check if unaligned_tracking_data still exists
-unaligned_tracking_data:
-  type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
-  filepath: data/02_intermediate/unaligned_tracking_data/
+#unaligned_tracking_data:
+#  type: zebrafish_ec_migration.io.csv_stack.CSVStackWriter
+#  filepath: data/02_intermediate/unaligned_tracking_data/
+
+# meta information on data
 
 fish_data_summary:
   type: pandas.CSVDataSet

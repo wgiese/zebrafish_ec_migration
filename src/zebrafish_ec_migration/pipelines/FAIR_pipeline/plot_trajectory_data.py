@@ -47,7 +47,7 @@ def plot_trajectory_data(processed_key_file: pd.DataFrame, parameters: Dict, sta
 
     return trajectory_plots
 
-def _plot_trajectory(movement_data, parameters):
+def _plot_trajectory(movement_data, parameters, plot_link_ids = True):
 
     x_min = movement_data['x'].min()
     y_min = movement_data['y'].min()
@@ -95,7 +95,14 @@ def _plot_trajectory(movement_data, parameters):
             color = vessel_type_colors[vessel_type]
 
             axarr[0].plot(x_pos, y_pos, color)
-            axarr[0].text(mean_x_link_id, mean_y_link_id, link_id, fontsize=7)
+
+            
+            axarr[0].plot(x_pos[0], y_pos[0], color = color, marker = 'o')
+            axarr[0].plot(x_pos[-1], y_pos[-1], color = color, marker = 'x')
+                        
+            if (plot_link_ids):            
+            	axarr[0].text(mean_x_link_id, mean_y_link_id, link_id, fontsize=7)
+            
             axarr[0].set_title("x-y-projection with link IDs")
             #axarr[0].text(100, 100, "link_id: %s" % link_id, fontsize=3)
             axarr[0].set_xlabel("x")
