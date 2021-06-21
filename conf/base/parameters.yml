@@ -34,7 +34,8 @@ time_cell_count : 40
 analysis_groups : ["control","WaspI [100uM]","Gata1","Gata1_Wasp1"]
 
 vessel_types: ["aISV", "vISV", "aorta", "dlav"]
-vessel_type_colors: {"aorta": "red", "dlav": "blue", "aISV": "orange", "vISV": "c", "either_ISV": "purple"}
+#vessel_type_colors: {"aorta": "red", "dlav": "blue", "aISV": "orange", "vISV": "c", "either_ISV": "purple"}
+vessel_type_colors: {"aorta": "crimson", "dlav": "lightsteelblue", "aISV": "lightcoral", "vISV": "c", "either_ISV": "purple"}
 
 dev_phases: {"anastomosis \n (26h - 28h)": [26.0,28.0], "secondary sprouting \n (28h - 32h)": [28.0,32.0],
              "vessel remodelling \n (32h - 38h)": [32.0,38.0], "junction maturation \n (38h - 44h)": [38.0,44.0]}
