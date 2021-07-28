@@ -167,3 +167,13 @@ biphasic_velocity_with_stat_plots:
 biphasic_velocity_statistics:
   type: pandas.CSVDataSet
   filepath: data/08_reporting/biphasic_velocity_statistic.csv
+
+biphasic_velocity_with_stat_plots_conditions:
+  type: zebrafish_ec_migration.io.matplotlib_figures.MatplotlibWriter
+  filepath: data/08_reporting/biphasic_ec_velocities/
+  save_args:
+    multiFile: True
+
+biphasic_velocity_statistics_conditions:
+  type: pandas.CSVDataSet
+  filepath: data/08_reporting/biphasic_velocity_statistic_conditions.csv

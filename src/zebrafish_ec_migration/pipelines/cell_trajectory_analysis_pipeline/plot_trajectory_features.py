@@ -309,9 +309,9 @@ def plot_biphasic_velocities_with_stat_test(trajectory_features: pd.DataFrame, p
         significance = "ns"
         if result[1] < 0.05:
             significance = "*"
-        if result[1] < 0.005:
+        if result[1] < 0.01:
             significance = "**"
-        if result[1] < 0.0005:
+        if result[1] < 0.001:
             significance = "***"
 
         x, h = 2.1, 0.1
@@ -344,6 +344,132 @@ def plot_biphasic_velocities_with_stat_test(trajectory_features: pd.DataFrame, p
         velocity_plots["biphasic_velocity_%s_with_stat_test.pdf" % analysis_group] = fig
 
         stat_tests["stat_test"] = stat_test
+
+    return velocity_plots, stat_tests
+
+
+def plot_biphasic_velocities_with_stat_test_conditions(trajectory_features: pd.DataFrame, parameters: Dict, start_time, end_time):
+    velocity_plots = dict()
+
+    stat_tests = pd.DataFrame()
+    stat_ind = 0
+    stat_test = "Welch’s t-test"
+
+    time_values = np.arange(26, 47, 2)
+
+    plt.rcParams.update({'font.size': 16})
+
+    dev_phases = parameters["dev_phases"]
+    dev_phases_list = list(dev_phases.keys())
+    vessel_colors = parameters['vessel_type_colors']
+    feature = "vd_velocity_micron_per_h"
+
+    for analysis_group_1 in trajectory_features["analysis_group"].unique():
+        for analysis_group_2 in trajectory_features["analysis_group"].unique():
+            if analysis_group_1 == analysis_group_2:
+                continue
+            
+            trajectory_features_group_1 = trajectory_features[trajectory_features["analysis_group"] == analysis_group_1]
+            trajectory_features_group_2 = trajectory_features[trajectory_features["analysis_group"] == analysis_group_2]
+
+            trajectory_features_phases_1_ = []
+            trajectory_features_phases_2_ = []
+            for dev_phase in dev_phases:
+                time_interval = dev_phases[dev_phase]
+
+                trajectory_features_phase = trajectory_features_group_1[
+                    trajectory_features_group_1["time_in_hpf"] >= time_interval[0]]
+                trajectory_features_phase = trajectory_features_phase[
+                    trajectory_features_phase["time_in_hpf"] < time_interval[1]]
+
+                trajectory_features_phase = trajectory_features_phase[trajectory_features_phase['time_in_hpf'].isin(time_values)]
+
+                trajectory_features_phase["dev_phase"] = dev_phase
+                trajectory_features_phases_1_.append(trajectory_features_phase)
+                
+                trajectory_features_phase = trajectory_features_group_2[
+                trajectory_features_group_2["time_in_hpf"] >= time_interval[0]]
+                trajectory_features_phase = trajectory_features_phase[
+                trajectory_features_phase["time_in_hpf"] < time_interval[1]]
+
+                trajectory_features_phase = trajectory_features_phase[trajectory_features_phase['time_in_hpf'].isin(time_values)]
+
+                trajectory_features_phase["dev_phase"] = dev_phase
+                trajectory_features_phases_2_.append(trajectory_features_phase)
+
+            trajectory_features_phases_group_1 = pd.concat(trajectory_features_phases_1_)
+            trajectory_features_phases_group_2 = pd.concat(trajectory_features_phases_2_)
+            
+
+            for vessel_type in ['aISV', 'vISV']:
+                fig, ax = plt.subplots(figsize=(15, 10))
+                
+                plot_df_group_1 = trajectory_features_phases_group_1[trajectory_features_phases_group_1['vessel_type'] == vessel_type]
+                plot_df_group_1 = plot_df_group_1.sort_values(by="frame").dropna()
+                
+                plot_df_group_2 = trajectory_features_phases_group_2[trajectory_features_phases_group_2['vessel_type'] == vessel_type]
+                plot_df_group_2 = plot_df_group_2.sort_values(by="frame").dropna()
+
+                sns.pointplot(x='dev_phase', y=feature, data=plot_df_group_1, ax=ax,
+                            color=vessel_colors[vessel_type], linestyles="dashed", capsize=0.05, scale=1.5, ci=95)
+                
+                sns.pointplot(x='dev_phase', y=feature, data=plot_df_group_2, ax=ax,
+                            color= "grey", linestyles="dashed", capsize=0.05, scale=1.5, ci=95)
+
+
+
+                #for dev_phase_A in plot_df['dev_phase'].unique():
+                for i in range(len(dev_phases_list)):
+                    dev_phase = dev_phases_list[i]
+                    sample_group_1 = plot_df_group_1[plot_df_group_1['dev_phase'] == dev_phase]
+
+                    sample_group_2 = plot_df_group_2[plot_df_group_2['dev_phase'] == dev_phase]
+
+                    stat_tests.at[stat_ind, "analysis_group_1"] = analysis_group_1
+                    stat_tests.at[stat_ind, "analysis_group_2"] = analysis_group_2
+                    stat_tests.at[stat_ind, "vessel_type"] = vessel_type
+                    stat_tests.at[stat_ind, "dev_phase"] = dev_phase
+
+                    result = stats.ttest_ind(sample_group_1[feature], sample_group_2[feature], equal_var = False)
+
+                    stat_tests.at[stat_ind, "t-statistic"] = result[0]
+                    stat_tests.at[stat_ind, "p-value"] = result[1]
+
+                    stat_ind += 1
+                    
+                cond_group_1 = trajectory_features_phases_group_1[trajectory_features_phases_group_1['dev_phase'] == dev_phases_list[2]]
+                cond_group_1 = cond_group_1.sort_values(by="frame").dropna()
+                cond_group_2 = trajectory_features_phases_group_2[trajectory_features_phases_group_2['dev_phase'] == dev_phases_list[2]]
+                cond_group_2 = cond_group_2.sort_values(by="frame").dropna()
+                cond_group_1 = cond_group_1[cond_group_1['vessel_type'] == vessel_type]
+                cond_group_2 = cond_group_2[cond_group_2['vessel_type'] == vessel_type]
+                result = stats.ttest_ind(cond_group_1[feature], cond_group_2[feature], equal_var=False)
+
+                y1 = cond_group_1[feature].mean()
+                y2 = cond_group_2[feature].mean()
+                # ax.annotate("***", xy=(1, y + 2.0), zorder=10)
+                # ax.annotate('', xy=(0, y), xytext=(2, y), arrowprops=props)
+                significance = "ns"
+                if result[1] < 0.05:
+                    significance = "*"
+                if result[1] < 0.01:
+                    significance = "**"
+                if result[1] < 0.001:
+                    significance = "***"
+
+                x, h = 2.1, 0.1
+                ax.plot([x , x + h , x + h, x], [y1, y1, y2, y2], lw=1.5, c='k')
+                ax.text(x+2*h, (y1 + y2) * 0.5, significance, ha='center', va='bottom', color='k')
+
+
+                ax.set_ylim(-1.5, 6.5)
+                ax.set_xlabel("developmental phases")
+                ax.set_ylabel("velocity [$\mathrm{\mu}$m/h]")
+
+                velocity_plots["biphasic_velocity_%s_vs_%s_%s_with_stat_test.png" % (analysis_group_1, analysis_group_2, vessel_type)] = fig
+                velocity_plots["biphasic_velocity_%s_vs_%s_%s_with_stat_test.pdf" % (analysis_group_1, analysis_group_2, vessel_type)] = fig
+
+    stat_tests["stat_test"] = stat_test
 
     return velocity_plots, stat_tests
 
