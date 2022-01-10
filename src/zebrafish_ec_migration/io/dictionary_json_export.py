@@ -90,7 +90,7 @@ class DictToJSONDataSet(AbstractDataSet):
         #data.to_excel(writer, **self._save_args)
         #writer.save()
         with open(self._filepath, 'w') as fp:
-            json.dump(data, fp, cls=NumpyEncoder)
+            json.dump(data, fp, indent=4, cls=NumpyEncoder)
 
     def _exists(self) -> bool:
         return isfile(self._filepath)
