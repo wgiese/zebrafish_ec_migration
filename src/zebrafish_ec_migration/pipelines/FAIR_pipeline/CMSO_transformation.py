@@ -102,6 +102,7 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
 
     object_data_statistics = pd.DataFrame()
     counter = 1
+    counter_stats = 1 
 
     with open("./conf/base/catalog.yml") as file:
         catalog_dict = yaml.load(file, Loader=yaml.FullLoader)
@@ -128,9 +129,8 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
             print(df_single_fish)
 
             object_filename = 'objects_fish_%s_%s.csv' % (int(fish_number), analysis_group)
-            #object_data[filename] = objects_d am not sharing that piece about Kate to be disparaging about herf
 
-            object_data_statistics.at[counter, "filename"] = object_filename
+            object_data_statistics.at[counter_stats, "filename"] = object_filename
 
             for index, row in df_single_fish.iterrows():
 
@@ -150,7 +150,8 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
                     unified_df = _unify_tidy_wide_IMARIS_formats(imaris_df)
                     print(unified_df.head())
                     if unified_df.size <= 1:
-                        print("ERROR: Unified df too small")
+                        print("ERROR: df too small")
+                        processed_key_file.at[index, "processed"] = False
                         print(unified_df.head())
                     else:
                         object_data_statistics.at[counter, "unified_df.size"] = unified_df.size
@@ -168,96 +169,10 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
                         link_data[link_filename] = link_df
 
                         json_filename = "meta_fish_%s_%s_%s.json" % (analysis_group, int(fish_number), row["vessel_type"])
+                        
+                        json_descriptor = _json_CMSO_descriptor(analysis_group,  int(fish_number), row['vessel_type'], object_filename, link_filename)
 
-                        json_meta[json_filename] = {"cmso_space_unit": "micron",
-                                                               "cmso_time_unit": "frame",
-                                                               "name": "cmso_tracks_zebrafish_%s" % analysis_group,
-                                                               "resources": [
-                                                                   {
-                                                                       "name" : "objects_table_fish_%s_%s_%s" % (
-                                                                        analysis_group, int(fish_number), row["vessel_type"]),
-                                                                       "path": "../CMSO_object_data/%s" % object_filename,
-                                                                       "schema": {
-                                                                           "fields": [
-                                                                               {
-                                                                                   "constraints": {
-                                                                                       "unique": True
-                                                                                   },
-                                                                                   "description": "",
-                                                                                   "format": "default",
-                                                                                   "name": "object_id",
-                                                                                   "title": "",
-                                                                                   "type": "integer"
-                                                                               },
-                                                                               {
-                                                                                   "description": "",
-                                                                                   "format": "default",
-                                                                                   "name": "frame",
-                                                                                   "title": "",
-                                                                                   "type": "integer"
-                                                                               },
-                                                                               {
-                                                                                   "description": "",
-                                                                                   "format": "default",
-                                                                                   "name": "x",
-                                                                                   "title": "",
-                                                                                   "type": "number"
-                                                                               },
-                                                                               {
-                                                                                   "description": "",
-                                                                                   "format": "default",
-                                                                                   "name": "y",
-                                                                                   "title": "",
-                                                                                   "type": "number"
-                                                                               },
-                                                                               {
-                                                                                   "description": "",
-                                                                                   "format": "default",
-                                                                                   "name": "z",
-                                                                                   "title": "",
-                                                                                   "type": "number"
-                                                                               },
-                                                                           ],
-                                                                           "primaryKey": "cmso_object_id"
-                                                                       }
-                                                                   },
-                                                                   {
-                                                                       "name": "objects_table_fish_%s_%s_%s" % (
-                                                                           analysis_group, int(fish_number),
-                                                                           row["vessel_type"]),
-                                                                       "path": "../CMSO_link_data/%s" % link_filename,
-                                                                       "schema": {
-                                                                           "fields": [
-                                                                               {
-                                                                                   "description": "",
-                                                                                   "format": "default",
-                                                                                   "name": "link_id",
-                                                                                   "title": "",
-                                                                                   "type": "integer"
-                                                                               },
-                                                                               {
-                                                                                   "description": "",
-                                                                                   "format": "default",
-                                                                                   "name": "object_id",
-                                                                                   "title": "",
-                                                                                   "type": "integer"
-                                                                               }
-                                                                           ],
-                                                                           "foreignKeys": [
-                                                                               {
-                                                                                   "fields": "cmso_object_id",
-                                                                                   "reference": {
-                                                                                       "datapackage": "",
-                                                                                       "fields": "object_id",
-                                                                                       "resource": "cmso_objects_table"
-                                                                                   }
-                                                                               }
-                                                                           ]
-                                                                       }
-                                                                   }
-                                                               ]
-
-                                                               }
+                        json_meta[json_filename] = json_descriptor
 
                         track_counter = 0
 
@@ -269,76 +184,122 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
                         track_filename = 'tracks_fish_%s_%s_%s.csv' % (analysis_group, int(fish_number), row["vessel_type"])
                         tracking_data[track_filename] = track_df
 
-                        processed_key_file.at[index,"link_data"] = cmso_link_dir + link_filename
-                        processed_key_file.at[index, "track_data"] = cmso_track_dir + track_filename
+                        processed_key_file.at[index, "link_data"] = cmso_link_dir + link_filename
+                        #processed_key_file.at[counter, "track_data"] = cmso_track_dir + track_filename
                         processed_key_file.at[index, "object_data"] = cmso_object_dir + object_filename
-        counter += 1
+                        processed_key_file.at[index, "json_descriptor"] = json_filename
+                        processed_key_file.at[index, "processed"] = True
+                        
+                        counter += 1
+        counter_stats += 1
 
-    processed_key_file = processed_key_file[processed_key_file["object_data"] != np.nan]
+    #processed_key_file = processed_key_file[processed_key_file["object_data"] != np.nan]
+    processed_key_file = processed_key_file[processed_key_file["processed"] == True]
+    unprocessed_key_file = processed_key_file[processed_key_file["processed"] != True]
 
     processed_key_file = processed_key_file.drop('filename', 1)
+    processed_key_file = processed_key_file.drop('processed', 1)
 
-    return processed_key_file, imaris_data, object_data, object_data_statistics, link_data, tracking_data, json_meta
+    return processed_key_file, imaris_data, unprocessed_key_file, object_data, object_data_statistics, link_data, tracking_data, json_meta
 
-    # print("The following parameters are used: ")
-    # print(parameters)
 
-    # time_points = np.arange(start_time,end_time,parameters["time_resolution"])
+def _json_CMSO_descriptor(analysis_group, fish_id, vessel_type, object_filename, link_filename):
 
-    ##feature_dir = "./data/02_intermediate/" + "/feature_files_%s_%s_%s/" % (start_time,end_time,parameters["dt"])
-    # movement_data_dir = "./data/03_intermediate/" + "/movement_data_%s_%s/" % (start_time,end_time)
-    ##trajectory_dir = "./data/02_intermediate/" + "/plot_trajectories_%s_%s_%s/" % (start_time,end_time,parameters["dt"])
+    json_descriptor = { "cmso_space_unit": "micron",
+                        "cmso_time_unit": "frame",
+                        "name": "cmso_tracks_zebrafish_%s" % analysis_group,
+                        "resources": [
+                            {
+                            "name" : "objects_table_fish_%s_%s_%s" % (
+                                        analysis_group, fish_id, vessel_type),
+                            "path": "../CMSO_object_data/%s" % object_filename,
+                            "schema": {
+                                "fields": [
+                                {
+                                    "constraints": {
+                                        "unique": True
+                                    },
+                                    "description": "",
+                                    "format": "default",
+                                    "name": "object_id",
+                                    "title": "",
+                                    "type": "integer"
+                                },
+                                {
+                                    "description": "",
+                                    "format": "default",
+                                    "name": "frame",
+                                    "title": "",
+                                    "type": "integer"
+                                },
+                                {
+                                    "description": "",
+                                    "format": "default",
+                                    "name": "x",
+                                    "title": "",
+                                    "type": "number"
+                                },
+                                {
+                                    "description": "",
+                                    "format": "default",
+                                    "name": "y",
+                                    "title": "",
+                                    "type": "number"
+                                },
+                                {
+                                    "description": "",
+                                    "format": "default",
+                                    "name": "z",
+                                    "title": "",
+                                    "type": "number"
+                                },
+                               ],
+                               "primaryKey": "object_id"
+                           }
+                        },
+                        {
+                            "name": "links_table_fish_%s_%s_%s" % (
+                                   analysis_group, fish_id,
+                                   vessel_type),
+                            "path": "../CMSO_link_data/%s" % link_filename,
+                            "schema": {
+                                "fields": [
+                                    {
+                                        "description": "",
+                                        "format": "default",
+                                        "name": "link_id",
+                                        "title": "",
+                                        "type": "integer"
+                                    },
+                                    {
+                                        "description": "",
+                                        "format": "default",
+                                        "name": "object_id",
+                                        "title": "",
+                                        "type": "integer"
+                                    }
+                                ],
+                                "foreignKeys": [
+                                       {
+                                           "fields": "object_id",
+                                           "reference": {
+                                               "datapackage": "",
+                                               "fields": "object_id",
+                                               "resource" : "objects_table_fish_%s_%s_%s" % (
+                                                    analysis_group, fish_id, vessel_type)
+                                           }
+                                       }
+                                   ]
+                               }
+                           }
+                       ]
 
-    # try:
-    ## Create target Directory
-    # os.mkdir(feature_dir)
-    # print("Directory " , feature_dir ,  " Created ")
-    # except FileExistsError:
-    # print("Directory " , feature_dir ,  " already exists")
+                       }
 
-    # try:
-    ## Create target Directory
-    # os.mkdir(movement_data_dir)
-    # print("Directory " , movement_data_dir ,  " Created ")
-    # except FileExistsError:
-    # print("Directory " , movement_data_dir ,  " already exists")
 
-    # try:
-    ## Create target Directory
-    # os.mkdir(trajectory_dir)
-    # print("Directory " , trajectory_dir ,  " Created ")
-    # except FileExistsError:
-    # print("Directory " , trajectory_dir ,  " already exists")
 
-    # features_df = pd.DataFrame()
+    return json_descriptor
 
-    ##file_statistics_df = pd.DataFrame(data=[], index=[], columns=['#tracks','mean_track_length','max_step'])
-    # file_statistics_df = pd.DataFrame()
-
-    # df_key = preprocessed_key_file.copy()
-
-    # ex = extract.ExtractData(parameters["data_dir"], key_filename = 'Key.xlsx')
-    # f = extract_features.ExtractFeatures()
-    # geo = extract_geometry.ExtractGeometry()
-
-    # counter_statistics = 0
-
-    # for fish_number in df_key["fish number"].unique():
-
-    # if (np.isnan(fish_number)):
-    # continue
-
-    # df_single_fish_all_groups = df_key[df_key['fish number'] == fish_number]
-
-    # for analysis_group in  df_single_fish_all_groups["analysis_group"].unique():
-
-    # df_single_fish = df_single_fish_all_groups[df_single_fish_all_groups["analysis_group"] == analysis_group]
-
-    # print("=================================================")
-    # print("fish number: %s" % int(fish_number))
-    # print("=================================================")
-
-    # movement_data, key_row = ex.get_movement_data(fish_number, df_key, parameters["data_dir"], start_time, end_time, analysis_group)
 
 def _unify_tidy_wide_IMARIS_formats(imaris_df):
 

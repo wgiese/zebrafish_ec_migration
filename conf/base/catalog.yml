@@ -11,8 +11,12 @@ imaris_key_file:
 
 processed_key_file:
   type: pandas.CSVDataSet
-  filepath: data/01_raw/processed_key_file.csv
+  filepath: data/01_raw/cmso_key_file.csv
 
+unprocessed_key_file:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/unprocessed_cmso_key_file.csv
+  
 aligned_trajectory_key_file:
   type: pandas.CSVDataSet
   filepath: data/02_intermediate/aligned_trajectory_key_file.csv

@@ -22,7 +22,7 @@ def create_pipeline(**kwargs):
             node(preprocess_mitosis_migration_file, "parameters", "preprocessed_mitosis_migration_file", name="preprocess_mitosis_migration_file"),
             node(CMSO_movement_data,
                  ["imaris_key_file", "parameters", "params:start_time_dpf1", "params:end_time_dpf1"],
-                 ["processed_key_file", "IMARIS_data", "CMSO_object_data", "CMSO_objects_statistics",
+                 ["processed_key_file", "IMARIS_data", "unprocessed_key_file", "CMSO_object_data", "CMSO_objects_statistics",
                   "CMSO_link_data", "CMSO_track_data", "CMSO_json_data"],
                  name="CMSO_transformation"),
             node(plot_trajectory_data,

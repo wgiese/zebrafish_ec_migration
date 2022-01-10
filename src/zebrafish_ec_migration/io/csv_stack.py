@@ -46,32 +46,7 @@ from kedro.io import AbstractDataSet, DataSetError #, ExistsMixin
 
 class CSVStackWriter(AbstractDataSet): #, ExistsMixin):
     """
-        ``MatplotlibWriter`` saves matplotlib objects as image files.
-
-        Example:
-        ::
-
-            >>> import matplotlib.pyplot as plt
-            >>> from kedro.contrib.io.matplotlib import MatplotlibWriter
-            >>>
-            >>> plt.plot([1,2,3],[4,5,6])
-            >>>
-            >>> single_plot_writer = MatplotlibWriter(filepath="docs/new_plot.png")
-            >>> single_plot_writer.save(plt)
-            >>>
-            >>> plt.close()
-            >>>
-            >>> plots = dict()
-            >>>
-            >>> for colour in ['blue', 'green', 'red']:
-            >>>     plots[colour] = plt.figure()
-            >>>     plt.plot([1,2,3],[4,5,6], color=colour)
-            >>>     plt.close()
-            >>>
-            >>> multi_plot_writer = MatplotlibWriter(filepath="docs/",
-            >>>                                      save_args={'multiFile': True})
-            >>> multi_plot_writer.save(plots)
-
+        ``CSVStackWriter`` saves csv
     """
 
     def _describe(self) -> Dict[str, Any]:
@@ -92,11 +67,9 @@ class CSVStackWriter(AbstractDataSet): #, ExistsMixin):
         Args:
             filepath: path to a text file.
             load_args: Currently ignored as loading is not supported.
-            save_args: multiFile: allows for multiple plot objects
-                to be saved. Additional load arguments can be found at
-                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+            save_args: multiFile: allows for multiple csv objects
         """
-        default_save_args = {"multiFile": True}
+        default_save_args = {"multiFile": True, "index": False}
         default_load_args = {"NamePattern": "unaligned_"}
 
         self._filepath = filepath
@@ -105,6 +78,7 @@ class CSVStackWriter(AbstractDataSet): #, ExistsMixin):
         self._load_args.pop("NamePattern")
         self._save_args = self._handle_default_args(save_args, default_save_args)
         self._save_args.pop("multiFile")
+        #self._save_args.pop("index")
 
     @staticmethod
     def _handle_default_args(user_args: dict, default_args: dict) -> dict:
@@ -130,7 +104,10 @@ class CSVStackWriter(AbstractDataSet): #, ExistsMixin):
     def _save(self, data) -> None:
 
         #if self._mutlifile_mode:
-
+        print("====save_args====")
+        print(self._save_args)
+        print("=======")
+        print(self)
         if not os.path.isdir(self._filepath):
             os.makedirs(self._filepath)
 
