@@ -200,6 +200,8 @@ def CMSO_movement_data(imaris_key_file: pd.DataFrame, parameters: Dict, start_ti
     processed_key_file = processed_key_file.drop('filename', 1)
     processed_key_file = processed_key_file.drop('processed', 1)
 
+    processed_key_file = processed_key_file.drop_duplicates()
+
     return processed_key_file, imaris_data, unprocessed_key_file, object_data, object_data_statistics, link_data, tracking_data, json_meta
 
 

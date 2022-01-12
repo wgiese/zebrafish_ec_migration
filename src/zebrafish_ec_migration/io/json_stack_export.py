@@ -102,7 +102,7 @@ class JSONStackDataSet(AbstractDataSet):
         if isinstance(data, list):
             for index, single_dict in enumerate(data):
                 with open(os.path.join(self._filepath, str(index)), 'w') as fp:
-                    json.dump(single_dict, fp, cls=NumpyEncoder)
+                    json.dump(single_dict, fp, indent=4, cls=NumpyEncoder)
                 df.to_csv(
                     os.path.join(self._filepath, str(index)), **self._save_args
                 )
@@ -110,7 +110,7 @@ class JSONStackDataSet(AbstractDataSet):
         elif isinstance(data, dict):
             for dict_name, single_dict in data.items():
                 with open(os.path.join(self._filepath, dict_name), 'w') as fp:
-                    json.dump(single_dict, fp, cls=NumpyEncoder)
+                    json.dump(single_dict, fp, indent=4, cls=NumpyEncoder)
 
 
         else:
